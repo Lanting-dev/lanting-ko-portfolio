@@ -25,6 +25,7 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
   const ref = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [shouldMountCanvas, setShouldMountCanvas] = useState(false);
+  const [inView, setInView] = useState(true);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -70,6 +71,21 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
     return () => observer.disconnect();
   }, [shouldMountCanvas]);
 
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !shouldMountCanvas) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry?.isIntersecting ?? false);
+      },
+      { root: null, rootMargin: "30% 0px", threshold: 0 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [shouldMountCanvas]);
+
   return (
     <div ref={ref} className="project-cube-scene">
       {shouldMountCanvas && dimensions.width > 0 && dimensions.height > 0 ? (
@@ -81,6 +97,7 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
           seed={seed}
           revealed={revealed}
           hovered={hovered}
+          active={inView}
         />
       ) : null}
     </div>

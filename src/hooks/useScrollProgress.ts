@@ -18,7 +18,10 @@ export function useScrollProgress(
     const track = trackRef.current;
     if (!track) return;
 
+    let frame = 0;
+
     const update = () => {
+      frame = 0;
       const rect = track.getBoundingClientRect();
       const scrollable = track.offsetHeight - window.innerHeight;
       if (scrollable <= 0) {
@@ -29,13 +32,19 @@ export function useScrollProgress(
       setProgress(scrolled / scrollable);
     };
 
+    const scheduleUpdate = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(update);
+    };
+
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
     };
   }, [trackRef, leadPx]);
 

@@ -43,12 +43,12 @@ export function isProjectEntryBallActive(
   return exitT > 0 && exitT < 0.995;
 }
 
-/** Left inset before the first card — flush with the padded content edge. */
+/** Left inset before the first card — centers card 1 in the scroll viewport at rest. */
 export function getProjectScrollStartPad(
-  _viewportWidth: number,
-  _cardWidth: number,
+  viewportWidth: number,
+  cardWidth: number,
 ): number {
-  return 0;
+  return Math.max(0, (viewportWidth - cardWidth) / 2);
 }
 
 /** End spacer so the last card can scroll fully into view (left-aligned like the first). */
@@ -59,12 +59,11 @@ export function getProjectScrollEndPad(
   return Math.max(48, viewportWidth - cardWidth);
 }
 
-export function getProjectTrackMetrics(
+export function getProjectTrackLayout(
   cardCount: number,
   cardWidth: number,
   gap: number,
   viewportWidth: number,
-  progress: number,
 ) {
   const startPad = getProjectScrollStartPad(viewportWidth, cardWidth);
   const endPad = getProjectScrollEndPad(viewportWidth, cardWidth);
@@ -74,6 +73,23 @@ export function getProjectTrackMetrics(
     Math.max(0, cardCount - 1) * gap +
     endPad;
   const maxOffset = Math.max(0, totalWidth - viewportWidth);
+
+  return { startPad, endPad, maxOffset };
+}
+
+export function getProjectTrackMetrics(
+  cardCount: number,
+  cardWidth: number,
+  gap: number,
+  viewportWidth: number,
+  progress: number,
+) {
+  const { startPad, endPad, maxOffset } = getProjectTrackLayout(
+    cardCount,
+    cardWidth,
+    gap,
+    viewportWidth,
+  );
 
   return {
     startPad,

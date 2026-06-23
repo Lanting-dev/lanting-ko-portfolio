@@ -39,9 +39,9 @@ function createSoftCircleTexture(size = 128): THREE.CanvasTexture {
     center,
     center,
   );
-  gradient.addColorStop(0, "rgba(0, 0, 0, 0.42)");
-  gradient.addColorStop(0.42, "rgba(0, 0, 0, 0.12)");
-  gradient.addColorStop(0.72, "rgba(0, 0, 0, 0.04)");
+  gradient.addColorStop(0, "rgba(0, 0, 0, 0.72)");
+  gradient.addColorStop(0.35, "rgba(0, 0, 0, 0.32)");
+  gradient.addColorStop(0.62, "rgba(0, 0, 0, 0.12)");
   gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
@@ -172,8 +172,11 @@ function ProjectCube({
     }
     greyFrontMaterial.opacity = 1 - amount;
     if (shadowRef.current) {
-      shadowRef.current.opacity =
-        revealedRef.current && hoveredRef.current ? 0.24 : 0;
+      const revealed = revealedRef.current;
+      const hovered = hoveredRef.current;
+      const targetOpacity = revealed ? (hovered ? 0.52 : 0.3) : 0;
+      shadowRef.current.opacity +=
+        (targetOpacity - shadowRef.current.opacity) * 0.2;
     }
 
     if (reducedMotion) {
@@ -193,7 +196,7 @@ function ProjectCube({
 
   return (
     <group ref={groupRef}>
-      <mesh position={[0.04, -BOX_H / 2 - 0.08, -0.03]} scale={[0.96, 0.16, 1]}>
+      <mesh position={[0.04, -BOX_H / 2 - 0.08, -0.03]} scale={[1.08, 0.2, 1]}>
         <circleGeometry args={[1, 48]} />
         <meshBasicMaterial
           ref={shadowRef}
@@ -269,6 +272,7 @@ type ProjectCubeCanvasProps = {
   seed: number;
   revealed: boolean;
   hovered: boolean;
+  active?: boolean;
 };
 
 export default function ProjectCubeCanvas({
@@ -279,6 +283,7 @@ export default function ProjectCubeCanvas({
   seed,
   revealed,
   hovered,
+  active = true,
 }: ProjectCubeCanvasProps) {
   const revealedRef = useRef(revealed);
   revealedRef.current = revealed;
@@ -289,8 +294,9 @@ export default function ProjectCubeCanvas({
     <Canvas
       className="project-cube-canvas"
       style={{ width, height }}
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       flat
+      frameloop={active ? "always" : "never"}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       camera={{ fov: 42, near: 0.05, far: 30 }}
       onCreated={({ gl }) => {

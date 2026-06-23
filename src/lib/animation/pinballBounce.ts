@@ -498,16 +498,14 @@ export function isProjectCardRevealActive(
     return isPinballFallComplete(fallPhase);
   }
 
-  const { segmentIndex, localT } = resolveHopSegment(
-    horizontalProgress,
-    cardCount,
-  );
-
-  if (segmentIndex >= cardIndex) {
-    return true;
+  const settled = getSettledCardIndex(horizontalProgress, cardCount);
+  if (settled !== null) {
+    return cardIndex <= settled;
   }
 
-  return segmentIndex === cardIndex - 1 && !isHopInFlight(localT);
+  // Mid-hop — only cards the ball has already landed on stay revealed.
+  const { segmentIndex } = resolveHopSegment(horizontalProgress, cardCount);
+  return cardIndex <= segmentIndex;
 }
 
 export function isPinballFallComplete(fallPhase: number): boolean {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import { ProjectCubeScene } from "@/components/projects/ProjectCubeScene";
 import type { ProjectItem } from "@/lib/projects";
 
@@ -14,7 +14,7 @@ type ProjectCardProps = {
   revealed?: boolean;
 };
 
-export function ProjectCard({
+export const ProjectCard = memo(function ProjectCard({
   project,
   cardIndex = 0,
   ballSlotRef,
@@ -96,4 +96,4 @@ export function ProjectCard({
       )}
     </article>
   );
-}
+});

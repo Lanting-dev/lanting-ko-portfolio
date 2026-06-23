@@ -567,6 +567,7 @@ a:hover {
   width: var(--project-card-display-width);
   height: var(--project-card-height);
   padding-top: var(--project-ball-notch-inset);
+  contain: layout style paint;
 }
 
 .project-card-body {

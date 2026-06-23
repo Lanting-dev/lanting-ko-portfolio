@@ -3,7 +3,6 @@
 import {
   useCallback,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
   type RefObject,
@@ -11,10 +10,9 @@ import {
 import {
   getProjectCardNudgeY,
   isProjectCardRevealActive,
-  resolveHopSegment,
 } from "@/lib/animation/pinballBounce";
 import {
-  getProjectTrackMetrics,
+  getProjectTrackLayout,
   mapProjectHopProgress,
   PROJECT_SCROLL_VH,
   computeProjectExitT,
@@ -24,6 +22,12 @@ import { sectionBigWordRevealStyle } from "@/lib/animation/sectionBigWordReveal"
 import { ProjectBallRider } from "./ProjectBallRider";
 import { ProjectCard } from "./ProjectCard";
 import type { BallHandoffPose } from "@/lib/layout/ballHandoff";
+
+type TrackLayout = {
+  startPad: number;
+  endPad: number;
+  maxOffset: number;
+};
 
 type ProjectScrollSectionProps = {
   trackRef?: RefObject<HTMLElement | null>;
@@ -57,20 +61,14 @@ export function ProjectScrollSection({
   const stickyRef = useRef<HTMLDivElement>(null);
   const bleedRef = useRef<HTMLDivElement>(null);
   const innerTrackRef = useRef<HTMLDivElement>(null);
+  const layoutRef = useRef<TrackLayout>({ startPad: 48, endPad: 48, maxOffset: 0 });
   const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [trackOffset, setTrackOffset] = useState(0);
-  const [startPad, setStartPad] = useState(48);
-  const [endPad, setEndPad] = useState(48);
+  const [pads, setPads] = useState({ startPad: 48, endPad: 48 });
   const cardCount = PROJECTS.length;
   const hopProgress = mapProjectHopProgress(horizontalProgress);
   const projectExitT = projectExitTProp ?? computeProjectExitT(horizontalProgress);
 
-  const hop = useMemo(
-    () => resolveHopSegment(hopProgress, cardCount),
-    [cardCount, hopProgress],
-  );
-
-  const measureOffset = useCallback(() => {
+  const measureLayout = useCallback(() => {
     const inner = innerTrackRef.current;
     const bleed = bleedRef.current;
     if (!inner || !bleed) return;
@@ -79,40 +77,44 @@ export function ProjectScrollSection({
     const firstCard = inner.querySelector<HTMLElement>(".project-card");
     const cardWidth = firstCard?.offsetWidth ?? 0;
     const gap = parseFloat(getComputedStyle(inner).columnGap || "0") || 0;
-    const { startPad: lead, endPad: pad, offset } = getProjectTrackMetrics(
-      cardCount,
-      cardWidth,
-      gap,
-      viewport,
-      hopProgress,
-    );
+    const layout = getProjectTrackLayout(cardCount, cardWidth, gap, viewport);
 
-    setStartPad(lead);
-    setEndPad(pad);
-    setTrackOffset(offset);
-  }, [cardCount, hopProgress]);
+    layoutRef.current = layout;
+    setPads((prev) =>
+      prev.startPad === layout.startPad && prev.endPad === layout.endPad
+        ? prev
+        : { startPad: layout.startPad, endPad: layout.endPad },
+    );
+  }, [cardCount]);
 
   useLayoutEffect(() => {
-    measureOffset();
+    measureLayout();
 
     const inner = innerTrackRef.current;
     const bleed = bleedRef.current;
     if (!inner || !bleed) return;
 
-    const ro = new ResizeObserver(measureOffset);
+    const ro = new ResizeObserver(measureLayout);
     ro.observe(bleed);
     ro.observe(inner);
     for (const card of inner.querySelectorAll(".project-card")) {
       ro.observe(card);
     }
 
-    window.addEventListener("resize", measureOffset);
+    window.addEventListener("resize", measureLayout);
 
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", measureOffset);
+      window.removeEventListener("resize", measureLayout);
     };
-  }, [measureOffset]);
+  }, [measureLayout]);
+
+  useLayoutEffect(() => {
+    const track = innerTrackRef.current;
+    if (!track) return;
+    const offset = layoutRef.current.maxOffset * hopProgress;
+    track.style.transform = `translate3d(-${offset}px, 0, 0)`;
+  }, [hopProgress]);
 
   const setBallSlotRef = useCallback(
     (index: number) => (node: HTMLDivElement | null) => {
@@ -161,13 +163,12 @@ export function ProjectScrollSection({
           <div
             ref={innerTrackRef}
             className="project-scroll-track"
-            style={{ transform: `translate3d(-${trackOffset}px, 0, 0)` }}
             role="list"
             aria-label="Selected projects"
           >
             <div
               className="project-scroll-start shrink-0"
-              style={{ width: startPad, flexBasis: startPad }}
+              style={{ width: pads.startPad, flexBasis: pads.startPad }}
               aria-hidden="true"
             />
             {PROJECTS.map((project, index) => (
@@ -196,7 +197,7 @@ export function ProjectScrollSection({
             ))}
             <div
               className="project-scroll-end shrink-0"
-              style={{ width: endPad, flexBasis: endPad }}
+              style={{ width: pads.endPad, flexBasis: pads.endPad }}
               aria-hidden="true"
             />
           </div>
