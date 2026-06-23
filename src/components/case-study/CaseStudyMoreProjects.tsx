@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { PROJECTS } from "@/lib/projects";
+import { VISIBLE_PROJECTS } from "@/lib/projects";
 
 type CaseStudyMoreProjectsProps = {
   currentProject?: string;
@@ -12,7 +12,9 @@ type CaseStudyMoreProjectsProps = {
 export function CaseStudyMoreProjects({
   currentProject = "nga",
 }: CaseStudyMoreProjectsProps) {
-  const projects = PROJECTS.filter((project) => project.id !== currentProject).slice(0, 3);
+  const projects = VISIBLE_PROJECTS.filter(
+    (project) => project.id !== currentProject,
+  ).slice(0, 3);
   const reducedMotion = usePrefersReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -107,6 +109,12 @@ export function CaseStudyMoreProjects({
                   {project.href ? (
                     <Link href={project.href} aria-label={project.alt}>
                       {image}
+                      <div className="case-study-more-card-body">
+                        {project.title ? (
+                          <p className="case-study-more-card-title">{project.title}</p>
+                        ) : null}
+                        <span className="site-cta">View case study →</span>
+                      </div>
                     </Link>
                   ) : (
                     image

@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type RefObject,
@@ -26,6 +27,7 @@ import {
   renderCrossStitchCellScatter,
   type StitchCell,
 } from "@/lib/dither/crossStitch";
+import { greyscaleImageData } from "@/lib/dither/greyscaleImageData";
 import { computeImageFit } from "@/lib/dither/imageSample";
 import { clamp } from "@/lib/dither/bayer";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
@@ -83,6 +85,10 @@ export function CrossStitchScatterCanvas({
   const [stitchCells, setStitchCells] = useState<StitchCell[]>([]);
 
   const sourceImage = sourceImageProp ?? loadedSrc;
+  const stitchSource = useMemo(() => {
+    if (!sourceImage) return null;
+    return useIntroLayout ? greyscaleImageData(sourceImage) : sourceImage;
+  }, [sourceImage, useIntroLayout]);
 
   useEffect(() => {
     if (sourceImageProp || !src) {
@@ -158,7 +164,7 @@ export function CrossStitchScatterCanvas({
   }, [useCardStitchLayout]);
 
   useEffect(() => {
-    if (!sourceImage || layout.w <= 0 || layout.h <= 0) {
+    if (!stitchSource || layout.w <= 0 || layout.h <= 0) {
       setStitchCells([]);
       return;
     }
@@ -167,8 +173,8 @@ export function CrossStitchScatterCanvas({
     const stitchGrid = resolveStitchGrid();
 
     const { drawWidth, drawHeight, offsetX, offsetY } = computeImageFit(
-      sourceImage.width,
-      sourceImage.height,
+      stitchSource.width,
+      stitchSource.height,
       bufferW,
       bufferH,
       fit,
@@ -177,7 +183,7 @@ export function CrossStitchScatterCanvas({
     const buildConfig = {
       width: bufferW,
       height: bufferH,
-      source: sourceImage,
+      source: stitchSource,
       offsetX,
       offsetY,
       drawWidth,
@@ -188,7 +194,7 @@ export function CrossStitchScatterCanvas({
 
     setStitchCells(buildStitchCells(buildConfig));
   }, [
-    sourceImage,
+    stitchSource,
     layout,
     fit,
     shuffleSeed,
@@ -254,7 +260,7 @@ export function CrossStitchScatterCanvas({
   ]);
 
   useEffect(() => {
-    if (!sourceImage || layout.w <= 0 || layout.h <= 0) return;
+    if (!stitchSource || layout.w <= 0 || layout.h <= 0) return;
 
     const { bufferW, bufferH } = resolveBufferLayout(layout.w, layout.h);
 
@@ -264,17 +270,42 @@ export function CrossStitchScatterCanvas({
       canvas.height = bufferH;
     }
     paint();
-  }, [sourceImage, layout, stitchCells, paint, resolveBufferLayout]);
+  }, [stitchSource, layout, stitchCells, paint, resolveBufferLayout]);
 
   useEffect(() => {
     let id = 0;
+
+    const needsContinuousFrame = () => {
+      if (reducedMotion) return false;
+      const drift = driftRef?.current ?? 0;
+      if (drift > 0.001) return true;
+      if (ambientSandMotion) return true;
+      if (animateNoise) return true;
+      if (progressRef.current < 0.999) return true;
+      if (sandPile && driftRef && progressRef.current < 1) return true;
+      return false;
+    };
+
     const tick = () => {
       paint();
+      if (needsContinuousFrame()) {
+        id = requestAnimationFrame(tick);
+      } else {
+        id = 0;
+      }
+    };
+
+    const kick = () => {
+      if (id) return;
       id = requestAnimationFrame(tick);
     };
-    id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
-  }, [paint]);
+
+    kick();
+
+    return () => {
+      if (id) cancelAnimationFrame(id);
+    };
+  }, [paint, progressRef, driftRef, animateNoise, reducedMotion, ambientSandMotion, sandPile]);
 
   return (
     <div ref={containerRef} className={className ?? "h-full w-full"}>

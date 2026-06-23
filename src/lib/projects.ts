@@ -10,6 +10,8 @@ export type ProjectItem = {
   title?: string;
   meta?: string;
   description?: string;
+  /** Omit from homepage carousel until the case study is ready. */
+  hidden?: boolean;
 };
 
 const PROJECT_CARD_COLOR_VERSION = "2026-06-23";
@@ -57,10 +59,13 @@ export const PROJECTS: ProjectItem[] = [
     id: "iong",
     src: "/projects/IONG.png",
     colorSrc: projectColorAsset("/projects/IONG-Color.png"),
-    alt: "IONG — product design",
+    alt: "IONG — speculative design and interaction design",
     accent: "#01204E",
+    href: "/work/iong",
     title: "IONG",
-    meta: "Product Design",
+    meta: "Speculative Design · Interaction Design",
+    description:
+      "A 2070 employee onboarding demo where reading time and biometric tracking quietly assign you a role inside a system that manages citizen nutrition.",
   },
   {
     id: "alo",
@@ -70,5 +75,9 @@ export const PROJECTS: ProjectItem[] = [
     accent: "#028391",
     title: "ALO",
     meta: "Product Design",
+    hidden: true,
   },
 ];
+
+/** Projects shown in the Work carousel and related lists. */
+export const VISIBLE_PROJECTS = PROJECTS.filter((project) => !project.hidden);

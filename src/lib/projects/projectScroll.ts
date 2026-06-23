@@ -77,6 +77,39 @@ export function getProjectTrackLayout(
   return { startPad, endPad, maxOffset };
 }
 
+/** Card whose centre is closest to the scroll viewport centre — drives auto-focus. */
+export function getFocusedProjectCardIndex(
+  hopProgress: number,
+  cardCount: number,
+  layout: {
+    startPad: number;
+    maxOffset: number;
+    cardWidth: number;
+    gap: number;
+    viewportWidth: number;
+  },
+): number {
+  const { startPad, maxOffset, cardWidth, gap, viewportWidth } = layout;
+  if (cardCount <= 0 || cardWidth <= 0 || viewportWidth <= 0) return 0;
+
+  const offset = clamp(hopProgress, 0, 1) * maxOffset;
+  const viewportCenter = viewportWidth / 2;
+  let closest = 0;
+  let minDist = Infinity;
+
+  for (let i = 0; i < cardCount; i += 1) {
+    const cardCenter =
+      startPad + i * (cardWidth + gap) + cardWidth / 2 - offset;
+    const dist = Math.abs(cardCenter - viewportCenter);
+    if (dist < minDist) {
+      minDist = dist;
+      closest = i;
+    }
+  }
+
+  return closest;
+}
+
 export function getProjectTrackMetrics(
   cardCount: number,
   cardWidth: number,

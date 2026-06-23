@@ -6,10 +6,36 @@ import type { GtStep } from "@/lib/case-studies/gt";
 
 type GtScrollStepsProps = {
   steps: readonly GtStep[];
+  mediaFrame?: "browser" | "plain";
+  railLabel?: string;
+  mode?: "sequential" | "explore";
 };
 
-function StepMedia({ media }: { media: GtStep["media"][number] }) {
+function StepMedia({
+  media,
+  mediaFrame = "browser",
+}: {
+  media: GtStep["media"][number];
+  mediaFrame?: "browser" | "plain";
+}) {
   if (media.type === "video") {
+    if (mediaFrame === "plain") {
+      return (
+        <figure className="gt-dark-media">
+          <video
+            src={media.src}
+            aria-label={media.alt}
+            poster={media.poster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+        </figure>
+      );
+    }
+
     return (
       <div className="gt-browser-frame">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -29,12 +55,25 @@ function StepMedia({ media }: { media: GtStep["media"][number] }) {
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={media.src} alt={media.alt} loading="lazy" />
+    mediaFrame === "plain" ? (
+      <figure className="gt-dark-media">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={media.src} alt={media.alt} loading="lazy" draggable={false} />
+      </figure>
+    ) : (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={media.src} alt={media.alt} loading="lazy" />
+    )
   );
 }
 
-export function GtScrollSteps({ steps }: GtScrollStepsProps) {
+export function GtScrollSteps({
+  steps,
+  mediaFrame = "browser",
+  railLabel = "Workflow steps",
+  mode = "sequential",
+}: GtScrollStepsProps) {
+  const isExplore = mode === "explore";
   const [activeIndex, setActiveIndex] = useState(0);
   const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reducedMotion = usePrefersReducedMotion();
@@ -64,15 +103,19 @@ export function GtScrollSteps({ steps }: GtScrollStepsProps) {
 
   if (reducedMotion) {
     return (
-      <ol className="gt-steps-static">
+      <ol className={`gt-steps-static${isExplore ? " gt-steps-static--explore" : ""}`}>
         {steps.map((step) => (
           <li key={step.index} className="gt-step-static-card">
-            <p className="gt-step-eyebrow">Step {step.index}</p>
+            {isExplore ? (
+              <p className="gt-step-eyebrow">{step.title}</p>
+            ) : (
+              <p className="gt-step-eyebrow">Step {step.index}</p>
+            )}
             <h3>{step.finding ?? step.title}</h3>
             <p>{step.description}</p>
             <div className={`gt-step-static-media ${step.media.length > 1 ? "is-pair" : ""}`.trim()}>
               {step.media.map((media) => (
-                <StepMedia key={media.src} media={media} />
+                <StepMedia key={media.src} media={media} mediaFrame={mediaFrame} />
               ))}
             </div>
           </li>
@@ -84,18 +127,20 @@ export function GtScrollSteps({ steps }: GtScrollStepsProps) {
   const activeStep = steps[activeIndex] ?? steps[0];
 
   return (
-    <div className="gt-step-reveal">
+    <div className={`gt-step-reveal${isExplore ? " gt-step-reveal--explore" : ""}`}>
       <div className="gt-step-sticky">
-        <ol className="gt-step-rail" aria-label="Course Builder workflow">
+        <ol className="gt-step-rail" aria-label={railLabel}>
           {steps.map((step, index) => (
             <li
               key={step.index}
               className={index <= activeIndex ? "is-revealed" : ""}
-              aria-current={index === activeIndex ? "step" : undefined}
+              aria-current={index === activeIndex ? (isExplore ? "location" : "step") : undefined}
             >
-              <span className="gt-step-dot">{index + 1}</span>
+              <span className="gt-step-dot" aria-hidden="true">
+                {!isExplore ? index + 1 : null}
+              </span>
               <span className="gt-step-rail-copy">
-                <span>Step {step.index}</span>
+                {!isExplore ? <span>Step {step.index}</span> : null}
                 <strong>{step.title}</strong>
               </span>
             </li>
@@ -104,14 +149,18 @@ export function GtScrollSteps({ steps }: GtScrollStepsProps) {
 
         <article key={activeStep.index} className="gt-step-stage" aria-live="polite">
           <div className="gt-step-stage-copy">
-            <p className="gt-step-eyebrow">Step {activeStep.index}</p>
+            {isExplore ? (
+              <p className="gt-step-eyebrow">{activeStep.title}</p>
+            ) : (
+              <p className="gt-step-eyebrow">Step {activeStep.index}</p>
+            )}
             <h3>{activeStep.finding ?? activeStep.title}</h3>
             <p>{activeStep.description}</p>
           </div>
           <div className="gt-step-stage-media">
             <div className={`gt-step-stage-media-grid ${activeStep.media.length > 1 ? "is-pair" : ""}`.trim()}>
               {activeStep.media.map((media) => (
-                <StepMedia key={media.src} media={media} />
+                <StepMedia key={media.src} media={media} mediaFrame={mediaFrame} />
               ))}
             </div>
           </div>

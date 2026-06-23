@@ -12,6 +12,8 @@ type ProjectCardProps = {
   cardImpactRef?: React.RefObject<HTMLDivElement | null>;
   cardNudgeY?: number;
   revealed?: boolean;
+  /** Scroll-centred card — same read mode as hover (color, caption, lift). */
+  focused?: boolean;
 };
 
 export const ProjectCard = memo(function ProjectCard({
@@ -21,6 +23,7 @@ export const ProjectCard = memo(function ProjectCard({
   cardImpactRef,
   cardNudgeY = 0,
   revealed = false,
+  focused = false,
 }: ProjectCardProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
@@ -51,30 +54,35 @@ export const ProjectCard = memo(function ProjectCard({
 
       <div
         ref={setFrameRef}
-        className="project-card-frame relative z-10 rounded-[20px]"
+        className="project-card-frame relative z-10 overflow-visible rounded-[20px]"
       >
         <ProjectCubeScene
           greySrc={project.src}
           colorSrc={project.colorSrc ?? project.src}
           seed={cardIndex * 53}
-          revealed={revealed}
           hovered={hovered}
+          focused={focused}
         />
 
-        <div className="project-card-caption">
-          {project.title ? (
-            <p className="project-card-title">{project.title}</p>
-          ) : null}
-          {project.meta ? (
-            <p className="project-card-meta">{project.meta}</p>
-          ) : null}
-          {project.description ? (
-            <p className="project-card-desc">{project.description}</p>
-          ) : null}
-          {project.href ? (
-            <span className="project-card-cta">View case study →</span>
-          ) : null}
-        </div>
+        {(project.title ||
+          project.meta ||
+          project.description ||
+          project.href) && (
+          <div className="project-card-caption">
+            {project.title ? (
+              <p className="project-card-title">{project.title}</p>
+            ) : null}
+            {project.meta ? (
+              <p className="project-card-meta">{project.meta}</p>
+            ) : null}
+            {project.description ? (
+              <p className="project-card-desc">{project.description}</p>
+            ) : null}
+            {project.href ? (
+              <span className="site-cta project-card-cta">View case study →</span>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -85,6 +93,7 @@ export const ProjectCard = memo(function ProjectCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       data-hovered={hovered ? "true" : undefined}
+      data-focused={focused ? "true" : undefined}
       data-revealed={revealed ? "true" : undefined}
     >
       {project.href ? (

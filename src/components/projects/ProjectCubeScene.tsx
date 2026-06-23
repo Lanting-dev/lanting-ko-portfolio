@@ -11,21 +11,20 @@ type ProjectCubeSceneProps = {
   greySrc: string;
   colorSrc: string;
   seed: number;
-  revealed: boolean;
   hovered: boolean;
+  focused: boolean;
 };
 
 export const ProjectCubeScene = memo(function ProjectCubeScene({
   greySrc,
   colorSrc,
   seed,
-  revealed,
   hovered,
+  focused,
 }: ProjectCubeSceneProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [shouldMountCanvas, setShouldMountCanvas] = useState(false);
-  const [inView, setInView] = useState(true);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -64,22 +63,7 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
         setShouldMountCanvas(true);
         observer.disconnect();
       },
-      { rootMargin: "1200px" },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [shouldMountCanvas]);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el || !shouldMountCanvas) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setInView(entry?.isIntersecting ?? false);
-      },
-      { root: null, rootMargin: "30% 0px", threshold: 0 },
+      { rootMargin: "640px" },
     );
 
     observer.observe(el);
@@ -95,9 +79,8 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
           width={dimensions.width}
           height={dimensions.height}
           seed={seed}
-          revealed={revealed}
           hovered={hovered}
-          active={inView}
+          focused={focused}
         />
       ) : null}
     </div>

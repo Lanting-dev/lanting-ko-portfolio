@@ -25,6 +25,38 @@ body {
   font-family: var(--font-sora), system-ui, sans-serif;
 }
 
+.site-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.7rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #000000;
+  color: #ffffff;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(0.8rem, 1.05vw, 0.92rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.site-cta:hover {
+  background: #222222;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.site-cta:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 3px;
+}
+
 :root {
   /* Page shell — shared horizontal rhythm */
   --page-gutter: clamp(1.25rem, 5vw, 4rem);
@@ -50,7 +82,7 @@ body {
 
   /* Figma node 40-10 — project cards + glass ball (ball.png = 53px @ 1440) */
   --project-card-width: min(600px, calc(100vw * 600 / 1440));
-  --project-card-gap: clamp(16px, calc(100vw * 24 / 1440), 24px);
+  --project-card-gap: clamp(40px, calc(100vw * 96 / 1440), 96px);
   --figma-ball-size: clamp(28px, calc(100vw * 53 / 1440), 53px);
   --project-ball-notch-inset: var(--figma-ball-size);
   /* Frame = full Figma PNG (600×755); shelf stacks above without cropping art */
@@ -438,15 +470,14 @@ a:hover {
   position: relative;
   z-index: 2;
   width: 100%;
+  overflow: visible;
 }
 
 .project-scroll-sticky {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  overflow-x: hidden;
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: visible;
 }
 
 .project-scroll-bleed {
@@ -455,6 +486,7 @@ a:hover {
   display: flex;
   align-items: center;
   padding-top: clamp(2.5rem, 7vh, 5rem);
+  overflow: visible;
 }
 
 .project-scroll-track {
@@ -482,92 +514,26 @@ a:hover {
   display: block;
 }
 
-/* Project card hover — lift instead of fading out. */
-.project-card a {
-  transform-origin: center bottom;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-.project-card a:hover {
-  opacity: 1;
-  transform: translateY(-10px) scale(1.02);
-}
-
-/* Readable caption layered over the lower (empty) part of the cube frame. */
-.project-card-caption {
-  position: absolute;
-  inset: auto 0 0 0;
-  z-index: 2;
-  padding: clamp(1rem, 2vw, 1.6rem);
-  text-align: left;
-  pointer-events: none;
-  background: linear-gradient(
-    to top,
-    rgb(255 255 255 / 0.94) 32%,
-    rgb(255 255 255 / 0) 100%
-  );
-}
-
-.project-card-title {
-  margin: 0;
-  font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(1rem, 1.5vw, 1.3rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  color: #111;
-}
-
-.project-card-meta {
-  margin: 0.3rem 0 0;
-  font-size: clamp(0.7rem, 0.95vw, 0.82rem);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgb(0 0 0 / 0.45);
-}
-
-.project-card-desc {
-  margin: 0;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  max-width: 34ch;
-  font-size: clamp(0.84rem, 1.1vw, 0.96rem);
-  line-height: 1.5;
-  color: rgb(0 0 0 / 0.68);
-  transition: max-height 0.45s ease, opacity 0.3s ease, margin-top 0.45s ease;
-}
-
-.project-card[data-hovered="true"] .project-card-desc {
-  max-height: 8rem;
-  margin-top: 0.6rem;
-  opacity: 1;
-}
-
-.project-card-cta {
-  display: inline-block;
-  margin-top: 0.75rem;
-  font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(0.8rem, 1.05vw, 0.92rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: #111;
-}
-
-.project-card[data-hovered="true"] .project-card-cta {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
+/* Auto-focus — cube recedes, typography takes the stage. */
 .project-card {
+  position: relative;
   box-sizing: border-box;
   flex: 0 0 var(--project-card-display-width);
   width: var(--project-card-display-width);
   height: var(--project-card-height);
   padding-top: var(--project-ball-notch-inset);
-  contain: layout style paint;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.project-scroll-bleed:has(.project-card[data-focused="true"])
+  .project-card[data-focused="true"] {
+  z-index: 5;
+}
+
+.project-scroll-bleed:has(.project-card[data-focused="true"])
+  .project-card:not([data-focused="true"]) {
+  opacity: 0.34;
+  filter: saturate(0.55) brightness(0.94);
 }
 
 .project-card-body {
@@ -575,6 +541,95 @@ a:hover {
   width: 100%;
   height: 100%;
   isolation: isolate;
+}
+
+.project-card a {
+  opacity: 1;
+}
+
+.project-card a:hover {
+  opacity: 1;
+}
+
+.project-card[data-hovered="true"]:not([data-focused="true"]) a {
+  transform: translateY(-8px);
+}
+
+/* Overlay — grows up from the bottom edge only (focus / hover). */
+.project-card-caption {
+  position: absolute;
+  right: 0;
+  bottom: -16px;
+  left: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  max-height: 0;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  overflow: hidden;
+  opacity: 0;
+  text-align: left;
+  padding: 0 clamp(0.65rem, 1.35vw, 1rem) clamp(0.65rem, 1.4vw, 0.95rem);
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(255 255 255 / 0.82) 0%,
+    rgb(255 255 255 / 0.5) 28%,
+    rgb(255 255 255 / 0.12) 58%,
+    rgb(255 255 255 / 0) 100%
+  );
+  transition:
+    max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    bottom 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-card[data-focused="true"] .project-card-caption,
+.project-card[data-hovered="true"] .project-card-caption {
+  bottom: -16px;
+  max-height: 50%;
+  opacity: 1;
+}
+
+.project-card-title {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #111;
+}
+
+.project-card-meta {
+  margin: 0.22rem 0 0;
+  width: 100%;
+  font-size: clamp(0.65rem, 0.85vw, 0.76rem);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgb(0 0 0 / 0.42);
+}
+
+.project-card-desc {
+  margin: 0.45rem 0 0;
+  width: 100%;
+  max-width: none;
+  font-size: clamp(0.84rem, 1.05vw, 0.94rem);
+  line-height: 1.5;
+  color: rgb(0 0 0 / 0.68);
+}
+
+.project-card-cta {
+  margin-top: 0.7rem;
+}
+
+.project-card-caption .site-cta {
+  pointer-events: none;
 }
 
 .project-ball-layer {
@@ -1194,7 +1249,32 @@ a:hover {
 }
 
 .case-study-more-card a {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.case-study-more-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1rem, 2vw, 1.25rem);
+}
+
+.case-study-more-card-title {
+  margin: 0;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #000000;
+}
+
+.case-study-more-card .site-cta {
+  align-self: flex-start;
 }
 
 .case-study-more-image {
@@ -2032,8 +2112,8 @@ a:hover {
   padding-bottom: clamp(6rem, 13vw, 11rem);
 }
 
-.editorial-kicker,
 .editorial-section-label,
+.editorial-kicker,
 .gt-step-eyebrow {
   margin: 0;
   font-size: clamp(0.72rem, 1vw, 0.82rem);
@@ -2041,6 +2121,26 @@ a:hover {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--editorial-muted);
+}
+
+.editorial-subsection-label {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+}
+
+.editorial-design-question {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  line-height: 1.45;
+  color: var(--editorial-text, #000);
+}
+
+.editorial-section-bridge {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.editorial-summary .site-cta,
+.editorial-conclusion-copy .site-cta {
+  margin-top: 1.25rem;
 }
 
 .editorial-hero > h1 {
@@ -2194,6 +2294,52 @@ a:hover {
   .gt-signal-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .gt-signal-grid--quad {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.gt-signal-grid--quad > li {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gt-signal-grid--quad > li:has(.case-study-figure) {
+  padding: 0;
+}
+
+.gt-signal-grid--quad .case-study-figure {
+  margin: 0;
+}
+
+.gt-signal-grid--quad .case-study-figure-frame {
+  margin: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border-radius: 16px 16px 0 0;
+}
+
+.gt-signal-grid--quad .case-study-figure-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.gt-signal-grid__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.gt-signal-grid--quad .gt-signal-grid__copy h3 {
+  margin: 0;
+}
+
+.gt-signal-grid--quad .gt-signal-grid__copy p {
+  margin: 1rem 0 0;
 }
 
 .gt-research-grid {
@@ -2327,6 +2473,20 @@ a:hover {
 }
 
 .gt-step-rail li[aria-current="step"] .gt-step-dot {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #0b0b0b;
+}
+
+.gt-step-reveal--explore .gt-step-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-inline: auto;
+  border: 0;
+  background: currentColor;
+}
+
+.gt-step-rail li[aria-current="location"] .gt-step-dot {
   border-color: #ffffff;
   background: #ffffff;
   color: #0b0b0b;
@@ -2980,6 +3140,7 @@ a:hover {
 .editorial-case-study {
   background: #ffffff;
   color: #000000;
+  --cs-grey: #dedede;
   /* Reset the leftover `overflow: clip` from the old dark-theme block above:
      it turned this wrapper into a paint-containment box that hard-clipped the
      glass card's anti-aliased rounded edge into a crisp 1px frame (copper-only). */
@@ -3093,6 +3254,10 @@ a:hover {
   color: rgb(0 0 0 / 0.65);
 }
 
+.editorial-case-study .editorial-design-question {
+  color: #000000;
+}
+
 .editorial-hero-media,
 .gt-dark-media,
 .editorial-design-media,
@@ -3160,6 +3325,12 @@ a:hover {
   color: #ffffff;
 }
 
+.editorial-case-study .gt-step-rail li[aria-current="location"] .gt-step-dot {
+  border-color: #000000;
+  background: #000000;
+  color: #ffffff;
+}
+
 .gt-step-stage,
 .gt-step-static-card {
   border-color: #dedede;
@@ -3214,3 +3385,77 @@ a:hover {
 .editorial-case-study .site-footer-meta-links {
   color: rgb(0 0 0 / 0.55);
 }
+
+/* Editorial — videos full-bleed; images use case-study-figure-frame grey mat (same as NGA) */
+.editorial-case-study .gt-dark-media:has(> video),
+.editorial-case-study .editorial-hero-media.gt-dark-media,
+.editorial-case-study .gt-step-stage-media .gt-dark-media {
+  padding: 0;
+  overflow: hidden;
+}
+
+.editorial-case-study .editorial-hero-media {
+  margin-top: clamp(2rem, 5vw, 4rem);
+  aspect-ratio: 16 / 9;
+  background: var(--cs-grey);
+}
+
+.editorial-case-study .gt-dark-media > video,
+.editorial-case-study .gt-step-stage-media video,
+.editorial-case-study .editorial-hero-media video,
+.editorial-case-study .gt-browser-frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.editorial-case-study .gt-step-stage-media .gt-dark-media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #0b0b0b;
+}
+
+.editorial-case-study .gt-step-stage-media {
+  padding: 0;
+  min-height: 0;
+}
+
+.editorial-case-study .gt-step-stage-media-grid,
+.editorial-case-study .gt-step-stage-media-grid.is-pair {
+  width: 100%;
+  height: 100%;
+  min-height: clamp(14rem, 28vw, 22rem);
+}
+
+.editorial-case-study .gt-step-stage-media .gt-dark-media {
+  height: 100%;
+  min-height: clamp(14rem, 28vw, 22rem);
+}
+
+.editorial-case-study .gt-step-stage {
+  background: rgb(255 255 255 / 0.68);
+}
+
+.editorial-case-study .gt-browser-frame {
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+}
+
+.editorial-case-study .gt-browser-frame video {
+  min-height: 100%;
+}
+
+.editorial-case-study .gt-step-static-card .gt-dark-media {
+  padding: 0;
+  aspect-ratio: 16 / 9;
+}
+
+.editorial-case-study .gt-step-static-card .gt-dark-media > video {
+  height: 100%;
+}
+

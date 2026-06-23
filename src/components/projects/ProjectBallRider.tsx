@@ -108,11 +108,9 @@ export function ProjectBallRider({
   useLayoutEffect(() => {
     measure();
 
-    window.addEventListener("scroll", measure, { passive: true });
     window.addEventListener("resize", measure);
 
     return () => {
-      window.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
     };
   }, [measure, horizontalProgress, projectExitT, aboutProgress]);

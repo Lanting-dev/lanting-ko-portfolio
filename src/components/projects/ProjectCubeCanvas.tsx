@@ -2,7 +2,7 @@
 
 import { useTexture } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import {
   CUBE_FACE_PALETTE,
@@ -18,77 +18,90 @@ const CARD_ASPECT = 600 / 755;
 const BOX_W = 1;
 const BOX_H = BOX_W / CARD_ASPECT;
 const BOX_D = 0.42;
-/** Three-quarter resting pose so the cube clearly reads as a solid. */
+/** Resting 3D pose — cards tilt when not scroll-centred. */
 const BASE_YAW = -0.5;
 const BASE_PITCH = 0.26;
+const ROT_LERP = 0.12;
+const ROT_EPS = 0.004;
 
-/** Soft radial falloff — reads as a blurred floor contact shadow, not a hard disc. */
-function createSoftCircleTexture(size = 128): THREE.CanvasTexture {
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return new THREE.CanvasTexture(canvas);
-
-  const center = size / 2;
-  const gradient = ctx.createRadialGradient(
-    center,
-    center,
-    0,
-    center,
-    center,
-    center,
-  );
-  gradient.addColorStop(0, "rgba(0, 0, 0, 0.72)");
-  gradient.addColorStop(0.35, "rgba(0, 0, 0, 0.32)");
-  gradient.addColorStop(0.62, "rgba(0, 0, 0, 0.12)");
-  gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, size, size);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.needsUpdate = true;
-  return texture;
+function projectCubeDpr(): number {
+  if (typeof window === "undefined") return 1;
+  return Math.min(window.devicePixelRatio || 1, 2);
 }
 
-type RevealRef = { current: boolean };
+function configureArtTexture(map: THREE.Texture, maxAniso: number): void {
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.anisotropy = maxAniso;
+  map.minFilter = THREE.LinearFilter;
+  map.magFilter = THREE.LinearFilter;
+  map.generateMipmaps = false;
+  map.needsUpdate = true;
+}
+
+type EngagedRef = { current: boolean };
+
+function DemandRenderOnChange({
+  engaged,
+  focused,
+  looping,
+  width,
+  height,
+}: {
+  engaged: boolean;
+  focused: boolean;
+  looping: boolean;
+  width: number;
+  height: number;
+}) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    invalidate();
+  }, [height, invalidate, width]);
+
+  useEffect(() => {
+    if (looping) return;
+    invalidate();
+  }, [engaged, focused, invalidate, looping]);
+
+  return null;
+}
 
 function ProjectCube({
   greySrc,
   colorSrc,
   seed,
-  revealedRef,
-  hoveredRef,
+  engagedRef,
+  engaged,
+  focusedRef,
+  focused,
+  onSettlingChange,
 }: {
   greySrc: string;
   colorSrc: string;
   seed: number;
-  revealedRef: RevealRef;
-  hoveredRef: RevealRef;
+  engagedRef: EngagedRef;
+  engaged: boolean;
+  focusedRef: { current: boolean };
+  focused: boolean;
+  onSettlingChange: (settling: boolean) => void;
 }) {
-  const reducedMotion = usePrefersReducedMotion();
   const gl = useThree((state) => state.gl);
   const [greyMap, colorMap] = useTexture([greySrc, colorSrc]);
-  // Anisotropic filtering keeps the art sharp on the tilted (foreshortened) face.
   const maxAniso = gl.capabilities.getMaxAnisotropy();
   for (const map of [greyMap, colorMap]) {
-    map.colorSpace = THREE.SRGBColorSpace;
-    map.anisotropy = maxAniso;
-    map.minFilter = THREE.LinearMipmapLinearFilter;
-    map.generateMipmaps = true;
-    map.needsUpdate = true;
+    configureArtTexture(map, maxAniso);
   }
 
+  const invalidate = useThree((state) => state.invalidate);
+  useEffect(() => {
+    invalidate();
+  }, [colorMap, greyMap, invalidate]);
+
   const groupRef = useRef<THREE.Group>(null);
-  const shadowRef = useRef<THREE.MeshBasicMaterial>(null);
   const colorBackplateRef = useRef<THREE.MeshBasicMaterial>(null);
   const colorPlaneRef = useRef<THREE.MeshBasicMaterial>(null);
 
-  const shadowTexture = useMemo(() => createSoftCircleTexture(), []);
-  useEffect(() => () => shadowTexture.dispose(), [shadowTexture]);
-
-  // Matches the profile cube: grey cross-stitch faces stay neutral while the
-  // project artwork itself reveals in colour on the front face.
   const stitch = useMemo(() => {
     const make = (id: CubeFaceId) =>
       new StitchCanvasTexture(
@@ -115,7 +128,6 @@ function ProjectCube({
     [stitch],
   );
 
-  // The five patterned faces — kept in an array so we can tint them together.
   const sideMaterials = useMemo(
     () => [
       new THREE.MeshBasicMaterial({ map: stitch.right.texture }),
@@ -137,7 +149,6 @@ function ProjectCube({
     [greyMap],
   );
 
-  // Box face order: right, left, top, bottom, front, back.
   const materials = useMemo(
     () => [
       sideMaterials[0],
@@ -157,57 +168,54 @@ function ProjectCube({
     [materials],
   );
 
-  useFrame(({ clock }) => {
+  const applyColorMix = (colorAmount: number) => {
+    greyFrontMaterial.opacity = 1 - colorAmount;
+    if (colorBackplateRef.current) {
+      colorBackplateRef.current.opacity = colorAmount;
+    }
+    if (colorPlaneRef.current) {
+      colorPlaneRef.current.opacity = colorAmount;
+    }
+  };
+
+  const settledRef = useRef(true);
+
+  useLayoutEffect(() => {
+    const group = groupRef.current;
+    if (!group) return;
+    if (focused) {
+      group.rotation.set(0, 0, 0);
+    } else {
+      group.rotation.set(BASE_PITCH, BASE_YAW, 0);
+    }
+  }, [focused]);
+
+  useFrame(() => {
     const group = groupRef.current;
     if (!group) return;
 
-    // Ball settles on the card → swap the noise face for the colour artwork.
-    const amount = revealedRef.current ? 1 : 0;
+    applyColorMix(engagedRef.current ? 1 : 0);
 
-    if (colorBackplateRef.current) {
-      colorBackplateRef.current.opacity = amount;
-    }
-    if (colorPlaneRef.current) {
-      colorPlaneRef.current.opacity = amount;
-    }
-    greyFrontMaterial.opacity = 1 - amount;
-    if (shadowRef.current) {
-      const revealed = revealedRef.current;
-      const hovered = hoveredRef.current;
-      const targetOpacity = revealed ? (hovered ? 0.52 : 0.3) : 0;
-      shadowRef.current.opacity +=
-        (targetOpacity - shadowRef.current.opacity) * 0.2;
-    }
+    const targetX = focusedRef.current ? 0 : BASE_PITCH;
+    const targetY = focusedRef.current ? 0 : BASE_YAW;
+    group.rotation.x += (targetX - group.rotation.x) * ROT_LERP;
+    group.rotation.y += (targetY - group.rotation.y) * ROT_LERP;
 
-    if (reducedMotion) {
-      // Static three-quarter pose still reads as a solid cube.
-      group.rotation.set(BASE_PITCH, BASE_YAW, 0);
-      return;
+    const isSettled =
+      Math.abs(group.rotation.x - targetX) < ROT_EPS &&
+      Math.abs(group.rotation.y - targetY) < ROT_EPS;
+    if (isSettled !== settledRef.current) {
+      settledRef.current = isSettled;
+      onSettlingChange(!isSettled);
     }
-    // Hover straightens the cube to face the viewer (readable + "openable");
-    // otherwise hold a three-quarter angle and sway around it.
-    const t = clock.elapsedTime;
-    const hovered = hoveredRef.current;
-    const targetY = hovered ? 0 : BASE_YAW + Math.sin(t * 0.5) * 0.1;
-    const targetX = hovered ? 0 : BASE_PITCH + Math.sin(t * 0.37 + 1) * 0.05;
-    group.rotation.y += (targetY - group.rotation.y) * 0.12;
-    group.rotation.x += (targetX - group.rotation.x) * 0.12;
   });
+
+  useEffect(() => {
+    applyColorMix(engaged ? 1 : 0);
+  }, [engaged]);
 
   return (
     <group ref={groupRef}>
-      <mesh position={[0.04, -BOX_H / 2 - 0.08, -0.03]} scale={[1.08, 0.2, 1]}>
-        <circleGeometry args={[1, 48]} />
-        <meshBasicMaterial
-          ref={shadowRef}
-          map={shadowTexture}
-          color={0x000000}
-          transparent
-          opacity={0}
-          depthWrite={false}
-          toneMapped={false}
-        />
-      </mesh>
       <mesh material={materials}>
         <boxGeometry args={[BOX_W, BOX_H, BOX_D]} />
       </mesh>
@@ -235,31 +243,63 @@ function ProjectCube({
   );
 }
 
-function CameraFraming() {
+function cameraDistance(
+  camera: THREE.PerspectiveCamera,
+  size: { width: number; height: number },
+  yaw: number,
+  pitch: number,
+  margin: number,
+): number {
+  const aspect = size.width / Math.max(size.height, 1);
+  const vFov = camera.fov * DEG;
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+  const silhouetteW =
+    BOX_W * Math.cos(Math.abs(yaw)) + BOX_D * Math.sin(Math.abs(yaw));
+  const silhouetteH =
+    BOX_H * Math.cos(Math.abs(pitch)) + BOX_D * Math.sin(Math.abs(pitch));
+  const halfH = (silhouetteH / 2) * margin;
+  const halfW = (silhouetteW / 2) * margin;
+  const distV = halfH / Math.tan(vFov / 2);
+  const distH = halfW / Math.tan(hFov / 2);
+  return Math.max(distV, distH) + BOX_D / 2;
+}
+
+function CameraFraming({ focused }: { focused: boolean }) {
   const { camera, size } = useThree();
+  const tiltDistanceRef = useRef(1);
+  const frontDistanceRef = useRef(1);
+  const focusBlendRef = useRef(focused ? 1 : 0);
+
+  useEffect(() => {
+    if (!focused) focusBlendRef.current = 0;
+  }, [focused]);
 
   useEffect(() => {
     if (!(camera instanceof THREE.PerspectiveCamera)) return;
-    const aspect = size.width / Math.max(size.height, 1);
-    const vFov = camera.fov * DEG;
-    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
-    // Fit the tilted silhouette (front + side + top) with breathing room.
-    const yaw = Math.abs(BASE_YAW) + 0.1;
-    const pitch = Math.abs(BASE_PITCH) + 0.05;
-    const silhouetteW = BOX_W * Math.cos(yaw) + BOX_D * Math.sin(yaw);
-    const silhouetteH = BOX_H * Math.cos(pitch) + BOX_D * Math.sin(pitch);
-    const margin = 1.12;
-    const halfH = (silhouetteH / 2) * margin;
-    const halfW = (silhouetteW / 2) * margin;
-    const distV = halfH / Math.tan(vFov / 2);
-    const distH = halfW / Math.tan(hFov / 2);
-    const distance = Math.max(distV, distH) + BOX_D / 2;
-    camera.position.set(0, 0, distance);
-    camera.lookAt(0, 0, 0);
+    tiltDistanceRef.current = cameraDistance(
+      camera,
+      size,
+      BASE_YAW,
+      BASE_PITCH,
+      1.08,
+    );
+    frontDistanceRef.current = cameraDistance(camera, size, 0, 0, 1.02);
     camera.near = 0.05;
-    camera.far = distance + 10;
+    camera.far =
+      Math.max(tiltDistanceRef.current, frontDistanceRef.current) + 10;
     camera.updateProjectionMatrix();
   }, [camera, size]);
+
+  useFrame(() => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    focusBlendRef.current +=
+      ((focused ? 1 : 0) - focusBlendRef.current) * 0.14;
+    const blend = focusBlendRef.current;
+    const distance =
+      tiltDistanceRef.current * (1 - blend) + frontDistanceRef.current * blend;
+    camera.position.set(0, 0, distance);
+    camera.lookAt(0, 0, 0);
+  });
 
   return null;
 }
@@ -270,9 +310,8 @@ type ProjectCubeCanvasProps = {
   width: number;
   height: number;
   seed: number;
-  revealed: boolean;
   hovered: boolean;
-  active?: boolean;
+  focused: boolean;
 };
 
 export default function ProjectCubeCanvas({
@@ -281,37 +320,58 @@ export default function ProjectCubeCanvas({
   width,
   height,
   seed,
-  revealed,
   hovered,
-  active = true,
+  focused,
 }: ProjectCubeCanvasProps) {
-  const revealedRef = useRef(revealed);
-  revealedRef.current = revealed;
-  const hoveredRef = useRef(hovered);
-  hoveredRef.current = hovered;
+  const reducedMotion = usePrefersReducedMotion();
+  const engaged = hovered || focused;
+  const engagedRef = useRef(engaged);
+  engagedRef.current = engaged;
+  const focusedRef = useRef(focused);
+  focusedRef.current = focused;
+  const [rotating, setRotating] = useState(false);
+  const handleSettlingChange = useCallback((settling: boolean) => {
+    setRotating(settling);
+  }, []);
+  const shouldLoop = !reducedMotion && (hovered || focused || rotating);
+  const [dpr, setDpr] = useState(1);
+
+  useLayoutEffect(() => {
+    setDpr(projectCubeDpr());
+  }, []);
 
   return (
     <Canvas
       className="project-cube-canvas"
       style={{ width, height }}
-      dpr={[1, 1.5]}
+      dpr={dpr}
       flat
-      frameloop={active ? "always" : "never"}
+      frameloop={shouldLoop ? "always" : "demand"}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       camera={{ fov: 42, near: 0.05, far: 30 }}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);
       }}
     >
-      <CameraFraming />
+      <CameraFraming focused={focused} />
+      <DemandRenderOnChange
+        engaged={engaged}
+        focused={focused}
+        looping={shouldLoop}
+        width={width}
+        height={height}
+      />
       <ambientLight intensity={1.15} />
       <Suspense fallback={null}>
         <ProjectCube
           greySrc={greySrc}
           colorSrc={colorSrc}
           seed={seed}
-          revealedRef={revealedRef}
-          hoveredRef={hoveredRef}
+          engagedRef={engagedRef}
+          engaged={engaged}
+          focusedRef={focusedRef}
+          focused={focused}
+          onSettlingChange={handleSettlingChange}
         />
       </Suspense>
     </Canvas>

@@ -3,6 +3,7 @@
 import {
   useCallback,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type RefObject,
@@ -12,12 +13,13 @@ import {
   isProjectCardRevealActive,
 } from "@/lib/animation/pinballBounce";
 import {
+  getFocusedProjectCardIndex,
   getProjectTrackLayout,
   mapProjectHopProgress,
   PROJECT_SCROLL_VH,
   computeProjectExitT,
 } from "@/lib/projects/projectScroll";
-import { PROJECTS } from "@/lib/projects";
+import { VISIBLE_PROJECTS } from "@/lib/projects";
 import { sectionBigWordRevealStyle } from "@/lib/animation/sectionBigWordReveal";
 import { ProjectBallRider } from "./ProjectBallRider";
 import { ProjectCard } from "./ProjectCard";
@@ -27,6 +29,9 @@ type TrackLayout = {
   startPad: number;
   endPad: number;
   maxOffset: number;
+  cardWidth: number;
+  gap: number;
+  viewportWidth: number;
 };
 
 type ProjectScrollSectionProps = {
@@ -61,12 +66,31 @@ export function ProjectScrollSection({
   const stickyRef = useRef<HTMLDivElement>(null);
   const bleedRef = useRef<HTMLDivElement>(null);
   const innerTrackRef = useRef<HTMLDivElement>(null);
-  const layoutRef = useRef<TrackLayout>({ startPad: 48, endPad: 48, maxOffset: 0 });
+  const layoutRef = useRef<TrackLayout>({
+    startPad: 48,
+    endPad: 48,
+    maxOffset: 0,
+    cardWidth: 0,
+    gap: 0,
+    viewportWidth: 0,
+  });
   const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [pads, setPads] = useState({ startPad: 48, endPad: 48 });
-  const cardCount = PROJECTS.length;
+  const [trackLayout, setTrackLayout] = useState<TrackLayout>({
+    startPad: 48,
+    endPad: 48,
+    maxOffset: 0,
+    cardWidth: 0,
+    gap: 0,
+    viewportWidth: 0,
+  });
+  const cardCount = VISIBLE_PROJECTS.length;
   const hopProgress = mapProjectHopProgress(horizontalProgress);
   const projectExitT = projectExitTProp ?? computeProjectExitT(horizontalProgress);
+  const focusedCardIndex = useMemo(() => {
+    if (!showLandedOrb || trackLayout.cardWidth <= 0) return -1;
+    return getFocusedProjectCardIndex(hopProgress, cardCount, trackLayout);
+  }, [cardCount, hopProgress, showLandedOrb, trackLayout]);
 
   const measureLayout = useCallback(() => {
     const inner = innerTrackRef.current;
@@ -79,7 +103,18 @@ export function ProjectScrollSection({
     const gap = parseFloat(getComputedStyle(inner).columnGap || "0") || 0;
     const layout = getProjectTrackLayout(cardCount, cardWidth, gap, viewport);
 
-    layoutRef.current = layout;
+    const nextLayout = { ...layout, cardWidth, gap, viewportWidth: viewport };
+    layoutRef.current = nextLayout;
+    setTrackLayout((prev) =>
+      prev.startPad === nextLayout.startPad &&
+      prev.endPad === nextLayout.endPad &&
+      prev.maxOffset === nextLayout.maxOffset &&
+      prev.cardWidth === nextLayout.cardWidth &&
+      prev.gap === nextLayout.gap &&
+      prev.viewportWidth === nextLayout.viewportWidth
+        ? prev
+        : nextLayout,
+    );
     setPads((prev) =>
       prev.startPad === layout.startPad && prev.endPad === layout.endPad
         ? prev
@@ -171,7 +206,7 @@ export function ProjectScrollSection({
               style={{ width: pads.startPad, flexBasis: pads.startPad }}
               aria-hidden="true"
             />
-            {PROJECTS.map((project, index) => (
+            {VISIBLE_PROJECTS.map((project, index) => (
               <ProjectCard
                 key={project.id}
                 project={project}
@@ -193,6 +228,7 @@ export function ProjectScrollSection({
                   hopProgress,
                   cardCount,
                 )}
+                focused={focusedCardIndex >= 0 && index === focusedCardIndex}
               />
             ))}
             <div
