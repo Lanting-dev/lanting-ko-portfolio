@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Monoton, Sora } from "next/font/google";
+import { AppProviders } from "@/app/providers";
 import { ScrollToTopOnLoad } from "@/components/ScrollToTopOnLoad";
+import { LOCALE_STORAGE_KEY } from "@/lib/i18n/locale";
+import { ZH_TW_FONT_STYLESHEET } from "@/lib/i18n/fonts";
 import "./globals.css";
 
 const sora = Sora({
@@ -16,9 +19,9 @@ const monoton = Monoton({
 });
 
 export const metadata: Metadata = {
-  title: "Lanting Ko — Product Designer",
+  title: "Lanting Ko · Product Designer",
   description:
-    "Lan-Ting is a product designer who shapes how things are structured, function, and look.",
+    "Lanting is a product designer focused on structure, function, and visual craft.",
 };
 
 export default function RootLayout({
@@ -27,7 +30,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link href={ZH_TW_FONT_STYLESHEET} rel="stylesheet" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var l=localStorage.getItem(${JSON.stringify(LOCALE_STORAGE_KEY)});if(l==="zh-TW")document.documentElement.lang="zh-Hant";}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className={`${sora.variable} ${monoton.variable} antialiased`}>
         <script
           dangerouslySetInnerHTML={{
@@ -35,8 +52,10 @@ export default function RootLayout({
               "history.scrollRestoration='manual';window.scrollTo(0,0);",
           }}
         />
-        <ScrollToTopOnLoad />
-        {children}
+        <AppProviders>
+          <ScrollToTopOnLoad />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

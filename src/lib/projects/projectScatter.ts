@@ -1,4 +1,5 @@
 import { clamp } from "@/lib/parallax/interpolate";
+import { VISIBLE_PROJECTS } from "@/lib/projects";
 import {
   PROJECT_DETAIL_START,
   PROJECT_SCATTER_END,
@@ -19,6 +20,7 @@ export const SCATTER_TARGETS: ScatterCenter[] = [
   { x: 89, y: 20, drift: 62 },
   { x: 13, y: 64, drift: 50 },
   { x: 87, y: 66, drift: -58 },
+  { x: 50, y: 78, drift: 36 },
 ];
 
 /** Stack offsets while cards sit in the centre (px). */
@@ -27,6 +29,7 @@ export const SCATTER_STACK = [
   { dx: 18, dy: -20 },
   { dx: -16, dy: 18 },
   { dx: 20, dy: 26 },
+  { dx: 0, dy: 34 },
 ] as const;
 
 function smoothstep(t: number): number {
@@ -47,14 +50,41 @@ export function computeScatterProgress(projectProgress: number): number {
 }
 
 export function getProjectFocusIndex(projectProgress: number): number {
-  if (projectProgress < PROJECT_DETAIL_START) return -1;
+  const count = VISIBLE_PROJECTS.length;
+  if (projectProgress < PROJECT_DETAIL_START || count === 0) return -1;
 
-  const seg = (1 - PROJECT_DETAIL_START) / 4;
+  const seg = (1 - PROJECT_DETAIL_START) / count;
   return clamp(
     Math.floor((projectProgress - PROJECT_DETAIL_START) / seg),
     0,
-    3,
+    count - 1,
   );
+}
+
+/** Sticky focus with segment hysteresis so scroll jitter does not flip cards. */
+export function getProjectFocusIndexStable(
+  projectProgress: number,
+  prevIndex: number,
+): number {
+  const count = VISIBLE_PROJECTS.length;
+  if (projectProgress < PROJECT_DETAIL_START || count === 0) return -1;
+
+  const seg = (1 - PROJECT_DETAIL_START) / count;
+  const raw = (projectProgress - PROJECT_DETAIL_START) / seg;
+  const hysteresis = 0.1;
+
+  if (prevIndex < 0) {
+    return clamp(Math.floor(raw), 0, count - 1);
+  }
+
+  let index = prevIndex;
+  if (raw > prevIndex + 1 - hysteresis && prevIndex < count - 1) {
+    index = prevIndex + 1;
+  } else if (raw < prevIndex + hysteresis && prevIndex > 0) {
+    index = prevIndex - 1;
+  }
+
+  return index;
 }
 
 export function getScatterCardLayout(

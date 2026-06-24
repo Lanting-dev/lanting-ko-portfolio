@@ -1,7 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { memo, useLayoutEffect, useRef, useState } from "react";
+import { memo, useLayoutEffect, useRef, useState, type MutableRefObject } from "react";
+
+export type PointerTilt = { x: number; y: number };
+export type PointerTiltRef = MutableRefObject<PointerTilt>;
 
 const ProjectCubeCanvas = dynamic(() => import("./ProjectCubeCanvas"), {
   ssr: false,
@@ -13,6 +16,9 @@ type ProjectCubeSceneProps = {
   seed: number;
   hovered: boolean;
   focused: boolean;
+  pointerTiltRef?: PointerTiltRef;
+  pointerParallax?: boolean;
+  pointerEngaged?: boolean;
 };
 
 export const ProjectCubeScene = memo(function ProjectCubeScene({
@@ -21,6 +27,9 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
   seed,
   hovered,
   focused,
+  pointerTiltRef,
+  pointerParallax = false,
+  pointerEngaged = false,
 }: ProjectCubeSceneProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -81,6 +90,9 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
           seed={seed}
           hovered={hovered}
           focused={focused}
+          pointerTiltRef={pointerTiltRef}
+          pointerParallax={pointerParallax}
+          pointerEngaged={pointerEngaged}
         />
       ) : null}
     </div>

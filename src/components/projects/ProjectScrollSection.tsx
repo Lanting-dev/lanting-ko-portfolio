@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, type RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { clamp } from "@/lib/parallax/interpolate";
 import {
   PROJECT_DETAIL_START,
@@ -8,12 +8,16 @@ import {
 } from "@/lib/projects/projectScroll";
 import {
   computeScatterProgress,
-  getProjectFocusIndex,
+  getProjectFocusIndexStable,
   getScatterCardLayout,
 } from "@/lib/projects/projectScatter";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { useLocalizedProjects } from "@/hooks/useLocalizedProject";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { ProjectCard } from "./ProjectCard";
+import type { PointerTiltRef } from "./ProjectCubeScene";
 import { ProjectDetailStage } from "./ProjectDetailStage";
 
 type ProjectScrollSectionProps = {
@@ -23,12 +27,44 @@ type ProjectScrollSectionProps = {
 export function ProjectScrollSection({
   trackRef,
 }: ProjectScrollSectionProps) {
+  const { ui } = useLocale();
+  const projects = useLocalizedProjects(VISIBLE_PROJECTS);
   const progress = useParallaxValue((s) => s.projectProgress);
+  const focusIndexRef = useRef(-1);
+  const reducedMotion = usePrefersReducedMotion();
+  const pointerTiltRef = useRef({ x: 0, y: 0 }) as PointerTiltRef;
+  const [pointerEngaged, setPointerEngaged] = useState(false);
 
   const scatterT = computeScatterProgress(progress);
-  const focusIndex = getProjectFocusIndex(progress);
+  const focusIndex = getProjectFocusIndexStable(progress, focusIndexRef.current);
+  focusIndexRef.current = focusIndex;
   const inDetail = focusIndex >= 0;
   const scatterHold = scatterT >= 0.98 && progress < PROJECT_DETAIL_START;
+  const scatterInteractive = !inDetail;
+
+  useEffect(() => {
+    if (!inDetail) return;
+    pointerTiltRef.current = { x: 0, y: 0 };
+    setPointerEngaged(false);
+  }, [inDetail, pointerTiltRef]);
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (inDetail || reducedMotion) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      pointerTiltRef.current = {
+        x: clamp(((e.clientX - rect.left) / rect.width - 0.5) * 2, -1, 1),
+        y: clamp(((e.clientY - rect.top) / rect.height - 0.5) * 2, -1, 1),
+      };
+      setPointerEngaged(true);
+    },
+    [inDetail, reducedMotion, pointerTiltRef],
+  );
+
+  const handlePointerLeave = useCallback(() => {
+    pointerTiltRef.current = { x: 0, y: 0 };
+    setPointerEngaged(false);
+  }, [pointerTiltRef]);
 
   const sectionEnter = clamp(progress / 0.08, 0, 1);
 
@@ -50,7 +86,7 @@ export function ProjectScrollSection({
   );
 
   const activeProject =
-    focusIndex >= 0 ? VISIBLE_PROJECTS[focusIndex] : VISIBLE_PROJECTS[0];
+    focusIndex >= 0 ? projects[focusIndex] : projects[0];
 
   return (
     <section
@@ -71,6 +107,8 @@ export function ProjectScrollSection({
                 ? "hold"
                 : "detail"
         }
+        onPointerMove={scatterInteractive ? handlePointerMove : undefined}
+        onPointerLeave={scatterInteractive ? handlePointerLeave : undefined}
       >
         <div
           className="project-scatter-center"
@@ -80,7 +118,7 @@ export function ProjectScrollSection({
           }}
         >
           <h2 className="section-bigword project-scatter-word">Work</h2>
-          <p className="project-scatter-intro">Selected product design work</p>
+          <p className="project-scatter-intro">{ui.work.subheading}</p>
         </div>
 
         <div
@@ -91,7 +129,7 @@ export function ProjectScrollSection({
           <ProjectDetailStage project={activeProject} visible={inDetail} />
         </div>
 
-        {VISIBLE_PROJECTS.map((project, i) => {
+        {projects.map((project, i) => {
           const layout = getScatterCardLayout(i, scatterT, progress);
           const isFocused = inDetail && i === focusIndex;
           const cardOpacity = inDetail
@@ -116,7 +154,10 @@ export function ProjectScrollSection({
                 project={project}
                 cardIndex={i}
                 backdrop
-                focused={isFocused}
+                focused={false}
+                scatterInteractive={scatterInteractive}
+                pointerTiltRef={pointerTiltRef}
+                pointerEngaged={pointerEngaged}
               />
             </div>
           );

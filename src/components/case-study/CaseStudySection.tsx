@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { CaseStudyReveal } from "@/components/case-study/CaseStudyReveal";
 import { CaseStudyParallax } from "@/components/case-study/CaseStudyParallax";
+import { CaseStudyParallaxReveal } from "@/components/case-study/CaseStudyParallaxReveal";
 
 type CaseStudySectionProps = {
   id?: string;
@@ -59,6 +60,9 @@ type CaseStudyFigureProps = {
   caption?: string;
   className?: string;
   delay?: number;
+  parallax?: boolean;
+  /** Fixed-aspect viewport; image scrolls inside on page scroll. */
+  revealAspect?: number;
 };
 
 export function CaseStudyFigure({
@@ -66,17 +70,37 @@ export function CaseStudyFigure({
   alt,
   caption,
   className = "",
+  parallax = true,
+  revealAspect,
 }: CaseStudyFigureProps) {
+  const image = (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img src={src} alt={alt} className="case-study-figure-img" loading="lazy" draggable={false} />
+  );
+
   return (
     <figure className={`case-study-figure ${className}`.trim()}>
-      <CaseStudyParallax
-        className="case-study-figure-frame"
-        strength={110}
-        offset={64}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={alt} className="case-study-figure-img" loading="lazy" draggable={false} />
-      </CaseStudyParallax>
+      {revealAspect ? (
+        <CaseStudyParallaxReveal
+          className="case-study-figure-frame"
+          viewportAspect={revealAspect}
+        >
+          {image}
+        </CaseStudyParallaxReveal>
+      ) : parallax ? (
+        <CaseStudyParallax
+          className="case-study-figure-frame"
+          strength={110}
+          offset={64}
+        >
+          {image}
+        </CaseStudyParallax>
+      ) : (
+        <div className="case-study-figure-frame case-study-figure-frame--plain">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt={alt} className="case-study-figure-img" loading="lazy" draggable={false} />
+        </div>
+      )}
       {caption ? (
         <figcaption className="case-study-figure-caption type-nav">{caption}</figcaption>
       ) : null}

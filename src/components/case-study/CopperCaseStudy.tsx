@@ -11,19 +11,25 @@ import { CaseStudyParallax } from "@/components/case-study/CaseStudyParallax";
 import { CaseStudyProgressBar } from "@/components/case-study/CaseStudyProgressBar";
 import { CaseStudyToc } from "@/components/case-study/CaseStudyToc";
 import {
-  COPPER_CASE_STUDY,
   type CopperMapping,
   type CopperMedia,
 } from "@/lib/case-studies/copper";
+import { useCaseStudy } from "@/hooks/useCaseStudy";
+import { caseStudySectionLabel } from "@/lib/i18n/caseStudySection";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 function MappingCard({
   item,
   index,
   total,
+  visualLabel,
+  soundLabel,
 }: {
   item: CopperMapping["items"][number];
   index: number;
   total: number;
+  visualLabel: string;
+  soundLabel: string;
 }) {
   return (
     <li className="copper-card">
@@ -37,12 +43,12 @@ function MappingCard({
         </svg>
       </div>
 
-      <p className="copper-card-eyebrow">Visual</p>
+      <p className="copper-card-eyebrow">{visualLabel}</p>
       <p className="copper-card-from">{item.from}</p>
 
       <span className="copper-card-arrow" aria-hidden="true" />
 
-      <p className="copper-card-eyebrow copper-card-eyebrow--sound">Sound</p>
+      <p className="copper-card-eyebrow copper-card-eyebrow--sound">{soundLabel}</p>
       <p className="copper-card-to">{item.to}</p>
 
       <p className="copper-card-desc">{item.body}</p>
@@ -58,7 +64,15 @@ function MappingCard({
   );
 }
 
-function SonicMapping({ mapping }: { mapping: CopperMapping }) {
+function SonicMapping({
+  mapping,
+  visualLabel,
+  soundLabel,
+}: {
+  mapping: CopperMapping;
+  visualLabel: string;
+  soundLabel: string;
+}) {
   const reducedMotion = usePrefersReducedMotion();
   const sectionRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -140,7 +154,13 @@ function SonicMapping({ mapping }: { mapping: CopperMapping }) {
         style={{ height: sectionHeight }}
       >
         <div className="copper-scroll-sticky">
-          <div ref={viewportRef} className="copper-scroll-viewport">
+          <div
+            ref={viewportRef}
+            className="copper-scroll-viewport"
+            role="region"
+            aria-label="Visual to sound mapping cards, horizontally scrollable"
+            tabIndex={0}
+          >
             <ol
               ref={trackRef}
               className="copper-cards"
@@ -152,6 +172,8 @@ function SonicMapping({ mapping }: { mapping: CopperMapping }) {
                   item={item}
                   index={i}
                   total={mapping.items.length}
+                  visualLabel={visualLabel}
+                  soundLabel={soundLabel}
                 />
               ))}
             </ol>
@@ -169,7 +191,7 @@ function DecisionMedia({ media }: { media: CopperMedia }) {
     return (
       <figure className="copper-sound-figure">
         <p className="copper-sound-note">
-          <span aria-hidden="true">🔊</span> This video has sound — press play to listen.
+          <span aria-hidden="true">🔊</span> This video has sound. Press play to listen.
         </p>
         <div className="editorial-design-media">
           <video
@@ -216,8 +238,10 @@ function DecisionMedia({ media }: { media: CopperMedia }) {
 }
 
 export function CopperCaseStudy() {
+  const { ui } = useLocale();
+  const study = useCaseStudy("copper");
   const { kicker, title, meta, summary, hero, problem, designDecisions, outcomes, outcomeDemo, conclusion } =
-    COPPER_CASE_STUDY;
+    study;
 
   return (
     <div className="editorial-case-study copper-case-study">
@@ -230,7 +254,7 @@ export function CopperCaseStudy() {
         <div className="case-study-glass editorial-case-glass">
           <div className="editorial-case-shell">
             <aside className="editorial-case-aside" aria-label="Table of contents">
-              <CaseStudyToc items={COPPER_CASE_STUDY.toc} />
+              <CaseStudyToc items={study.toc} />
             </aside>
 
             <main className="editorial-case-main">
@@ -248,7 +272,7 @@ export function CopperCaseStudy() {
                 </dl>
 
                 <aside className="editorial-summary">
-                  <h2>Long Story Short</h2>
+                  <h2>{ui.caseStudy.longStoryShort}</h2>
                   {summary.map((paragraph) => (
                     <p key={paragraph.slice(0, 36)}>{paragraph}</p>
                   ))}
@@ -258,7 +282,7 @@ export function CopperCaseStudy() {
               </header>
 
               <section id="problem" className="editorial-section">
-                <p className="editorial-section-label">Problem</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("problem", ui)}</p>
                 <h2>{problem.headline}</h2>
                 <p className="editorial-section-lead">{problem.body}</p>
               </section>
@@ -277,14 +301,18 @@ export function CopperCaseStudy() {
                     </div>
                     <DecisionMedia media={decision.media} />
                     {"mapping" in decision && decision.mapping ? (
-                      <SonicMapping mapping={decision.mapping} />
+                      <SonicMapping
+                        mapping={decision.mapping}
+                        visualLabel={ui.caseStudy.visual}
+                        soundLabel={ui.caseStudy.sound}
+                      />
                     ) : null}
                   </section>
                 ))}
               </div>
 
               <section id="outcome" className="editorial-section">
-                <p className="editorial-section-label">Outcome</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("outcome", ui)}</p>
                 <DecisionMedia media={outcomeDemo} />
                 <ul className="copper-outcome-grid">
                   {outcomes.map((outcome) => (
@@ -297,7 +325,7 @@ export function CopperCaseStudy() {
               </section>
 
               <section id="conclusion" className="editorial-section editorial-conclusion">
-                <p className="editorial-section-label">Conclusion</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("conclusion", ui)}</p>
                 <h2>{conclusion.headline}</h2>
                 <div className="editorial-conclusion-copy">
                   {conclusion.paragraphs.map((paragraph) => (

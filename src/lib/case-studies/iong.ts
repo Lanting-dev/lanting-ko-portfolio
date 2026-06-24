@@ -30,7 +30,7 @@ export type IongInterface = {
 export const IONG_CASE_STUDY = {
   slug: "iong",
   kicker: "IONG 養",
-  title: "Food Decision-Making Through Biometric Automation",
+  title: "When Biometric Systems Decide What We Eat",
   meta: [
     { label: "Duration", value: "4 weeks" },
     { label: "Team", value: "Lan-Ting Ko" },
@@ -48,7 +48,7 @@ export const IONG_CASE_STUDY = {
   ],
   summary: [
     "In 2070, food is no longer a personal choice. It is a government-managed system driven by biometric tracking and automated nutrition. IONG reimagines what happens when care, convenience, and optimization quietly replace everyday decision-making.",
-    "You enter as a new employee onboarding into the system, not as a citizen receiving meals, but as someone learning how the institution works. There is no fixed path: reading time, clicks, and biometric scans are tracked as you explore, and the employee badge you receive reflects that behavior. Interaction itself becomes participation.",
+    "You enter the system as a new employee, not as a citizen receiving meals, but as someone learning how the institution works. There is no fixed path: the system tracks reading time, clicks, and biometric scans as you explore, then assigns an employee badge based on that behavior. Interaction itself becomes participation.",
   ],
   hero: {
     src: "/work/iong/intro.mp4",
@@ -61,7 +61,7 @@ export const IONG_CASE_STUDY = {
     body:
       "Declining birth rates and pressure on public health systems have turned food into a government-managed resource. The Republic of Valoria partners with private companies to establish IONG 養, a centralized nutrition program that supports population health without ever describing participation as mandatory.",
     context:
-      "Citizens receive meals generated through continuous biometric analysis; food is made from processed surplus and alternative materials. The welcome onboarding demo puts you on the employee side of that system, discovering how health scoring, monitoring, and allocation work from within the institution.",
+      "Citizens receive meals generated through continuous biometric analysis, using food made from processed surplus and alternative materials. The onboarding demo places you on the employee side of the system, revealing how health scoring, monitoring, and allocation operate from within the institution.",
     designQuestion:
       "What happens when onboarding makes compliance feel voluntary?",
     image: {
@@ -137,7 +137,7 @@ export const IONG_CASE_STUDY = {
   process: {
     headline: "From object to employee onboarding",
     intro:
-      "The onboarding demo was the last layer. IONG moved from physical speculation to a connected digital ecosystem, studying how systems shape behavior through design, not through force, but through routine, restricted information, and small rewards.",
+      "The onboarding demo was the final layer. IONG evolved from a physical speculative object into a connected digital ecosystem that examines how systems shape behavior through routine, restricted information, and small rewards rather than overt force.",
     points: [
       [
         "01",
@@ -181,7 +181,7 @@ export const IONG_CASE_STUDY = {
   system: {
     headline: "One centralized system, five departments",
     intro:
-      "Everything in IONG runs through five connected departments. Onboarding gives you partial access; what follows maps to what you explored in the demo, then what sits outside your clearance.",
+      "IONG operates through five connected departments. The onboarding experience grants partial access; this section maps what you can explore in the demo and what remains beyond your clearance.",
     inDemo: {
       label: "In the demo",
       lead: "As a new employee, you can open Mete Systems, Hæl Intelligence, and Wēl Outreach. You also pass through biometric verification and, eventually, receive a badge.",
@@ -204,7 +204,7 @@ export const IONG_CASE_STUDY = {
       {
         name: "Hæl Intelligence",
         tagline: "Biometric data analysis",
-        body: "Uses wearable data to create daily nutrition plans for citizens, updating formulas in real time while keeping personal data siloed across departments.",
+        body: "Uses wearable data to create daily nutrition plans for citizens and updates formulas in real time, while personal data remains siloed across departments.",
         accessible: true,
       },
       {
@@ -307,7 +307,7 @@ export const IONG_CASE_STUDY = {
   experience: {
     headline: "Employee onboarding as the experience",
     intro:
-      "The welcome onboarding demo has no fixed path. You enter with partial employee access, pass biometric scans, and freely explore departments. Some sections stay locked behind clearance levels. The system tracks reading time and interaction: how long you stay in each section shapes the employee badge you receive. There is no prompt to choose a role; participation happens through browsing.",
+      "The onboarding demo has no fixed path. You enter with partial employee access, complete biometric scans, and explore the departments freely. Some sections remain locked behind clearance levels. The system tracks your reading time and interactions, then uses that behavior to determine the employee badge you receive. You never choose a role directly; browsing becomes a form of participation.",
     steps: [
       {
         index: "welcome",
@@ -420,7 +420,7 @@ export const IONG_CASE_STUDY = {
     headline: "Speculation as a mirror for the present",
     paragraphs: [
       "IONG was my final project at Pratt, a chance to experiment with worldbuilding and systems thinking outside the constraints of a typical product brief. Imagining a future where food is managed, not chosen, made me look more critically at the health apps, recommendation engines, and behavioral nudges that already shape everyday life.",
-      "This may not be the most conventional UX project, but it was the most interesting one for me as a designer: building a fiction that feels seamless enough to almost make sense, and close enough to the present to feel uncomfortable.",
+      "This may not be a conventional UX project, but it became one of the most meaningful to me as a designer: building a fictional system coherent enough to feel plausible and close enough to the present to feel uncomfortable.",
     ],
   },
 } as const;

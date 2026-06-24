@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 /** Floating circular "back to top" button — appears after scrolling down. */
 export function CaseStudyBackToTop() {
+  const { ui } = useLocale();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -16,7 +18,7 @@ export function CaseStudyBackToTop() {
   return (
     <button
       type="button"
-      aria-label="Back to top"
+      aria-label={ui.caseStudy.backToTop}
       className={`case-study-top ${visible ? "is-visible" : ""}`.trim()}
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
     >

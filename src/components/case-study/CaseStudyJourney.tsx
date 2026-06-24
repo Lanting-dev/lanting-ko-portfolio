@@ -60,7 +60,13 @@ export function CaseStudyJourney({ steps }: CaseStudyJourneyProps) {
   }, [reducedMotion]);
 
   return (
-    <div ref={ref} className="case-study-journey-scroll">
+    <div
+      ref={ref}
+      className="case-study-journey-scroll"
+      role="region"
+      aria-label="User journey, horizontally scrollable"
+      tabIndex={0}
+    >
       <div className="case-study-journey-map">
         <div className="case-study-journey-curve" aria-hidden="true">
           <svg viewBox="0 0 1000 260" preserveAspectRatio="none">

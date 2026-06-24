@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useLocalizedProjects } from "@/hooks/useLocalizedProject";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 
 type CaseStudyMoreProjectsProps = {
@@ -12,9 +14,10 @@ type CaseStudyMoreProjectsProps = {
 export function CaseStudyMoreProjects({
   currentProject = "nga",
 }: CaseStudyMoreProjectsProps) {
-  const projects = VISIBLE_PROJECTS.filter(
-    (project) => project.id !== currentProject,
-  ).slice(0, 3);
+  const { ui } = useLocale();
+  const projects = useLocalizedProjects(
+    VISIBLE_PROJECTS.filter((project) => project.id !== currentProject).slice(0, 3),
+  );
   const reducedMotion = usePrefersReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -84,13 +87,19 @@ export function CaseStudyMoreProjects({
     >
       <div className="case-study-more-sticky page-shell">
         <div className="case-study-more-header">
-          <p className="type-nav text-black/45">Continue exploring</p>
+          <p className="type-nav text-black/45">{ui.caseStudy.continueExploring}</p>
           <h2 id="more-projects-title" className="case-study-more-title">
-            See More Projects
+            {ui.caseStudy.seeMoreProjects}
           </h2>
         </div>
 
-        <div ref={viewportRef} className="case-study-more-viewport">
+        <div
+          ref={viewportRef}
+          className="case-study-more-viewport"
+          role="region"
+          aria-label="More projects, horizontally scrollable"
+          tabIndex={0}
+        >
           <div ref={trackRef} className="case-study-more-track">
             {projects.map((project) => {
               const image = (
@@ -113,7 +122,7 @@ export function CaseStudyMoreProjects({
                         {project.title ? (
                           <p className="case-study-more-card-title">{project.title}</p>
                         ) : null}
-                        <span className="site-cta">View case study →</span>
+                        <span className="site-cta">{ui.work.viewCaseStudy}</span>
                       </div>
                     </Link>
                   ) : (
