@@ -21,12 +21,20 @@ import {
   getSectionImages,
   hasImpactPoints,
   hasJourney,
-  NGA_CASE_STUDY,
 } from "@/lib/case-studies/nga";
+import { useCaseStudy } from "@/hooks/useCaseStudy";
+
+/** Reference crop for NGA mockups — viewport window, full PNG revealed on scroll. */
+const NGA_MOCKUP_REVEAL_ASPECT: Partial<Record<string, number>> = {
+  "drawing-assist": 1024 / 606,
+  reactions: 1024 / 619,
+  "theme-shuffle": 1024 / 568,
+};
 
 export function NgaCaseStudy() {
+  const study = useCaseStudy("nga");
   const { meta, summary, problem, research, designSections, conclusion } =
-    NGA_CASE_STUDY;
+    study;
 
   return (
     <div className="case-study-page nga-case-study">
@@ -38,13 +46,13 @@ export function NgaCaseStudy() {
         <div className="case-study-glass">
           <div className="nga-case-shell">
           <aside className="nga-case-aside" aria-label="Table of contents">
-            <CaseStudyToc items={NGA_CASE_STUDY.toc} />
+            <CaseStudyToc items={study.toc} />
           </aside>
 
           <div className="nga-case-main">
             <header className="case-study-hero">
               <CaseStudyReveal motion="scale">
-                <h1 className="case-study-title">{NGA_CASE_STUDY.title}</h1>
+                <h1 className="case-study-title">{study.title}</h1>
               </CaseStudyReveal>
 
               <CaseStudyReveal className="case-study-hero-meta" delay={0.04}>
@@ -80,7 +88,7 @@ export function NgaCaseStudy() {
                     variant="phones"
                   >
                     <div className="case-study-screens-frame">
-                      {NGA_CASE_STUDY.heroImages.map((image) => {
+                      {study.heroImages.map((image) => {
                         return (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -180,6 +188,7 @@ export function NgaCaseStudy() {
                         <CaseStudyFigure
                           src={getSectionImage(section)!.src}
                           alt={getSectionImage(section)!.alt}
+                          revealAspect={NGA_MOCKUP_REVEAL_ASPECT[section.id]}
                           delay={0.06 + index * 0.02}
                         />
                         <CaseStudyReveal delay={0.1}>
@@ -199,6 +208,7 @@ export function NgaCaseStudy() {
                       <CaseStudyFigure
                         src={getSectionImage(section)!.src}
                         alt={getSectionImage(section)!.alt}
+                        revealAspect={NGA_MOCKUP_REVEAL_ASPECT[section.id]}
                         delay={0.06 + index * 0.02}
                       />
                     )
@@ -211,7 +221,7 @@ export function NgaCaseStudy() {
               <blockquote className="case-study-quote">
                 <p>&ldquo;{conclusion.quote}&rdquo;</p>
                 <footer className="type-nav mt-5 text-black/45">
-                  — {conclusion.quoteAttribution}
+                  · {conclusion.quoteAttribution}
                 </footer>
               </blockquote>
             </CaseStudyReveal>

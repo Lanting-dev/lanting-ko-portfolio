@@ -8,11 +8,15 @@ import { CaseStudyNav } from "@/components/case-study/CaseStudyNav";
 import { CaseStudyProgressBar } from "@/components/case-study/CaseStudyProgressBar";
 import { CaseStudyToc } from "@/components/case-study/CaseStudyToc";
 import { GtScrollSteps } from "@/components/case-study/GtScrollSteps";
-import { GT_CASE_STUDY } from "@/lib/case-studies/gt";
+import { useCaseStudy } from "@/hooks/useCaseStudy";
+import { caseStudySectionLabel } from "@/lib/i18n/caseStudySection";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function GtCaseStudy() {
+  const { ui } = useLocale();
+  const study = useCaseStudy("gt");
   const { meta, summary, problem, research, insight, design, impact, conclusion } =
-    GT_CASE_STUDY;
+    study;
 
   return (
     <div className="editorial-case-study gt-case-study">
@@ -24,14 +28,14 @@ export function GtCaseStudy() {
 
         <div className="case-study-glass editorial-case-glass">
           <div className="editorial-case-shell">
-            <aside className="editorial-case-aside" aria-label="Table of contents">
-              <CaseStudyToc items={GT_CASE_STUDY.toc} />
+            <aside className="editorial-case-aside" aria-label={ui.caseStudy.sections}>
+              <CaseStudyToc items={study.toc} />
             </aside>
 
             <main className="editorial-case-main">
             <header className="editorial-hero">
               <p className="editorial-kicker">Course Builder AI</p>
-              <h1>{GT_CASE_STUDY.title}</h1>
+              <h1>{study.title}</h1>
 
               <dl className="editorial-meta">
                 {meta.map(({ label, value }) => (
@@ -43,7 +47,7 @@ export function GtCaseStudy() {
               </dl>
 
               <aside className="editorial-summary">
-                <h2>Long Story Short</h2>
+                <h2>{ui.caseStudy.longStoryShort}</h2>
                 {summary.map((paragraph) => (
                   <p key={paragraph.slice(0, 36)}>{paragraph}</p>
                 ))}
@@ -57,7 +61,7 @@ export function GtCaseStudy() {
             </header>
 
             <section id="problem" className="editorial-section">
-              <p className="editorial-section-label">Problem</p>
+              <p className="editorial-section-label">{caseStudySectionLabel("problem", ui)}</p>
               <h2>{problem.headline}</h2>
               <p className="editorial-section-lead">{problem.body}</p>
               <ul className="gt-signal-grid">
@@ -71,7 +75,7 @@ export function GtCaseStudy() {
             </section>
 
             <section id="research" className="editorial-section">
-              <p className="editorial-section-label">Research</p>
+              <p className="editorial-section-label">{caseStudySectionLabel("research", ui)}</p>
               <h2>{research.headline}</h2>
               <div className="gt-research-grid">
                 <figure className="gt-dark-media gt-research-media">
@@ -102,7 +106,7 @@ export function GtCaseStudy() {
             </section>
 
             <section className="editorial-section gt-insight-section">
-              <p className="editorial-section-label">Core Insight</p>
+              <p className="editorial-section-label">{ui.caseStudy.sectionsMap.coreInsight}</p>
               <h2>{insight.headline}</h2>
               <p className="editorial-section-lead">{insight.body}</p>
               <GtScrollSteps steps={insight.steps} />
@@ -140,16 +144,16 @@ export function GtCaseStudy() {
               ))}
             </div>
 
-            <section className="gt-impact" aria-label="Client feedback">
-              <p className="editorial-section-label">Impact</p>
+            <section className="gt-impact" aria-label={caseStudySectionLabel("impact", ui)}>
+              <p className="editorial-section-label">{caseStudySectionLabel("impact", ui)}</p>
               <blockquote>
                 <p>&ldquo;{impact.quote}&rdquo;</p>
-                <footer>— {impact.attribution}</footer>
+                <footer>· {impact.attribution}</footer>
               </blockquote>
             </section>
 
             <section id="conclusion" className="editorial-section editorial-conclusion">
-              <p className="editorial-section-label">Conclusion</p>
+              <p className="editorial-section-label">{caseStudySectionLabel("conclusion", ui)}</p>
               <h2>{conclusion.headline}</h2>
               <div className="editorial-conclusion-copy">
                 {conclusion.paragraphs.map((paragraph) => (

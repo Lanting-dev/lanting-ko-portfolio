@@ -28,8 +28,8 @@ export const GT_CASE_STUDY = {
     { id: "conclusion", label: "Conclusion" },
   ],
   summary: [
-    "Gutenberg’s AI Course Builder converts PDFs, PowerPoint files, and other documents into structured courses. AI-generated results are non-deterministic, but the system does not clearly communicate what users should provide or what will happen next. As a result, participants feel stuck, hesitate to take action, and rely on trial and error.",
-    "In this project, I studied how participants interacted with the system and redesigned how the system communicates its behavior.",
+    "Gutenberg's AI Course Builder converts PDFs, PowerPoint files, and other documents into structured courses. Because AI output is non-deterministic, users need clear guidance about what to provide, what the system is doing, and what will happen next. Without it, participants hesitated, avoided actions, and relied on trial and error.",
+    "I studied how participants moved through the workflow, identified system visibility as the underlying issue, and redesigned the experience to set clearer expectations and support safe iteration.",
   ],
   problem: {
     headline:
@@ -38,15 +38,15 @@ export const GT_CASE_STUDY = {
       "Participants frequently hesitate before taking action, revisit the same input fields, and move back and forth between sections. Some skip steps entirely. These patterns appear throughout the flow, from creating a project to generating content.",
     signals: [
       {
-        title: "Input Purpose",
+        title: "Input purpose",
         body: "Participants repeatedly returned to input fields.",
       },
       {
-        title: "Action Outcome",
+        title: "Action outcome",
         body: "Six of eight participants hesitated before regenerating content because they were unsure how it would affect their existing work.",
       },
       {
-        title: "System Status",
+        title: "System status",
         body: "Participants were unsure whether their work was saved.",
       },
     ],
@@ -56,15 +56,15 @@ export const GT_CASE_STUDY = {
       "Understanding why users feel uncertain when interacting with an AI system",
     methods: [
       {
-        title: "Eight Eye-Tracking and RTA Sessions",
+        title: "Eight eye-tracking and RTA sessions",
         body: "I conducted eight in-person eye-tracking sessions with first-time users and paired each with a retrospective think-aloud (RTA) to understand how they made decisions and where confusion occurred during tasks.",
       },
       {
-        title: "61.3 System Usability Scale Score",
+        title: "System Usability Scale score: 61.3",
         body: "Participants completed the System Usability Scale after each session. The product received a SUS score of 61.3, suggesting that participants did not feel fully comfortable using it.",
       },
       {
-        title: "The Same Patterns Appeared in Hotjar",
+        title: "The same patterns appeared in Hotjar",
         body: "Hotjar revealed the same interaction patterns, showing where existing users hesitated, retried actions, or tried to figure out what to do next.",
       },
     ],
@@ -72,7 +72,7 @@ export const GT_CASE_STUDY = {
   insight: {
     headline: "System state is not visible to participants",
     body:
-      "The AI course builder generates a draft based on user input, and detailed editing is expected to happen later in the CMS. Watching participants go through the process, I found they were stuck during several steps. These issues share some common areas: the system state is not visible, which causes confusion throughout the process. Participants don’t know what to provide or what will happen next, so they rely on trial and error.",
+      "The AI Course Builder generates a draft from user input, while detailed editing happens later in the CMS. Across the workflow, participants encountered the same underlying problem: the system did not make its state visible. They could not tell what to provide, how their input would be used, whether work had been saved, or what an action would change. As a result, they relied on trial and error.",
     steps: [
       {
         index: "01",
@@ -104,10 +104,10 @@ export const GT_CASE_STUDY = {
       },
       {
         index: "03",
-        title: "Review & Refine course outline",
-        finding: "Uncertainty Around Saved Work",
+        title: "Review and refine the course outline",
+        finding: "Uncertainty around saved work",
         description:
-          "After generating pages of content, 4/8 participants were confused by the wording of the “Update Information” button. They weren’t sure if their work was saved, which made them hesitate and lowered their confidence in the system.",
+          "After generating pages of content, four of eight participants were confused by the “Update Information” button. They could not tell whether their work had been saved, which made them hesitate and reduced their confidence in the system.",
         media: [
           {
             src: "/work/gt/step-outline-gaze.mp4",
@@ -132,7 +132,7 @@ export const GT_CASE_STUDY = {
       },
       {
         index: "05",
-        title: "Review & Refine content",
+        title: "Review and refine content",
         description:
           "The workflow ended without clearly showing whether progress was saved or whether participants could return to an earlier version.",
         media: [
@@ -150,7 +150,7 @@ export const GT_CASE_STUDY = {
     {
       id: "clear-expectations",
       label: "Design Decision 01",
-      headline: "Set Clear Expectations for Users",
+      headline: "Set clear expectations",
       paragraphs: [
         "It’s like being asked to draw something without knowing what is expected. Most people do not feel stuck because they lack creativity, but because they do not know what to draw. The existing AI Course Builder creates a similar experience: participants are given input fields, but it is unclear what information they should provide or how it will be used.",
         "To address this, I added four types of guidance to help participants understand each field and reduce cognitive load.",
@@ -158,16 +158,16 @@ export const GT_CASE_STUDY = {
       image: "/work/gt/clear-expectations.jpg",
       alt: "Redesigned learning-objectives form with four guidance patterns",
       points: [
-        ["01", "Indicate Purpose", "What are they filling out right now?"],
-        ["02", "Length Guidance", "How much should they write?"],
-        ["03", "Content Guidance", "What kind of information belongs here?"],
-        ["04", "AI Transparency", "How will this affect the generated course?"],
+        ["01", "Purpose", "What are users filling out right now?"],
+        ["02", "Length guidance", "How much should they write?"],
+        ["03", "Content guidance", "What information belongs here?"],
+        ["04", "AI transparency", "How will this affect the generated course?"],
       ],
     },
     {
       id: "safe-iteration",
       label: "Design Decision 02",
-      headline: "Support Safe Iteration",
+      headline: "Support safe iteration",
       paragraphs: [
         "Participants’ search for a save option and hesitation to regenerate content signaled a need to preserve existing work. Because AI is non-deterministic, the same input does not guarantee the same output, making previous content important as a reference.",
         "I made saved progress visible through notifications and added version history so users could return to an earlier point before taking action.",
@@ -175,8 +175,8 @@ export const GT_CASE_STUDY = {
       image: "/work/gt/safe-iteration.jpg",
       alt: "Save-status notification and version-history concepts",
       points: [
-        ["01", "User Awareness", "Make the current system status visible."],
-        ["02", "Version History", "Allow users to return to a previous point."],
+        ["01", "System status", "Make saved progress and current status visible."],
+        ["02", "Version history", "Let users return to an earlier version."],
       ],
     },
   ],
@@ -185,7 +185,7 @@ export const GT_CASE_STUDY = {
     attribution: "GT Course Builder AI Product Manager",
   },
   conclusion: {
-    headline: "From Usability Issues to System Visibility",
+    headline: "From usability issues to system visibility",
     paragraphs: [
       "Triangulating multiple data sources helped validate consistent patterns in user behavior. By combining eye-tracking, RTA, and behavioral data, I identified the underlying reasons for hesitation and confusion rather than relying on a single signal. This shifted the focus from isolated usability issues to the broader problem of system visibility.",
       "Testing was conducted in isolation without the full CMS context, which may have influenced how participants behaved during the study. Future work would validate these findings in a CMS-integrated environment and explore how different interaction models support both generation and editing.",

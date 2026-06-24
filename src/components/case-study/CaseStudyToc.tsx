@@ -7,6 +7,7 @@ import {
   useState,
   type MouseEvent,
 } from "react";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 type TocItem = {
   id: string;
   label: string;
@@ -17,6 +18,7 @@ type CaseStudyTocProps = {
 };
 
 export function CaseStudyToc({ items }: CaseStudyTocProps) {
+  const { ui } = useLocale();
   const [activeId, setActiveId] = useState(items[0]?.id ?? "problem");
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -68,9 +70,9 @@ export function CaseStudyToc({ items }: CaseStudyTocProps) {
   return (
     <nav
       className="case-study-toc"
-      aria-label="Case study sections"
+      aria-label={ui.caseStudy.sections}
     >
-      <p className="type-nav mb-4 text-black/45">Sections</p>
+      <p className="type-nav mb-4 text-black/45">{ui.caseStudy.sections}</p>
       <ol className="case-study-toc-list">
         {items.map(({ id, label }) => {
           const isActive = activeId === id;

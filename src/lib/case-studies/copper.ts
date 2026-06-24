@@ -49,7 +49,7 @@ export const COPPER_CASE_STUDY = {
     { label: "Team", value: "Lan-Ting K, Smridhi G, Simran K, Gloria Y, Nandita M" },
     { label: "Client", value: "Cooper Hewitt" },
     { label: "Service", value: "Accessibility" },
-    { label: "Tools", value: "Figma, Voice Over, Hume AI" },
+    { label: "Tools", value: "Figma, VoiceOver, Hume AI" },
   ],
   toc: [
     { id: "problem", label: "Problem" },
@@ -59,7 +59,7 @@ export const COPPER_CASE_STUDY = {
   ],
   summary: [
     "Bungee is a chromatic display font in Cooper Hewitt’s digital collection, but its web-based tester was built entirely around visual interaction, leaving users with visual impairments unable to engage with it.",
-    "In this project, I redesigned the interface to meet WCAG standards, replacing inaccessible controls with keyboard-navigable alternatives and adding audio feedback to turn a visual-only experience into a multisensory one.",
+      "I redesigned the interface around WCAG guidance, replacing inaccessible controls with keyboard-navigable alternatives and adding audio feedback to turn a visual-only tool into a multisensory experience.",
   ],
   hero: {
     src: "/work/copper/hero.png",
@@ -76,7 +76,7 @@ export const COPPER_CASE_STUDY = {
       label: "Design Decision 01",
       headline: "Unfold the control panel for keyboard access",
       body:
-        "The collapsed panel required extra clicks and couldn’t be navigated by keyboard. I unfolded it, mapped a logical tab order, and wrapped the interface in a semantic <form> so users can trigger actions without tabbing through every element.",
+      "The collapsed panel required extra clicks and could not be navigated by keyboard. I expanded it, established a logical tab order, and grouped the controls in a semantic <form> so users could understand and navigate the interface more efficiently.",
       media: {
         src: "/work/copper/tab-order.png",
         type: "image",
@@ -119,16 +119,16 @@ export const COPPER_CASE_STUDY = {
           {
             from: "Overall Contrast",
             to: "Timbre",
-            body: "Different color schemes map to voice qualities that evoke similar emotional responses — bright colors feel energetic, muted tones feel softer.",
+            body: "Different color schemes map to voice qualities that evoke similar emotional responses: bright colors feel energetic, muted tones feel softer.",
           },
           {
             from: "Layering",
             to: "Audio Effects",
             body: "Bungee’s distinctive layers transform into specific audio effects:",
             sub: [
-              "Inline — a slight echo effect",
-              "Outline — reverb depth",
-              "Shade — a chorus effect that adds richness",
+              "Inline: a slight echo effect",
+              "Outline: reverb depth",
+              "Shade: a chorus effect that adds richness",
             ],
           },
           {
@@ -154,7 +154,7 @@ export const COPPER_CASE_STUDY = {
       label: "Design Decision 04",
       headline: "Guide every visitor through onboarding",
       body:
-        "Interactive digital works aren’t always intuitive for museum visitors. I designed a contextual tutorial triggered on both hover and keyboard focus, with an optional panel for returning users.",
+        "Interactive digital works are not always intuitive to museum visitors. I designed contextual guidance triggered by both hover and keyboard focus, plus an optional tutorial panel that visitors can reopen when needed.",
       media: {
         src: "/work/copper/onboarding.mp4",
         type: "video",

@@ -11,6 +11,7 @@ import {
 } from "@/lib/about/cubeFacePalette";
 import { StitchCanvasTexture } from "@/lib/about/stitchThreeTexture";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import type { PointerTiltRef } from "@/components/projects/ProjectCubeScene";
 
 const DEG = Math.PI / 180;
 /** Portrait front face matches the project card art (600 × 755). */
@@ -23,6 +24,11 @@ const BASE_YAW = -0.5;
 const BASE_PITCH = 0.26;
 const ROT_LERP = 0.12;
 const ROT_EPS = 0.004;
+/** Subtle pointer-follow tilt on scatter cubes. */
+const POINTER_YAW = 0.14;
+const POINTER_PITCH = 0.09;
+const POINTER_TILT_LERP = 0.1;
+const POINTER_TILT_EPS = 0.002;
 
 function projectCubeDpr(): number {
   if (typeof window === "undefined") return 1;
@@ -75,7 +81,10 @@ function ProjectCube({
   engaged,
   focusedRef,
   focused,
+  pointerTiltRef,
+  pointerParallaxEnabled,
   onSettlingChange,
+  onParallaxActiveChange,
 }: {
   greySrc: string;
   colorSrc: string;
@@ -84,7 +93,10 @@ function ProjectCube({
   engaged: boolean;
   focusedRef: { current: boolean };
   focused: boolean;
+  pointerTiltRef?: PointerTiltRef;
+  pointerParallaxEnabled: boolean;
   onSettlingChange: (settling: boolean) => void;
+  onParallaxActiveChange: (active: boolean) => void;
 }) {
   const gl = useThree((state) => state.gl);
   const [greyMap, colorMap] = useTexture([greySrc, colorSrc]);
@@ -179,6 +191,8 @@ function ProjectCube({
   };
 
   const settledRef = useRef(true);
+  const parallaxActiveRef = useRef(false);
+  const smoothedTiltRef = useRef({ x: 0, y: 0 });
 
   useLayoutEffect(() => {
     const group = groupRef.current;
@@ -196,8 +210,29 @@ function ProjectCube({
 
     applyColorMix(engagedRef.current ? 1 : 0);
 
-    const targetX = focusedRef.current ? 0 : BASE_PITCH;
-    const targetY = focusedRef.current ? 0 : BASE_YAW;
+    const smoothed = smoothedTiltRef.current;
+    if (pointerParallaxEnabled && pointerTiltRef) {
+      const target = pointerTiltRef.current;
+      smoothed.x += (target.x - smoothed.x) * POINTER_TILT_LERP;
+      smoothed.y += (target.y - smoothed.y) * POINTER_TILT_LERP;
+    } else {
+      smoothed.x += (0 - smoothed.x) * POINTER_TILT_LERP;
+      smoothed.y += (0 - smoothed.y) * POINTER_TILT_LERP;
+    }
+
+    const parallaxActive =
+      pointerParallaxEnabled &&
+      (Math.abs(smoothed.x) > POINTER_TILT_EPS ||
+        Math.abs(smoothed.y) > POINTER_TILT_EPS);
+    if (parallaxActive !== parallaxActiveRef.current) {
+      parallaxActiveRef.current = parallaxActive;
+      onParallaxActiveChange(parallaxActive);
+    }
+
+    const targetX = focusedRef.current
+      ? 0
+      : BASE_PITCH + smoothed.y * POINTER_PITCH;
+    const targetY = focusedRef.current ? 0 : BASE_YAW + smoothed.x * POINTER_YAW;
     group.rotation.x += (targetX - group.rotation.x) * ROT_LERP;
     group.rotation.y += (targetY - group.rotation.y) * ROT_LERP;
 
@@ -312,6 +347,9 @@ type ProjectCubeCanvasProps = {
   seed: number;
   hovered: boolean;
   focused: boolean;
+  pointerTiltRef?: PointerTiltRef;
+  pointerParallax?: boolean;
+  pointerEngaged?: boolean;
 };
 
 export default function ProjectCubeCanvas({
@@ -322,6 +360,9 @@ export default function ProjectCubeCanvas({
   seed,
   hovered,
   focused,
+  pointerTiltRef,
+  pointerParallax = false,
+  pointerEngaged = false,
 }: ProjectCubeCanvasProps) {
   const reducedMotion = usePrefersReducedMotion();
   const engaged = hovered || focused;
@@ -330,10 +371,21 @@ export default function ProjectCubeCanvas({
   const focusedRef = useRef(focused);
   focusedRef.current = focused;
   const [rotating, setRotating] = useState(false);
+  const [parallaxActive, setParallaxActive] = useState(false);
   const handleSettlingChange = useCallback((settling: boolean) => {
     setRotating(settling);
   }, []);
-  const shouldLoop = !reducedMotion && (hovered || focused || rotating);
+  const handleParallaxActiveChange = useCallback((active: boolean) => {
+    setParallaxActive(active);
+  }, []);
+  const pointerParallaxEnabled = pointerParallax && !reducedMotion && !focused;
+  const shouldLoop =
+    !reducedMotion &&
+    (hovered ||
+      focused ||
+      rotating ||
+      parallaxActive ||
+      (pointerParallaxEnabled && pointerEngaged));
   const [dpr, setDpr] = useState(1);
 
   useLayoutEffect(() => {
@@ -371,7 +423,10 @@ export default function ProjectCubeCanvas({
           engaged={engaged}
           focusedRef={focusedRef}
           focused={focused}
+          pointerTiltRef={pointerTiltRef}
+          pointerParallaxEnabled={pointerParallaxEnabled}
           onSettlingChange={handleSettlingChange}
+          onParallaxActiveChange={handleParallaxActiveChange}
         />
       </Suspense>
     </Canvas>

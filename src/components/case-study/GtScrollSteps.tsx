@@ -9,14 +9,17 @@ type GtScrollStepsProps = {
   mediaFrame?: "browser" | "plain";
   railLabel?: string;
   mode?: "sequential" | "explore";
+  wideMedia?: boolean;
 };
 
 function StepMedia({
   media,
   mediaFrame = "browser",
+  wide = false,
 }: {
   media: GtStep["media"][number];
   mediaFrame?: "browser" | "plain";
+  wide?: boolean;
 }) {
   if (media.type === "video") {
     if (mediaFrame === "plain") {
@@ -56,7 +59,7 @@ function StepMedia({
 
   return (
     mediaFrame === "plain" ? (
-      <figure className="gt-dark-media">
+      <figure className={`gt-dark-media${wide ? " is-wide" : ""}`.trim()}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={media.src} alt={media.alt} loading="lazy" draggable={false} />
       </figure>
@@ -72,6 +75,7 @@ export function GtScrollSteps({
   mediaFrame = "browser",
   railLabel = "Workflow steps",
   mode = "sequential",
+  wideMedia = false,
 }: GtScrollStepsProps) {
   const isExplore = mode === "explore";
   const [activeIndex, setActiveIndex] = useState(0);
@@ -115,7 +119,12 @@ export function GtScrollSteps({
             <p>{step.description}</p>
             <div className={`gt-step-static-media ${step.media.length > 1 ? "is-pair" : ""}`.trim()}>
               {step.media.map((media) => (
-                <StepMedia key={media.src} media={media} mediaFrame={mediaFrame} />
+                <StepMedia
+                  key={media.src}
+                  media={media}
+                  mediaFrame={mediaFrame}
+                  wide={wideMedia}
+                />
               ))}
             </div>
           </li>
@@ -160,7 +169,12 @@ export function GtScrollSteps({
           <div className="gt-step-stage-media">
             <div className={`gt-step-stage-media-grid ${activeStep.media.length > 1 ? "is-pair" : ""}`.trim()}>
               {activeStep.media.map((media) => (
-                <StepMedia key={media.src} media={media} mediaFrame={mediaFrame} />
+                <StepMedia
+                  key={media.src}
+                  media={media}
+                  mediaFrame={mediaFrame}
+                  wide={wideMedia}
+                />
               ))}
             </div>
           </div>

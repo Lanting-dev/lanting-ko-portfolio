@@ -1,7 +1,7 @@
 import { clamp } from "@/lib/dither/bayer";
 
 /** Vertical scroll track height for sticky Work pin (cluster → scatter → detail). */
-export const PROJECT_SCROLL_VH = 580;
+export const PROJECT_SCROLL_VH = 640;
 
 /** Cards stay clustered until the ball nears Work (~project progress). */
 export const PROJECT_SCATTER_START = 0.06;

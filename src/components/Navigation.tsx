@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-
-const NAV_LINKS = [
-  { href: "#work", label: "Work" },
-  { href: "#about", label: "About" },
-] as const;
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function Navigation() {
+  const { ui } = useLocale();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: "#work", label: ui.nav.work },
+    { href: "#about", label: ui.nav.about },
+  ] as const;
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -25,33 +28,30 @@ export function Navigation() {
   }, [closeMenu, menuOpen]);
 
   return (
-    <header className="site-nav type-nav relative z-40 shrink-0">
+    <header className="site-nav type-nav sticky top-0 z-40 shrink-0">
       <div
         className={`site-nav-pill grid grid-cols-[1fr_auto] items-center gap-3 md:grid-cols-[1fr_auto_1fr] md:gap-4 ${
           menuOpen ? "is-open" : ""
         }`.trim()}
       >
-        <div className="hidden min-w-0 truncate md:block">
-          <span className="text-black/45">Language </span>
-          <span className="font-semibold text-black">EN</span>
-        </div>
+        <LanguageToggle className="site-nav-lang-lead hidden md:block" />
 
         <Link
           href="/"
           onClick={closeMenu}
           className="whitespace-nowrap transition-opacity hover:opacity-60 md:justify-self-center"
         >
-          Lanting • Design
+          {ui.nav.brand}
         </Link>
 
         <button
           type="button"
-          className="type-nav justify-self-end text-black md:hidden"
+          className="site-nav-menu-btn type-nav justify-self-end text-black md:hidden"
           aria-expanded={menuOpen}
           aria-controls="site-nav"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? "Close" : "Menu"}
+          {menuOpen ? ui.nav.close : ui.nav.menu}
         </button>
 
         <nav
@@ -60,7 +60,8 @@ export function Navigation() {
             menuOpen ? "flex" : "hidden md:flex"
           }`}
         >
-          {NAV_LINKS.map(({ href, label }) => (
+          <LanguageToggle className="md:hidden" />
+          {navLinks.map(({ href, label }) => (
             <a key={href} href={href} onClick={closeMenu}>
               {label}
             </a>

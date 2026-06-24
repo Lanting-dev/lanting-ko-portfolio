@@ -74,21 +74,21 @@ export const NGA_CASE_STUDY = {
     title: "Long Story Short",
     paragraphs: [
       "13% of NGA's website users are Fun Seekers, the youngest audience group and mostly Gen Z. However, they have the lowest satisfaction among all groups. While Artle drives 10,000 daily players, it focuses on guessing rather than active participation.",
-      "In this project, I address this gap by shifting art engagement from passive recognition to social creation. The result is a multiplayer drawing experience where users create, compete, and share.",
+      "We addressed this gap by shifting art engagement from passive recognition to social creation. The result was a multiplayer drawing experience where users create, compete, and share.",
     ],
   },
   heroImages: [
     {
       src: "/work/nga/home.png",
-      alt: "Art or Fart — home screen",
+      alt: "Art or Fart · home screen",
     },
     {
       src: "/work/nga/public-room-selection.png",
-      alt: "Art or Fart — public room selection",
+      alt: "Art or Fart · public room selection",
     },
     {
       src: "/work/nga/ai-tool.png",
-      alt: "Art or Fart — AI drawing tool",
+      alt: "Art or Fart · AI drawing tool",
     },
   ] satisfies CaseStudyImageRef[],
   toc: [
@@ -114,7 +114,7 @@ export const NGA_CASE_STUDY = {
         body: "Artle drives strong return behavior, with 54% of Fun Seekers returning. However, a lack of interactive content remains their main pain point.",
       },
       {
-        title: "57% of Traffic Comes From Mobile",
+        title: "57% of traffic comes from mobile",
         body: "Fun Seekers primarily use mobile devices to access the NGA website.",
       },
     ] satisfies CaseStudyInsight[],
@@ -122,7 +122,7 @@ export const NGA_CASE_STUDY = {
   research: {
     label: "Research",
     headline:
-      "Engaging, Informative Experiences Are Social and Authentic",
+      "Engaging, informative experiences feel social and authentic",
     intro:
       "Based on these insights, we focused on understanding what Gen Z Fun Seekers consider engaging and how they use museum websites.",
     findings: [
@@ -131,11 +131,11 @@ export const NGA_CASE_STUDY = {
         methods: ["Survey", "Interview"],
       },
       {
-        text: "Fun Comes From Social Interaction, Sharing, and Co-Creation",
+        text: "Fun comes from social interaction, sharing, and co-creation",
         methods: ["Survey", "Literature Review", "Interview"],
       },
       {
-        text: "Gen Z Values Authenticity",
+        text: "Gen Z values authenticity",
         methods: ["Interview", "Literature Review"],
       },
     ] satisfies CaseStudyFinding[],
@@ -216,7 +216,7 @@ export const NGA_CASE_STUDY = {
     {
       id: "reactions",
       label: "Design Decision 03",
-      headline: "Enable Social Expression Without Losing Control",
+      headline: "Enable social expression without losing control",
       body: "Open chat risked undermining NGA's institutional voice. We replaced it with a reactions feature, preserving social expression while keeping communication controlled.",
       image: {
         src: "/work/nga/case-reactions.png",
@@ -226,7 +226,7 @@ export const NGA_CASE_STUDY = {
     {
       id: "theme-shuffle",
       label: "Design Decision 04",
-      headline: "Learn Through Play",
+      headline: "Learn through play",
       body: "Letting users vote on themes created more problems than it solved. A carousel selector that combines an art style with an object gave players more variety, clearer context, and a built-in learning moment.",
       image: {
         src: "/work/nga/case-theme-shuffle.png",
@@ -236,7 +236,7 @@ export const NGA_CASE_STUDY = {
     {
       id: "impact",
       label: "Impact",
-      headline: "Transform Learning Into a Game",
+      headline: "Transform learning into a game",
       body: "Art or Fart is a competitive, multiplayer drawing game where players paint to a themed prompt, vote on each other's work, and climb a weekly leaderboard.",
       image: {
         src: "/work/nga/case-impact-review.png",
@@ -260,7 +260,7 @@ export const NGA_CASE_STUDY = {
   ] as const satisfies readonly CaseStudyDesignSection[],
   conclusion: {
     quote:
-      "A lot of this is familiar to our developers... I can see this easily fitting into our portfolio of products.",
+      "A lot of this is familiar to our developers. I can see this easily fitting into our portfolio of products.",
     quoteAttribution: "NGA Team",
     label: "Conclusion",
     headline: "Scaling the Experience",

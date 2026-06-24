@@ -9,9 +9,13 @@ import { CaseStudyNav } from "@/components/case-study/CaseStudyNav";
 import { CaseStudyProgressBar } from "@/components/case-study/CaseStudyProgressBar";
 import { CaseStudyToc } from "@/components/case-study/CaseStudyToc";
 import { GtScrollSteps } from "@/components/case-study/GtScrollSteps";
-import { IONG_CASE_STUDY } from "@/lib/case-studies/iong";
+import { useCaseStudy } from "@/hooks/useCaseStudy";
+import { caseStudySectionLabel } from "@/lib/i18n/caseStudySection";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function IongCaseStudy() {
+  const { ui } = useLocale();
+  const study = useCaseStudy("iong");
   const {
     meta,
     summary,
@@ -23,7 +27,7 @@ export function IongCaseStudy() {
     system,
     experience,
     reflection,
-  } = IONG_CASE_STUDY;
+  } = study;
 
   return (
     <div className="editorial-case-study">
@@ -36,13 +40,13 @@ export function IongCaseStudy() {
         <div className="case-study-glass editorial-case-glass">
           <div className="editorial-case-shell">
             <aside className="editorial-case-aside" aria-label="Table of contents">
-              <CaseStudyToc items={IONG_CASE_STUDY.toc} />
+              <CaseStudyToc items={study.toc} />
             </aside>
 
             <main className="editorial-case-main">
               <header className="editorial-hero">
-                <p className="editorial-kicker">{IONG_CASE_STUDY.kicker}</p>
-                <h1>{IONG_CASE_STUDY.title}</h1>
+                <p className="editorial-kicker">{study.kicker}</p>
+                <h1>{study.title}</h1>
 
                 <dl className="editorial-meta">
                   {meta.map(({ label, value }) => (
@@ -54,13 +58,13 @@ export function IongCaseStudy() {
                 </dl>
 
                 <aside className="editorial-summary">
-                  <h2>Long Story Short</h2>
+                  <h2>{ui.caseStudy.longStoryShort}</h2>
                   {summary.map((paragraph) => (
                     <p key={paragraph.slice(0, 36)}>{paragraph}</p>
                   ))}
                   <p>
                     <Link href={demoUrl} className="site-cta" target="_blank" rel="noreferrer">
-                      Try the live onboarding demo →
+                      {ui.caseStudy.tryLiveDemo}
                     </Link>
                   </p>
                 </aside>
@@ -80,12 +84,12 @@ export function IongCaseStudy() {
               </header>
 
               <section id="world" className="editorial-section">
-                <p className="editorial-section-label">World</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("world", ui)}</p>
                 <h2>{world.headline}</h2>
                 <p className="editorial-section-lead">{world.body}</p>
                 <p className="editorial-section-lead">{world.context}</p>
 
-                <p className="editorial-section-label editorial-subsection-label">Design question</p>
+                <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.designQuestion}</p>
                 <p className="editorial-section-lead editorial-design-question">{world.designQuestion}</p>
 
                 <CaseStudyFigure
@@ -94,7 +98,7 @@ export function IongCaseStudy() {
                   alt={world.image.alt}
                 />
 
-                <p className="editorial-section-label editorial-subsection-label">Design goals</p>
+                <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.designGoals}</p>
                 <ul className="gt-signal-grid">
                   {world.goals.map((goal) => (
                     <li key={goal.title}>
@@ -106,7 +110,7 @@ export function IongCaseStudy() {
               </section>
 
               <section id="experience" className="editorial-section gt-insight-section">
-                <p className="editorial-section-label">Experience</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("experience", ui)}</p>
                 <h2>{experience.headline}</h2>
                 <p className="editorial-section-lead">{experience.intro}</p>
                 <GtScrollSteps
@@ -119,7 +123,7 @@ export function IongCaseStudy() {
               </section>
 
               <section id="process" className="editorial-section">
-                <p className="editorial-section-label">Process</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("process", ui)}</p>
                 <h2>{process.headline}</h2>
                 <p className="editorial-section-lead">{process.intro}</p>
 
@@ -147,7 +151,7 @@ export function IongCaseStudy() {
               </section>
 
               <section id="research" className="editorial-section">
-                <p className="editorial-section-label">Research</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("research", ui)}</p>
                 <h2>{research.headline}</h2>
                 <p className="editorial-section-lead">{research.intro}</p>
 
@@ -160,7 +164,7 @@ export function IongCaseStudy() {
                   ))}
                 </ul>
 
-                <p className="editorial-section-label editorial-subsection-label">Literature review</p>
+                <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.literatureReview}</p>
                 <ul className="gt-signal-grid">
                   {research.literature.map((item) => (
                     <li key={item.title}>
@@ -170,7 +174,7 @@ export function IongCaseStudy() {
                   ))}
                 </ul>
 
-                <p className="editorial-section-label editorial-subsection-label">Weak signals</p>
+                <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.weakSignals}</p>
                 <ul className="gt-signal-grid">
                   {research.signals.map((signal) => (
                     <li key={signal.title}>
@@ -182,7 +186,7 @@ export function IongCaseStudy() {
               </section>
 
               <section id="system" className="editorial-section">
-                <p className="editorial-section-label">System</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("system", ui)}</p>
                 <h2>{system.headline}</h2>
                 <p className="editorial-section-lead">{system.intro}</p>
 
@@ -258,7 +262,7 @@ export function IongCaseStudy() {
                   ))}
 
                   <section className="editorial-section editorial-design-section">
-                    <p className="editorial-section-label">Delivery</p>
+                    <p className="editorial-section-label">{ui.caseStudy.delivery}</p>
                     <h2>{system.delivery.headline}</h2>
                     <p className="editorial-section-lead">{system.delivery.body}</p>
                     <CaseStudyFigure
@@ -269,7 +273,7 @@ export function IongCaseStudy() {
                   </section>
 
                   <section className="editorial-section editorial-design-section">
-                    <p className="editorial-section-label">Petizen</p>
+                    <p className="editorial-section-label">{ui.caseStudy.petizen}</p>
                     <h2>{system.petizen.headline}</h2>
                     <p className="editorial-section-lead">{system.petizen.body}</p>
                     <CaseStudyFigure
@@ -282,7 +286,7 @@ export function IongCaseStudy() {
               </section>
 
               <section id="reflection" className="editorial-section editorial-conclusion">
-                <p className="editorial-section-label">Reflection</p>
+                <p className="editorial-section-label">{caseStudySectionLabel("reflection", ui)}</p>
                 <h2>{reflection.headline}</h2>
                 <div className="editorial-conclusion-copy">
                   {reflection.paragraphs.map((paragraph) => (
@@ -290,7 +294,7 @@ export function IongCaseStudy() {
                   ))}
                   <p>
                     <Link href={demoUrl} className="site-cta" target="_blank" rel="noreferrer">
-                      Try the live onboarding demo →
+                      {ui.caseStudy.tryLiveDemo}
                     </Link>
                   </p>
                 </div>

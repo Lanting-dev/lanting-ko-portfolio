@@ -8,6 +8,7 @@ import { AboutSection } from "@/components/about/AboutSection";
 import { FooterSection } from "@/components/footer/FooterSection";
 import { DitherPageIntro } from "@/components/dither/DitherPageIntro";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { HeroParallaxScene } from "./HeroParallaxScene";
 import { ParallaxEngineProvider } from "./ParallaxEngineProvider";
 
@@ -41,6 +42,7 @@ export function ParallaxLandingClient() {
   const heroCaptureRef = useRef<HTMLDivElement>(null);
 
   const reducedMotion = usePrefersReducedMotion();
+  const { home } = useLocale();
   const [introComplete, setIntroComplete] = useState(false);
   const [heroEnter, setHeroEnter] = useState(false);
 
@@ -74,9 +76,7 @@ export function ParallaxLandingClient() {
         <Navigation />
         <HeroClient />
         <p className="type-body mb-10 ml-auto max-w-[500px] text-right text-black md:mb-12">
-          Lan-Ting is a product designer who shapes how things are structured,
-          function, and look. She creates digital experiences that are clear,
-          structured, and human-centered.
+          {home.heroBio}
         </p>
         <ProjectSection />
         <AboutSection staticLayout />
@@ -95,6 +95,10 @@ export function ParallaxLandingClient() {
         />
       ) : null}
 
+      <div className="mx-auto w-full max-w-[1440px] page-shell">
+        <Navigation />
+      </div>
+
       <section
         ref={heroTrackRef}
         className="relative"
@@ -107,7 +111,6 @@ export function ParallaxLandingClient() {
               heroEnter ? "is-active" : ""
             }`}
           >
-            <Navigation />
             <div className="hero-stage-wrap relative flex min-h-0 flex-1 flex-col">
               <HeroParallaxScene />
             </div>

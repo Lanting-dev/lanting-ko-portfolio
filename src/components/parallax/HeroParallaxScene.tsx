@@ -1,6 +1,7 @@
 "use client";
 
 import { useFitText } from "@/hooks/useFitText";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 /**
  * Hero title + bio. Continuous scroll values arrive as CSS custom properties
@@ -8,6 +9,7 @@ import { useFitText } from "@/hooks/useFitText";
  * scrolling.
  */
 export function HeroParallaxScene() {
+  const { home } = useLocale();
   // Size "LANTING" (the wider line) to fill the title column edge-to-edge.
   const {
     widthRef: titleFitRef,
@@ -77,9 +79,7 @@ export function HeroParallaxScene() {
               "translateY(calc((100% - var(--hero-bio-peek, 1.9em)) * (1 - var(--hero-bio-reveal, 0))))",
           }}
         >
-          Lan-Ting is a product designer who shapes how things are structured,
-          function, and look. She creates digital experiences that are clear,
-          structured, and human-centered.
+          {home.heroBio}
         </p>
       </div>
     </div>

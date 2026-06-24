@@ -40,11 +40,11 @@ export function useFitText<
       pointerEvents: "none",
       fontSize: `${REF_FONT_PX}px`,
     });
-    fontEl.appendChild(measurer);
-
     const fit = () => {
       const available = widthEl.clientWidth;
+      fontEl.appendChild(measurer);
       const natural = measurer.getBoundingClientRect().width;
+      measurer.remove();
       if (available > 0 && natural > 0) {
         setFontSize((available / natural) * REF_FONT_PX);
       }
@@ -65,7 +65,7 @@ export function useFitText<
     return () => {
       cancelled = true;
       observer.disconnect();
-      measurer.remove();
+      if (measurer.isConnected) measurer.remove();
     };
   }, [text]);
 
