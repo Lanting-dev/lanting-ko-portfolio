@@ -1,7 +1,16 @@
 import { clamp } from "@/lib/dither/bayer";
 
-/** Vertical scroll track height for sticky horizontal project scrub */
-export const PROJECT_SCROLL_VH = 450;
+/** Vertical scroll track height for sticky Work pin (cluster → scatter → detail). */
+export const PROJECT_SCROLL_VH = 580;
+
+/** Cards stay clustered until the ball nears Work (~project progress). */
+export const PROJECT_SCATTER_START = 0.06;
+
+/** Cards finish flying to corners. */
+export const PROJECT_SCATTER_END = 0.28;
+
+/** Sequential centre detail begins after the scatter beat holds. */
+export const PROJECT_DETAIL_START = 0.4;
 
 /** Last portion of project scroll — ball rolls off the final card and falls to profile. */
 export const PROJECT_EXIT_SCROLL_FRACTION = 0.24;

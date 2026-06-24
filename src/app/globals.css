@@ -85,18 +85,16 @@ body {
   --project-card-gap: clamp(40px, calc(100vw * 96 / 1440), 96px);
   --figma-ball-size: clamp(28px, calc(100vw * 53 / 1440), 53px);
   --project-ball-notch-inset: var(--figma-ball-size);
-  /* Frame = full Figma PNG (600×755); shelf stacks above without cropping art */
+  /* Flat card art is portrait 2400×3028. Frame height bounded by the height
+     budget and by the available width × aspect (so it never crops). */
   --project-card-frame-height: min(
-    calc(100dvh - 13.5rem - var(--figma-ball-size)),
-    calc(var(--project-card-width) * 755 / 600)
+    calc(100dvh - 14rem - var(--figma-ball-size)),
+    calc((var(--project-card-content-width) - var(--project-scroll-card-peek)) * 3028 / 2400)
   );
   --project-card-height: calc(
     var(--project-card-frame-height) + var(--figma-ball-size)
   );
-  --project-card-display-width: min(
-    calc(var(--project-card-frame-height) * 600 / 755),
-    calc(var(--project-card-content-width) - var(--project-scroll-card-peek))
-  );
+  --project-card-display-width: calc(var(--project-card-frame-height) * 2400 / 3028);
   --project-scroll-start-pad: clamp(48px, calc(100vw * 64 / 1440), 96px);
   --project-scroll-card-peek: clamp(56px, calc(100vw * 96 / 1440), 120px);
   --pinball-drop-height: clamp(44px, calc(100vw * 68 / 1440), 68px);
@@ -141,10 +139,20 @@ a:hover {
 
 .type-display-hero {
   line-height: 1;
+  /* Inline display font strokes extend above the cap box. */
+  padding-top: 0.1em;
+  overflow: visible;
 }
 
 .type-display-hero > * + * {
   margin-top: var(--type-display-row-gap);
+}
+
+/* Hero title bleeds past the page gutter to the viewport edges. */
+.hero-title-stage {
+  margin-inline: calc(-1 * var(--page-gutter));
+  padding-inline: clamp(0.5rem, 1.5vw, 1.25rem);
+  overflow: visible;
 }
 
 .parallax-scroll-ball {
@@ -373,6 +381,10 @@ a:hover {
   overflow-y: visible;
 }
 
+.hero-sticky {
+  overflow: visible;
+}
+
 @media (max-width: 768px) {
   .hero-stage-wrap {
     overflow-x: visible;
@@ -408,8 +420,8 @@ a:hover {
     --project-card-content-width: calc(100vw - 2 * var(--page-gutter));
     --project-scroll-card-peek: clamp(24px, 7vw, 40px);
     --project-card-frame-height: min(
-      calc(100dvh - 8.5rem - var(--figma-ball-size)),
-      calc(var(--project-card-content-width) * 755 / 600)
+      calc(100dvh - 9rem - var(--figma-ball-size)),
+      calc((var(--project-card-content-width) - var(--project-scroll-card-peek)) * 3028 / 2400)
     );
   }
 }
@@ -426,7 +438,7 @@ a:hover {
     flex: 1 1 0;
     justify-content: center;
     min-height: 0;
-    padding-top: clamp(0.75rem, 3vh, 1.5rem);
+    padding-top: clamp(1.25rem, 4vh, 2rem);
     padding-bottom: clamp(0.5rem, 2vh, 1rem);
   }
 
@@ -480,12 +492,14 @@ a:hover {
   overflow: visible;
 }
 
+/* Cards fill the whole sticky and centre in the viewport, independent of the
+   "Work" label (which stays top-left; the cards may overlap it). */
 .project-scroll-bleed {
-  width: 100%;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
-  padding-top: clamp(2.5rem, 7vh, 5rem);
   overflow: visible;
 }
 
@@ -510,8 +524,238 @@ a:hover {
   height: 100%;
 }
 
-.project-cube-scene .project-cube-canvas {
+/* Flat card art — greyscale base + colour crossfade on focus/hover. */
+.project-card-art {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #f4f4f1;
+}
+
+.project-card-art-img {
+  position: absolute;
+  inset: 0;
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-card-art-color {
+  transition: opacity 0.5s ease;
+}
+
+/* ——— Scattered Work layout — cards float around centred copy ——— */
+.project-scatter-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  /* Clip cards that bleed past the edges and kill any horizontal scroll. */
+  overflow: hidden;
+}
+
+.project-scatter-center {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  pointer-events: none;
+  transition:
+    opacity 0.5s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-scatter-word {
+  font-size: clamp(3rem, 9vw, 7rem);
+  text-align: center;
+}
+
+.project-scatter-intro {
+  margin: 1.3rem auto 0;
+  max-width: 32rem;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(1.1rem, 1.6vw, 1.45rem);
+  line-height: 1.55;
+  color: #4a4a4a;
+}
+
+.project-scatter-card {
+  position: absolute;
+  width: clamp(104px, 10.5vw, 168px);
+  z-index: 1;
+  will-change: transform, left, top, opacity;
+}
+
+.project-scatter-card .project-card {
+  width: 100%;
+  height: auto;
+  flex: none;
+  padding-top: 0;
+  transform: none;
+}
+
+.project-scatter-card .project-card-body {
+  height: auto;
+  transform: none;
+}
+
+.project-scatter-card .project-card-frame {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2400 / 3028;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.45s ease,
+    opacity 0.45s ease;
+}
+
+.project-scatter-sticky[data-scatter-phase="cluster"] .project-scatter-center {
+  z-index: 3;
+}
+
+.project-scatter-sticky[data-scatter-phase="cluster"] .project-scatter-card {
+  z-index: 1;
+}
+
+.project-scatter-sticky[data-scatter-phase="scatter"] .project-scatter-card.is-clustered {
+  z-index: 2;
+}
+
+.project-scatter-sticky[data-detail-active="true"]
+  .project-scatter-card:not(.is-focused) {
+  filter: grayscale(1) saturate(0.42) brightness(0.94);
+}
+
+.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused {
+  filter: none;
+  /* Centre detail is the hero — hide the duplicate cube so the stage stays balanced. */
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.project-scatter-sticky[data-detail-active="true"]
+  .project-scatter-card.is-focused
+  .project-card-frame {
+  transform: scale(1.06);
+}
+
+.project-scatter-card .project-card[data-backdrop="true"] .project-card-caption {
+  display: none;
+}
+
+/* Centre detail stage — image left, copy right */
+.project-detail-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+
+.project-detail-stage {
+  width: 100%;
+  pointer-events: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.project-detail-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2.25rem, 4vw, 4.5rem);
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+  margin-inline: auto;
+  animation: project-detail-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes project-detail-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.project-detail-media {
+  flex: 0 0 clamp(210px, 22vw, 290px);
+  aspect-ratio: 2400 / 3028;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #f4f4f1;
+}
+
+.project-detail-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-detail-copy {
+  flex: 0 1 clamp(280px, 27vw, 400px);
+  width: clamp(280px, 27vw, 400px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.project-detail-title {
+  margin: 0;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #111;
+}
+
+.project-detail-meta {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.65rem, 0.85vw, 0.76rem);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgb(0 0 0 / 0.42);
+}
+
+.project-detail-desc {
+  margin: 0.65rem 0 0;
+  max-width: 28rem;
+  font-size: clamp(0.9rem, 1.1vw, 1rem);
+  line-height: 1.55;
+  color: rgb(0 0 0 / 0.68);
+}
+
+.project-detail-cta {
+  margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .project-detail-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    width: fit-content;
+    gap: 1.25rem;
+  }
+
+  .project-detail-media {
+    flex-basis: clamp(170px, 52vw, 220px);
+  }
+
+  .project-detail-copy {
+    width: min(78vw, 22rem);
+    flex-basis: auto;
+  }
 }
 
 /* Auto-focus — cube recedes, typography takes the stage. */
@@ -522,18 +766,22 @@ a:hover {
   width: var(--project-card-display-width);
   height: var(--project-card-height);
   padding-top: var(--project-ball-notch-inset);
-  transition: opacity 0.5s ease, filter 0.5s ease;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease;
 }
 
 .project-scroll-bleed:has(.project-card[data-focused="true"])
   .project-card[data-focused="true"] {
   z-index: 5;
+  transform: scale(1.03);
 }
 
 .project-scroll-bleed:has(.project-card[data-focused="true"])
   .project-card:not([data-focused="true"]) {
   opacity: 0.34;
   filter: saturate(0.55) brightness(0.94);
+  transform: scale(0.88);
 }
 
 .project-card-body {
@@ -555,43 +803,31 @@ a:hover {
   transform: translateY(-8px);
 }
 
-/* Overlay — grows up from the bottom edge only (focus / hover). */
+/* Caption — info panel to the RIGHT of the image (image left / info right),
+   shown on focus / hover. Never overlays the art, so no title collision. */
 .project-card-caption {
   position: absolute;
-  right: 0;
-  bottom: -16px;
-  left: 0;
-  z-index: 2;
+  top: 50%;
+  left: calc(100% + clamp(1.25rem, 2.5vw, 2.75rem));
+  width: min(22rem, 30vw);
+  transform: translateY(-50%) translateX(-12px);
+  z-index: 5;
   box-sizing: border-box;
   display: flex;
-  width: 100%;
-  max-height: 0;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-end;
-  overflow: hidden;
-  opacity: 0;
+  align-items: flex-start;
   text-align: left;
-  padding: 0 clamp(0.65rem, 1.35vw, 1rem) clamp(0.65rem, 1.4vw, 0.95rem);
+  opacity: 0;
   pointer-events: none;
-  background: linear-gradient(
-    to top,
-    rgb(255 255 255 / 0.82) 0%,
-    rgb(255 255 255 / 0.5) 28%,
-    rgb(255 255 255 / 0.12) 58%,
-    rgb(255 255 255 / 0) 100%
-  );
   transition:
-    max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.4s ease,
-    bottom 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-card[data-focused="true"] .project-card-caption,
 .project-card[data-hovered="true"] .project-card-caption {
-  bottom: -16px;
-  max-height: 50%;
   opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 .project-card-title {
@@ -748,7 +984,7 @@ a:hover {
   width: 100%;
   height: 100%;
   min-height: 0;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 380px);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 470px);
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
     "bigword copy"
@@ -850,35 +1086,20 @@ a:hover {
   white-space: nowrap;
 }
 
-/* Giant "Work" behind the cards — centred, overlapping card midsection. */
+/* "Work" — top-left section label (cards centre over it; overlap is fine). */
 .project-bigword-wrap {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  align-self: flex-start;
   z-index: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: min(40vw, 20rem);
   pointer-events: none;
   overflow: visible;
 }
 
-.project-bigword-wrap .project-bigword {
-  position: relative;
-  top: auto;
-  left: auto;
-  right: auto;
-  font-size: clamp(5.5rem, 26vw, 17rem);
-  line-height: 0.78;
-  letter-spacing: -0.015em;
-  transform: translateY(clamp(-5rem, -10vh, -2.5rem));
-}
-
 .project-bigword {
-  position: absolute;
-  top: clamp(0.5rem, 3vh, 2.5rem);
-  left: 0;
-  right: 0;
-  text-align: center;
+  position: relative;
+  text-align: left;
+  white-space: nowrap;
   z-index: 0;
 }
 
@@ -888,7 +1109,7 @@ a:hover {
   position: relative;
   align-self: end;
   width: 100%;
-  max-width: 380px;
+  max-width: 470px;
   padding-bottom: clamp(1.5rem, 5vh, 3rem);
   z-index: 20;
   color: #1a1a1a;
@@ -983,32 +1204,12 @@ a:hover {
   color: #3a3a3a;
 }
 
-/* ——— Footer — scroll-scrubbed sand epilogue ——— */
-
-.footer-scroll-pin {
-  position: relative;
-  z-index: 3;
-}
-
-.footer-scroll-sticky {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  display: flex;
-  min-height: 100dvh;
-  flex-direction: column;
-  justify-content: flex-end;
-  overflow: visible;
-}
-
-.footer-scroll-sticky.site-footer {
-  padding-bottom: 0;
-}
+/* ——— Footer — direct contact/meta ending ——— */
 
 .site-footer {
   position: relative;
   width: 100%;
-  padding-top: clamp(2rem, 5vh, 3rem);
+  padding-top: clamp(3rem, 8vh, 6rem);
   padding-bottom: 0;
   background: #ffffff;
 }
@@ -1062,61 +1263,30 @@ a:hover {
   overflow: visible;
 }
 
-.footer-sand-entry-slot,
-.footer-sand-impact-slot {
-  position: absolute;
-  pointer-events: none;
-  width: 1px;
-  height: 1px;
-}
-
-.footer-sand-entry-slot {
-  left: 50%;
-  top: 6%;
-}
-
-.footer-sand-impact-slot {
-  left: 50%;
-  top: 54%;
-  transform: translateX(-50%);
-}
-
 .footer-sand-canvas {
   position: absolute;
   inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
 }
 
-.footer-sand-bloom-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
+.footer-sand-bloom-layer,
 .footer-sand-bloom {
   position: absolute;
   inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.footer-sand-bloom-layer {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.footer-sand-bloom {
   image-rendering: pixelated;
-}
-
-.footer-sand-cross-flower {
-  position: absolute;
-  left: 50%;
-  top: 14%;
-  width: clamp(76px, 14vw, 150px);
-  aspect-ratio: 1;
-  transform: translate(-50%, -54%);
-  overflow: hidden;
-}
-
-.footer-sand-cross-flower-canvas {
-  width: 100%;
-  height: 100%;
 }
 
 /* ——— Case study — editorial magazine rhythm (A&I-inspired, light theme) ——— */
@@ -1188,7 +1358,7 @@ a:hover {
   margin-top: clamp(3.5rem, 10vh, 7rem);
 }
 
-.case-study-footer .site-footer {
+.case-study-footer.site-footer {
   padding-top: 0;
 }
 
@@ -1281,7 +1451,7 @@ a:hover {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 600 / 755;
+  aspect-ratio: 2400 / 3028;
   object-fit: cover;
   transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -3458,4 +3628,3 @@ a:hover {
 .editorial-case-study .gt-step-static-card .gt-dark-media > video {
   height: 100%;
 }
-

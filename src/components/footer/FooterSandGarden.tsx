@@ -10,13 +10,14 @@ import { FooterSandBloom } from "@/components/footer/FooterSandBloom";
 
 type FooterSandGardenProps = {
   footerProgress: number;
-  sandImpactRef: RefObject<HTMLDivElement | null>;
-  sandEntryRef: RefObject<HTMLDivElement | null>;
+  sandImpactRef?: RefObject<HTMLDivElement | null>;
+  sandEntryRef?: RefObject<HTMLDivElement | null>;
   /** Keep a live grain shimmer after the pile has fully settled. */
   ambientNoise?: boolean;
   bloom?: boolean;
 };
 
+/** Cross-stitch sand pile — used by the case-study footers. */
 export function FooterSandGarden({
   footerProgress,
   sandImpactRef,
@@ -70,16 +71,12 @@ export function FooterSandGarden({
 
   return (
     <div ref={containerRef} className="footer-sand-garden" aria-hidden="true">
-      <div
-        ref={sandEntryRef}
-        className="footer-sand-entry-slot"
-        aria-hidden="true"
-      />
-      <div
-        ref={sandImpactRef}
-        className="footer-sand-impact-slot"
-        aria-hidden="true"
-      />
+      {sandEntryRef ? (
+        <div ref={sandEntryRef} className="footer-sand-entry-slot" aria-hidden="true" />
+      ) : null}
+      {sandImpactRef ? (
+        <div ref={sandImpactRef} className="footer-sand-impact-slot" aria-hidden="true" />
+      ) : null}
 
       {sourceImage ? (
         <CrossStitchScatterCanvas

@@ -55,7 +55,7 @@ export const IONG_CASE_STUDY = {
     poster: "/work/iong/welcome-onboard.png",
     alt: "IONG welcome onboarding screen with employee badge assignment",
   },
-  demoUrl: "https://iong-portfolio.vercel.app",
+  demoUrl: "https://iong.vercel.app/index.html",
   world: {
     headline: "2070: A Low-Fertility Future",
     body:

@@ -27,23 +27,16 @@ const CUBE_FOOT_Y = CUBE_HALF;
 
 type ProfileCubeProps = {
   aboutProgress: number;
-  profileImpactComplete: boolean;
   anchorGroupRef: RefObject<THREE.Group | null>;
 };
 
-function ProfileCube({
-  aboutProgress,
-  profileImpactComplete,
-  anchorGroupRef,
-}: ProfileCubeProps) {
+function ProfileCube({ aboutProgress, anchorGroupRef }: ProfileCubeProps) {
   const reducedMotion = usePrefersReducedMotion();
   const profileMap = useTexture(PROFILE_ASSET);
   profileMap.colorSpace = THREE.SRGBColorSpace;
 
   const progressRef = useRef(aboutProgress);
-  const impactRef = useRef(profileImpactComplete);
   progressRef.current = aboutProgress;
-  impactRef.current = profileImpactComplete;
 
   const stitch = useMemo(
     () => ({
@@ -114,7 +107,7 @@ function ProfileCube({
     if (!spin) return;
 
     const { rotateX, rotateY, rotateZ, cubeScale, wobble } =
-      getAboutSceneValues(progressRef.current, impactRef.current);
+      getAboutSceneValues(progressRef.current);
 
     spin.rotation.order = "ZYX";
     spin.rotation.set(
@@ -136,39 +129,12 @@ function ProfileCube({
   );
 }
 
-function ProfileBallAnchorProjector({
-  cubeGroupRef,
-  onAnchorMove,
-}: {
-  cubeGroupRef: RefObject<THREE.Group | null>;
-  onAnchorMove: (x: number, y: number) => void;
-}) {
-  const { camera, size } = useThree();
-  const point = useMemo(() => new THREE.Vector3(), []);
-
-  useFrame(() => {
-    const cube = cubeGroupRef.current;
-    if (!cube) return;
-
-    point.set(0, CUBE_HALF, CUBE_HALF);
-    cube.localToWorld(point);
-    point.project(camera);
-
-    onAnchorMove(
-      (point.x * 0.5 + 0.5) * size.width,
-      (-point.y * 0.5 + 0.5) * size.height,
-    );
-  });
-
-  return null;
-}
-
 type AboutCubeCanvasProps = {
   width: number;
   height: number;
   aboutProgress: number;
-  profileImpactComplete: boolean;
-  onAnchorMove: (x: number, y: number) => void;
+  /** Run the render loop only while the scene is on screen. */
+  active?: boolean;
 };
 
 function CameraFraming({ aspect }: { aspect: number }) {
@@ -196,8 +162,6 @@ function CameraFraming({ aspect }: { aspect: number }) {
 
 function AboutCubeSceneInner({
   aboutProgress,
-  profileImpactComplete,
-  onAnchorMove,
   aspect,
 }: Omit<AboutCubeCanvasProps, "width" | "height"> & { aspect: number }) {
   const anchorGroupRef = useRef<THREE.Group>(null);
@@ -207,16 +171,8 @@ function AboutCubeSceneInner({
       <CameraFraming aspect={aspect} />
       <ambientLight intensity={1.15} />
       <Suspense fallback={null}>
-        <ProfileCube
-          aboutProgress={aboutProgress}
-          profileImpactComplete={profileImpactComplete}
-          anchorGroupRef={anchorGroupRef}
-        />
+        <ProfileCube aboutProgress={aboutProgress} anchorGroupRef={anchorGroupRef} />
       </Suspense>
-      <ProfileBallAnchorProjector
-        cubeGroupRef={anchorGroupRef}
-        onAnchorMove={onAnchorMove}
-      />
     </>
   );
 }
@@ -225,8 +181,7 @@ export default function AboutCubeCanvas({
   width,
   height,
   aboutProgress,
-  profileImpactComplete,
-  onAnchorMove,
+  active = true,
 }: AboutCubeCanvasProps) {
   const aspect = width / Math.max(height, 1);
 
@@ -235,18 +190,14 @@ export default function AboutCubeCanvas({
       className="about-cube-canvas"
       style={{ width, height }}
       dpr={[1, 2]}
+      frameloop={active ? "always" : "never"}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       camera={{ fov: 36, near: 0.05, far: 30 }}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);
       }}
     >
-      <AboutCubeSceneInner
-        aspect={aspect}
-        aboutProgress={aboutProgress}
-        profileImpactComplete={profileImpactComplete}
-        onAnchorMove={onAnchorMove}
-      />
+      <AboutCubeSceneInner aspect={aspect} aboutProgress={aboutProgress} />
     </Canvas>
   );
 }

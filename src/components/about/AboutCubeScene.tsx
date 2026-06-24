@@ -1,32 +1,23 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import {
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 const AboutCubeCanvas = dynamic(() => import("./AboutCubeCanvas"), {
   ssr: false,
 });
 
 type AboutCubeSceneProps = {
-  profileBallSlotRef: RefObject<HTMLDivElement | null>;
   aboutProgress: number;
-  profileImpactComplete?: boolean;
 };
 
-export function AboutCubeScene({
-  profileBallSlotRef,
-  aboutProgress,
-  profileImpactComplete = false,
-}: AboutCubeSceneProps) {
+export function AboutCubeScene({ aboutProgress }: AboutCubeSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [shouldMountCanvas, setShouldMountCanvas] = useState(false);
+  // Once mounted the canvas is never unmounted; gate its render loop on actual
+  // visibility so it stops driving the GPU while scrolled into hero/footer.
+  const [inView, setInView] = useState(false);
 
   useLayoutEffect(() => {
     const el = containerRef.current;
@@ -72,18 +63,23 @@ export function AboutCubeScene({
     return () => observer.disconnect();
   }, [shouldMountCanvas]);
 
-  const handleAnchorMove = useCallback(
-    (x: number, y: number) => {
-      const slot = profileBallSlotRef.current;
-      if (!slot) return;
-      // `.about-cube-scene` has a `filter`, which makes this position:fixed slot
-      // resolve against the scene box (not the viewport). The projector already
-      // reports scene-local coords, so apply them directly.
-      slot.style.left = `${x}px`;
-      slot.style.top = `${y}px`;
-    },
-    [profileBallSlotRef],
-  );
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(Boolean(entry?.isIntersecting)),
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div ref={containerRef} className="about-cube-scene">
@@ -92,16 +88,9 @@ export function AboutCubeScene({
           width={dimensions.width}
           height={dimensions.height}
           aboutProgress={aboutProgress}
-          profileImpactComplete={profileImpactComplete}
-          onAnchorMove={handleAnchorMove}
+          active={inView}
         />
       ) : null}
-
-      <div
-        ref={profileBallSlotRef}
-        className="about-profile-ball-slot project-ball-anchor pointer-events-none fixed z-[2] h-px w-px opacity-0"
-        aria-hidden="true"
-      />
     </div>
   );
 }

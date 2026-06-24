@@ -1,179 +1,56 @@
 "use client";
 
+import { useCallback, type RefObject } from "react";
+import { clamp } from "@/lib/parallax/interpolate";
 import {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
-import {
-  getProjectCardNudgeY,
-  isProjectCardRevealActive,
-} from "@/lib/animation/pinballBounce";
-import {
-  getFocusedProjectCardIndex,
-  getProjectTrackLayout,
-  mapProjectHopProgress,
+  PROJECT_DETAIL_START,
   PROJECT_SCROLL_VH,
-  computeProjectExitT,
 } from "@/lib/projects/projectScroll";
+import {
+  computeScatterProgress,
+  getProjectFocusIndex,
+  getScatterCardLayout,
+} from "@/lib/projects/projectScatter";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
-import { sectionBigWordRevealStyle } from "@/lib/animation/sectionBigWordReveal";
-import { ProjectBallRider } from "./ProjectBallRider";
+import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
 import { ProjectCard } from "./ProjectCard";
-import type { BallHandoffPose } from "@/lib/layout/ballHandoff";
-
-type TrackLayout = {
-  startPad: number;
-  endPad: number;
-  maxOffset: number;
-  cardWidth: number;
-  gap: number;
-  viewportWidth: number;
-};
+import { ProjectDetailStage } from "./ProjectDetailStage";
 
 type ProjectScrollSectionProps = {
   trackRef?: RefObject<HTMLElement | null>;
-  orbTargetRef?: RefObject<HTMLDivElement | null>;
-  cardImpactRef?: RefObject<HTMLDivElement | null>;
-  lastBallSlotRef?: RefObject<HTMLDivElement | null>;
-  handoffPoseRef?: RefObject<BallHandoffPose | null>;
-  profileBallSlotRef?: RefObject<HTMLDivElement | null>;
-  projectExitT?: number;
-  aboutProgress?: number;
-  horizontalProgress?: number;
-  fallPhase?: number;
-  showLandedOrb?: boolean;
-  hideProjectBall?: boolean;
 };
 
 export function ProjectScrollSection({
   trackRef,
-  orbTargetRef,
-  cardImpactRef,
-  lastBallSlotRef,
-  handoffPoseRef,
-  profileBallSlotRef,
-  projectExitT: projectExitTProp,
-  aboutProgress = 0,
-  horizontalProgress = 0,
-  fallPhase = 0,
-  showLandedOrb = false,
-  hideProjectBall = false,
 }: ProjectScrollSectionProps) {
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const bleedRef = useRef<HTMLDivElement>(null);
-  const innerTrackRef = useRef<HTMLDivElement>(null);
-  const layoutRef = useRef<TrackLayout>({
-    startPad: 48,
-    endPad: 48,
-    maxOffset: 0,
-    cardWidth: 0,
-    gap: 0,
-    viewportWidth: 0,
-  });
-  const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [pads, setPads] = useState({ startPad: 48, endPad: 48 });
-  const [trackLayout, setTrackLayout] = useState<TrackLayout>({
-    startPad: 48,
-    endPad: 48,
-    maxOffset: 0,
-    cardWidth: 0,
-    gap: 0,
-    viewportWidth: 0,
-  });
-  const cardCount = VISIBLE_PROJECTS.length;
-  const hopProgress = mapProjectHopProgress(horizontalProgress);
-  const projectExitT = projectExitTProp ?? computeProjectExitT(horizontalProgress);
-  const focusedCardIndex = useMemo(() => {
-    if (!showLandedOrb || trackLayout.cardWidth <= 0) return -1;
-    return getFocusedProjectCardIndex(hopProgress, cardCount, trackLayout);
-  }, [cardCount, hopProgress, showLandedOrb, trackLayout]);
+  const progress = useParallaxValue((s) => s.projectProgress);
 
-  const measureLayout = useCallback(() => {
-    const inner = innerTrackRef.current;
-    const bleed = bleedRef.current;
-    if (!inner || !bleed) return;
+  const scatterT = computeScatterProgress(progress);
+  const focusIndex = getProjectFocusIndex(progress);
+  const inDetail = focusIndex >= 0;
+  const scatterHold = scatterT >= 0.98 && progress < PROJECT_DETAIL_START;
 
-    const viewport = bleed.clientWidth;
-    const firstCard = inner.querySelector<HTMLElement>(".project-card");
-    const cardWidth = firstCard?.offsetWidth ?? 0;
-    const gap = parseFloat(getComputedStyle(inner).columnGap || "0") || 0;
-    const layout = getProjectTrackLayout(cardCount, cardWidth, gap, viewport);
+  const sectionEnter = clamp(progress / 0.08, 0, 1);
 
-    const nextLayout = { ...layout, cardWidth, gap, viewportWidth: viewport };
-    layoutRef.current = nextLayout;
-    setTrackLayout((prev) =>
-      prev.startPad === nextLayout.startPad &&
-      prev.endPad === nextLayout.endPad &&
-      prev.maxOffset === nextLayout.maxOffset &&
-      prev.cardWidth === nextLayout.cardWidth &&
-      prev.gap === nextLayout.gap &&
-      prev.viewportWidth === nextLayout.viewportWidth
-        ? prev
-        : nextLayout,
-    );
-    setPads((prev) =>
-      prev.startPad === layout.startPad && prev.endPad === layout.endPad
-        ? prev
-        : { startPad: layout.startPad, endPad: layout.endPad },
-    );
-  }, [cardCount]);
+  const introOpacity =
+    progress < PROJECT_DETAIL_START
+      ? sectionEnter
+      : clamp(1 - (progress - PROJECT_DETAIL_START) / 0.08, 0, 1);
 
-  useLayoutEffect(() => {
-    measureLayout();
-
-    const inner = innerTrackRef.current;
-    const bleed = bleedRef.current;
-    if (!inner || !bleed) return;
-
-    const ro = new ResizeObserver(measureLayout);
-    ro.observe(bleed);
-    ro.observe(inner);
-    for (const card of inner.querySelectorAll(".project-card")) {
-      ro.observe(card);
-    }
-
-    window.addEventListener("resize", measureLayout);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measureLayout);
-    };
-  }, [measureLayout]);
-
-  useLayoutEffect(() => {
-    const track = innerTrackRef.current;
-    if (!track) return;
-    const offset = layoutRef.current.maxOffset * hopProgress;
-    track.style.transform = `translate3d(-${offset}px, 0, 0)`;
-  }, [hopProgress]);
-
-  const setBallSlotRef = useCallback(
-    (index: number) => (node: HTMLDivElement | null) => {
-      slotRefs.current[index] = node;
-
-      if (index === 0 && orbTargetRef) {
-        orbTargetRef.current = node;
-      }
-
-      if (index === cardCount - 1 && lastBallSlotRef) {
-        lastBallSlotRef.current = node;
-      }
-    },
-    [cardCount, lastBallSlotRef, orbTargetRef],
-  );
+  const detailOpacity =
+    progress < PROJECT_DETAIL_START
+      ? 0
+      : clamp((progress - PROJECT_DETAIL_START) / 0.07, 0, 1);
 
   const setPinTrackRef = useCallback(
     (node: HTMLElement | null) => {
-      if (trackRef) {
-        trackRef.current = node;
-      }
+      if (trackRef) trackRef.current = node;
     },
     [trackRef],
   );
+
+  const activeProject =
+    focusIndex >= 0 ? VISIBLE_PROJECTS[focusIndex] : VISIBLE_PROJECTS[0];
 
   return (
     <section
@@ -183,74 +60,68 @@ export function ProjectScrollSection({
       style={{ height: `${PROJECT_SCROLL_VH}vh` }}
     >
       <div
-        ref={stickyRef}
-        className="project-scroll-sticky relative mx-auto flex h-dvh w-full max-w-[1440px] flex-col page-shell pb-6 pt-16 md:pb-8 md:pt-20"
+        className="project-scatter-sticky sticky top-0 mx-auto flex h-dvh w-full max-w-[1440px] flex-col items-center justify-center page-shell"
+        data-detail-active={inDetail ? "true" : "false"}
+        data-scatter-phase={
+          scatterT < 0.04
+            ? "cluster"
+            : scatterT < 0.98
+              ? "scatter"
+              : scatterHold
+                ? "hold"
+                : "detail"
+        }
       >
         <div
-          className="project-bigword-wrap"
-          style={sectionBigWordRevealStyle(horizontalProgress)}
-          aria-hidden="true"
+          className="project-scatter-center"
+          style={{
+            opacity: introOpacity,
+            transform: `translateY(${(1 - sectionEnter) * 18}px)`,
+          }}
         >
-          <h2 className="section-bigword project-bigword">Work</h2>
+          <h2 className="section-bigword project-scatter-word">Work</h2>
+          <p className="project-scatter-intro">Selected product design work</p>
         </div>
 
-        <div ref={bleedRef} className="project-scroll-bleed relative z-[1] min-h-0 flex-1">
-          <div
-            ref={innerTrackRef}
-            className="project-scroll-track"
-            role="list"
-            aria-label="Selected projects"
-          >
+        <div
+          className="project-detail-wrap"
+          style={{ opacity: detailOpacity }}
+          aria-hidden={!inDetail}
+        >
+          <ProjectDetailStage project={activeProject} visible={inDetail} />
+        </div>
+
+        {VISIBLE_PROJECTS.map((project, i) => {
+          const layout = getScatterCardLayout(i, scatterT, progress);
+          const isFocused = inDetail && i === focusIndex;
+          const cardOpacity = inDetail
+            ? isFocused
+              ? 0
+              : 0.22 * layout.opacity
+            : layout.opacity;
+
+          return (
             <div
-              className="project-scroll-start shrink-0"
-              style={{ width: pads.startPad, flexBasis: pads.startPad }}
-              aria-hidden="true"
-            />
-            {VISIBLE_PROJECTS.map((project, index) => (
+              key={project.id}
+              className={`project-scatter-card${isFocused ? " is-focused" : ""}${scatterT < 0.98 ? " is-clustered" : ""}`}
+              style={{
+                left: layout.left,
+                top: layout.top,
+                opacity: cardOpacity,
+                transform: layout.transform,
+                zIndex: layout.zIndex,
+              }}
+            >
               <ProjectCard
-                key={project.id}
                 project={project}
-                cardIndex={index}
-                ballSlotRef={setBallSlotRef(index)}
-                cardImpactRef={index === 0 ? cardImpactRef : undefined}
-                cardNudgeY={getProjectCardNudgeY(
-                  index,
-                  fallPhase,
-                  showLandedOrb,
-                  hopProgress,
-                  cardCount,
-                  projectExitT,
-                )}
-                revealed={isProjectCardRevealActive(
-                  index,
-                  fallPhase,
-                  showLandedOrb,
-                  hopProgress,
-                  cardCount,
-                )}
-                focused={focusedCardIndex >= 0 && index === focusedCardIndex}
+                cardIndex={i}
+                backdrop
+                focused={isFocused}
               />
-            ))}
-            <div
-              className="project-scroll-end shrink-0"
-              style={{ width: pads.endPad, flexBasis: pads.endPad }}
-              aria-hidden="true"
-            />
-          </div>
-        </div>
+            </div>
+          );
+        })}
       </div>
-
-      <ProjectBallRider
-        slotRefs={slotRefs}
-        cardCount={cardCount}
-        horizontalProgress={hopProgress}
-        projectExitT={projectExitT}
-        aboutProgress={aboutProgress}
-        lastBallSlotRef={lastBallSlotRef}
-        profileBallSlotRef={profileBallSlotRef}
-        handoffPoseRef={handoffPoseRef}
-        visible={showLandedOrb && !hideProjectBall}
-      />
     </section>
   );
 }
