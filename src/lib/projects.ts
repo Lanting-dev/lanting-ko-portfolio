@@ -26,8 +26,8 @@ export const PROJECTS: ProjectItem[] = [
     alt: "National Gallery of Art — UX research and product design",
     accent: "#F85525",
     href: "/work/nga",
-    title: "National Gallery of Art",
-    meta: "UX Research · Product Design",
+    title: "Designing a Multiplayer Experience for Gen Z Museum Engagement",
+    meta: "National Gallery of Art · UX Research · Product Design",
     description:
       "A multiplayer drawing game that turns art appreciation into social, competitive play for Gen Z.",
   },
@@ -38,8 +38,8 @@ export const PROJECTS: ProjectItem[] = [
     alt: "Gutenberg Technology — AI Course Builder research and product design",
     accent: "#FAA968",
     href: "/work/gt",
-    title: "Gutenberg Technology",
-    meta: "UX Research · Product Design",
+    title: "Making System State Visible in AI Course Creation",
+    meta: "Gutenberg Technology · UX Research · Product Design",
     description:
       "Making an AI course builder legible by surfacing system state so users act with confidence instead of trial and error.",
   },
@@ -50,8 +50,8 @@ export const PROJECTS: ProjectItem[] = [
     alt: "Cooper Hewitt — accessible Bungee font tester redesign",
     accent: "#F6DCAC",
     href: "/work/copper",
-    title: "Cooper Hewitt",
-    meta: "Accessibility · Product Design",
+    title: "Redesigning an Accessible Font Exploration Interface",
+    meta: "Cooper Hewitt · Accessibility · Product Design",
     description:
       "Rebuilding the Bungee font tester for keyboard and screen-reader access, plus audio that turns a visual tool multisensory.",
   },
@@ -62,8 +62,8 @@ export const PROJECTS: ProjectItem[] = [
     alt: "IONG — speculative design and interaction design",
     accent: "#01204E",
     href: "/work/iong",
-    title: "IONG",
-    meta: "Speculative Design · Interaction Design",
+    title: "Food Decision-Making Through Biometric Automation",
+    meta: "Individual Project · Speculative Design · Interaction Design",
     description:
       "A 2070 employee onboarding demo where reading time and biometric tracking quietly assign you a role inside a system that manages citizen nutrition.",
   },

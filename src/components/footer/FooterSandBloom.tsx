@@ -128,7 +128,7 @@ export function FooterSandBloom() {
     let timer = 0;
     let start = 0;
     let active = reducedMotion;
-    // Let the sand drop + scatter into its heap first, then grow the flowers.
+    // The sand is already settled; preserve the original flower timing.
     const BLOOM_DELAY_MS = 1000;
     const flowers = buildFlowers();
     const lastStart = flowers.reduce((m, f) => Math.max(m, f.delay), 0);

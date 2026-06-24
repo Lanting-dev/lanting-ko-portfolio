@@ -6,20 +6,16 @@ import {
   CROSS_STITCH_CELL_CARD,
   CROSS_STITCH_THREAD_CARD,
 } from "@/lib/dither/constants";
-import type { TrailPoint } from "@/lib/animation/ballPathTrail";
+import type { TrailPoint } from "@/lib/animation/heroBallFall";
 
 type BallPathTrailProps = {
   points: TrailPoint[];
   className?: string;
-  /** Peak stitch opacity at the ball end of the trail. */
   maxOpacity?: number;
 };
 
-/** Size of one pixel block in the stitch (px). */
 const PIXEL = 2;
-/** Distance between stitches along the path (px). */
 const SPACING = 11;
-/** Thread colour — matches the cube's grey cross-stitch faces. */
 const THREAD = "128, 128, 128";
 
 function distanceToSegment(
@@ -38,10 +34,6 @@ function distanceToSegment(
   return Math.hypot(px - (x0 + t * dx), py - (y0 + t * dy));
 }
 
-/**
- * Pixel-block offsets for one cross-stitch "X", generated from the SAME cell /
- * thread spec the cube and project cards use, so the whole site is one fabric.
- */
 const X_OFFSETS: Array<[number, number]> = (() => {
   const size = Math.max(3, CROSS_STITCH_CELL_CARD);
   const half = CROSS_STITCH_THREAD_CARD * 0.5;
@@ -67,13 +59,15 @@ const X_OFFSETS: Array<[number, number]> = (() => {
 
 type Cross = { x: number; y: number; f: number };
 
-/** Walk the polyline and drop an evenly-spaced stitch every SPACING px. */
 function buildStitches(points: TrailPoint[]): Cross[] {
   if (points.length < 2) return [];
 
   let total = 0;
   for (let i = 1; i < points.length; i += 1) {
-    total += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+    total += Math.hypot(
+      points[i].x - points[i - 1].x,
+      points[i].y - points[i - 1].y,
+    );
   }
   if (total < SPACING) return [];
 
@@ -102,7 +96,7 @@ function buildStitches(points: TrailPoint[]): Cross[] {
 export function BallPathTrail({
   points,
   className = "z-[35]",
-  maxOpacity = 0.18,
+  maxOpacity = 0.2,
 }: BallPathTrailProps) {
   const stitches = useMemo(() => buildStitches(points), [points]);
 

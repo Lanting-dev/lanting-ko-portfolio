@@ -1,46 +1,22 @@
 "use client";
 
-import { useRef, type RefObject } from "react";
+import { type RefObject } from "react";
 import { ABOUT_SCROLL_VH } from "@/lib/about/aboutScroll";
 import { SectionBigWord } from "@/components/SectionBigWord";
-import { AboutBallRider } from "./AboutBallRider";
+import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
 import { AboutCopy } from "./AboutCopy";
 import { AboutCubeScene } from "./AboutCubeScene";
-import type { BallHandoffPose } from "@/lib/layout/ballHandoff";
 
 type AboutSectionProps = {
   trackRef?: RefObject<HTMLElement | null>;
-  profileBallSlotRef?: RefObject<HTMLDivElement | null>;
-  lastBallSlotRef?: RefObject<HTMLElement | null>;
-  handoffPoseRef?: RefObject<BallHandoffPose | null>;
-  aboutProgress?: number;
-  profileImpactComplete?: boolean;
-  projectExitT?: number;
-  aboutBallActive?: boolean;
-  sandEntryRef?: RefObject<HTMLElement | null>;
-  sandImpactRef?: RefObject<HTMLElement | null>;
-  footerProgress?: number;
-  /** Static stack for reduced-motion — no scroll pin or ball rider. */
+  /** Static stack for reduced-motion — no scroll pin. */
   staticLayout?: boolean;
 };
 
-export function AboutSection({
-  trackRef,
-  profileBallSlotRef: profileBallSlotRefProp,
-  lastBallSlotRef,
-  handoffPoseRef,
-  aboutProgress = 0,
-  profileImpactComplete = false,
-  projectExitT = 1,
-  aboutBallActive = false,
-  sandEntryRef,
-  sandImpactRef,
-  footerProgress = 0,
-  staticLayout = false,
-}: AboutSectionProps) {
-  const localBallSlotRef = useRef<HTMLDivElement>(null);
-  const localProfileBallSlotRef = useRef<HTMLDivElement>(null);
-  const profileBallSlotRef = profileBallSlotRefProp ?? localProfileBallSlotRef;
+export function AboutSection({ trackRef, staticLayout = false }: AboutSectionProps) {
+  // Drives the big word, cube spin, and copy. Re-renders only while the about
+  // track is scrubbing (aboutProgress is pinned at 1 through the footer).
+  const aboutProgress = useParallaxValue((s) => s.aboutProgress);
   const revealProgress = staticLayout ? 1 : aboutProgress;
 
   const layout = (
@@ -52,11 +28,7 @@ export function AboutSection({
       </SectionBigWord>
 
       <div className="about-cube-wrap">
-        <AboutCubeScene
-          profileBallSlotRef={profileBallSlotRef}
-          aboutProgress={revealProgress}
-          profileImpactComplete={staticLayout || profileImpactComplete}
-        />
+        <AboutCubeScene aboutProgress={revealProgress} />
       </div>
 
       <AboutCopy aboutProgress={revealProgress} />
@@ -86,19 +58,6 @@ export function AboutSection({
       <div className="about-scroll-sticky page-shell relative z-[1]">
         {layout}
       </div>
-
-      <AboutBallRider
-        lastBallSlotRef={lastBallSlotRef ?? localBallSlotRef}
-        profileBallSlotRef={profileBallSlotRef}
-        handoffPoseRef={handoffPoseRef}
-        aboutProgress={aboutProgress}
-        profileImpactComplete={profileImpactComplete}
-        projectExitT={projectExitT}
-        visible={aboutBallActive}
-        sandEntryRef={sandEntryRef}
-        sandImpactRef={sandImpactRef}
-        footerProgress={footerProgress}
-      />
     </section>
   );
 }

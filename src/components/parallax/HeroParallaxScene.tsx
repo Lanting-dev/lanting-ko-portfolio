@@ -1,49 +1,31 @@
 "use client";
 
-import { useMemo, useRef, type RefObject } from "react";
-import { FlowerGraphicClient } from "@/components/FlowerGraphicClient";
-import { getHeroParallaxValues } from "@/lib/parallax/heroParallax";
-import { pinballBioNudge } from "@/lib/animation/pinballBounce";
 import { useFitText } from "@/hooks/useFitText";
 
-type HeroParallaxSceneProps = {
-  progress: number;
-  anchorRef: RefObject<HTMLSpanElement | null>;
-  bioShelfRef: RefObject<HTMLDivElement | null>;
-  bioCopyRef: RefObject<HTMLParagraphElement | null>;
-  /** Hide when FloatingOrb renders the flower (avoids duplicate). */
-  hideInlineFlower?: boolean;
-};
-
-export function HeroParallaxScene({
-  progress,
-  anchorRef,
-  bioShelfRef,
-  bioCopyRef,
-  hideInlineFlower = false,
-}: HeroParallaxSceneProps) {
-  const bioBlockRef = useRef<HTMLDivElement>(null);
+/**
+ * Hero title + bio. Continuous scroll values arrive as CSS custom properties
+ * written by {@link ParallaxEngineProvider}, so this never re-renders while
+ * scrolling.
+ */
+export function HeroParallaxScene() {
   // Size "LANTING" (the wider line) to fill the title column edge-to-edge.
   const {
     widthRef: titleFitRef,
     fontRef: titleFontRef,
     fontSize: titleFontSize,
   } = useFitText<HTMLDivElement, HTMLHeadingElement>("LANTING");
-  const values = useMemo(() => getHeroParallaxValues(progress), [progress]);
-  const unifiedOpacity = 1 - values.splitOpacity;
-  const bioNudge =
-    values.fallPhase > 0 ? pinballBioNudge(values.fallPhase) : 0;
 
   return (
     <div className="hero-scene relative flex min-h-0 flex-1 flex-col">
       <div
         ref={titleFitRef}
-        className="hero-title-stage relative flex min-h-0 flex-1 flex-col justify-center overflow-visible pt-4 pb-2 sm:pt-6 md:py-6 lg:py-10"
+        className="hero-title-stage relative flex min-h-0 flex-1 flex-col justify-center overflow-visible pt-6 pb-2 sm:pt-8 md:py-8 lg:py-12"
       >
         <div
           className="relative w-full overflow-visible will-change-transform"
           style={{
-            transform: `translateY(${values.titleYOffset}px) scale(${values.titleScale})`,
+            transform:
+              "translateX(clamp(1rem, 1.5vw, 1.75rem)) translateY(calc(var(--hero-title-y, 0) * 1px)) scale(var(--hero-title-scale, 1))",
             transformOrigin: "left center",
           }}
         >
@@ -51,43 +33,28 @@ export function HeroParallaxScene({
             ref={titleFontRef}
             className="type-display text-black"
             style={{
-              ["--type-display-row-gap" as string]: `${values.rowGapEm}em`,
+              ["--type-display-row-gap" as string]:
+                "calc(var(--hero-rowgap, 0.2) * 1em)",
               ...(titleFontSize ? { fontSize: `${titleFontSize}px` } : {}),
             }}
             aria-label="Lanting Ko"
           >
             <div className="type-display-hero relative">
-              <span ref={anchorRef} className="relative block leading-none">
+              <span className="relative block leading-none">
                 <span
                   className="block"
-                  style={{ opacity: values.splitOpacity }}
-                  aria-hidden={unifiedOpacity > 0.5}
+                  style={{ opacity: "var(--hero-split, 0)" }}
+                  aria-hidden="true"
                 >
                   LAN<span className="ml-[0.18em]">TING</span>
                 </span>
                 <span
                   className="absolute inset-0 block leading-none"
-                  style={{ opacity: unifiedOpacity }}
-                  aria-hidden={values.splitOpacity > 0.5}
+                  style={{ opacity: "calc(1 - var(--hero-split, 0))" }}
+                  aria-hidden="true"
                 >
                   LANTING
                 </span>
-
-                {!hideInlineFlower && values.ballMix < 0.98 ? (
-                  <span
-                    className="pointer-events-none absolute z-10 [isolation:isolate]"
-                    style={{
-                      width: `calc(var(--figma-flower-size) * ${values.orbFlowerScale})`,
-                      height: `calc(var(--figma-flower-size) * ${values.orbFlowerScale})`,
-                      left: `${values.orbLeftEm}em`,
-                      top: `${values.orbTopEm}em`,
-                      transform: "translate(-50%, -50%)",
-                    }}
-                    aria-hidden="true"
-                  >
-                    <FlowerGraphicClient className="h-full w-full" />
-                  </span>
-                ) : null}
               </span>
 
               <span className="block leading-none">KO</span>
@@ -97,24 +64,17 @@ export function HeroParallaxScene({
       </div>
 
       <div
-        ref={bioBlockRef}
         className="hero-bio-block pointer-events-none flex w-full min-w-0 max-w-full flex-col"
         style={{
-          transform: `translateY(${values.bioTranslateY + bioNudge}px)`,
-          opacity: values.bioOpacity,
+          transform: "translateY(calc(var(--hero-bio-ty, 0) * 1px))",
+          opacity: "var(--hero-bio-opacity, 1)",
         }}
       >
-        <div
-          ref={bioShelfRef}
-          className="hero-bio-shelf shrink-0"
-          style={{ height: "var(--figma-ball-size)" }}
-          aria-hidden="true"
-        />
         <p
-          ref={bioCopyRef}
           className="hero-bio-copy type-body text-right text-black"
           style={{
-            transform: `translateY(calc((100% - var(--hero-bio-peek, 1.9em)) * ${1 - values.bioReveal}))`,
+            transform:
+              "translateY(calc((100% - var(--hero-bio-peek, 1.9em)) * (1 - var(--hero-bio-reveal, 0))))",
           }}
         >
           Lan-Ting is a product designer who shapes how things are structured,
