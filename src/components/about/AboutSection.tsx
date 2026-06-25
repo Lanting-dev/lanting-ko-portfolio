@@ -1,7 +1,7 @@
 "use client";
 
 import { type RefObject } from "react";
-import { ABOUT_SCROLL_VH } from "@/lib/about/aboutScroll";
+import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
 import { SectionBigWord } from "@/components/SectionBigWord";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
 import { AboutCopy } from "./AboutCopy";
@@ -17,6 +17,7 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
   // Drives the big word, cube spin, and copy. Re-renders only while the about
   // track is scrubbing (aboutProgress is pinned at 1 through the footer).
   const aboutProgress = useParallaxValue((s) => s.aboutProgress);
+  const aboutTrackVh = useScrollTrackVh("about");
   const revealProgress = staticLayout ? 1 : aboutProgress;
 
   const layout = (
@@ -52,7 +53,7 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
       ref={trackRef}
       id="about"
       className="about-scroll-pin relative w-full bg-white"
-      style={{ height: `${ABOUT_SCROLL_VH}vh` }}
+      style={{ height: `${aboutTrackVh}vh` }}
       aria-label="About Lan-Ting Ko"
     >
       <div className="about-scroll-sticky page-shell relative z-[1]">

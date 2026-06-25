@@ -1,6 +1,13 @@
+import { isMobileViewport } from "@/lib/browser/isMobile";
 import { isSafari } from "@/lib/browser/isSafari";
 import type { BlockScale } from "./blockReveal";
 import { DITHER_MACRO_SCALE, DITHER_MESO_SCALE } from "./blockReveal";
+
+/** Safari + narrow viewports — lower canvas res and frame rate. */
+function isLowPowerCanvas(): boolean {
+  if (typeof window === "undefined") return false;
+  return isSafari() || isMobileViewport();
+}
 
 /** CSS-pixel defaults — scaled by devicePixelRatio at render time. */
 export const DITHER_PIXEL_SIZE = 2;
@@ -43,26 +50,26 @@ export const DITHER_RENDER_MODE: DitherRenderMode = "cross";
 
 export function ditherDeviceScale(): number {
   if (typeof window === "undefined") return 1;
-  if (isSafari()) return 1;
+  if (isLowPowerCanvas()) return 1;
   return Math.min(window.devicePixelRatio || 1, 2);
 }
 
-/** Internal canvas scale — Safari renders smaller and upscales via CSS. */
+/** Internal canvas scale — low-power targets render smaller and upscale via CSS. */
 export function ditherRenderScale(): number {
-  return isSafari() ? 0.5 : 1;
+  return isLowPowerCanvas() ? 0.5 : 1;
 }
 
 export function ditherEffectivePixelSize(base = DITHER_PIXEL_SIZE): number {
-  return isSafari() ? Math.max(2, base) : base;
+  return isLowPowerCanvas() ? Math.max(2, base) : base;
 }
 
-/** 0 = every rAF tick; Safari caps to ~20fps. */
+/** 0 = every rAF tick; low-power caps to ~20fps. */
 export function ditherFrameIntervalMs(): number {
-  return isSafari() ? 50 : 0;
+  return isLowPowerCanvas() ? 50 : 0;
 }
 
 export function ditherMacroScale(): BlockScale {
-  return isSafari()
+  return isLowPowerCanvas()
     ? { blockPx: 24, lag: 0, spread: 0.18 }
     : DITHER_MACRO_SCALE;
 }
@@ -72,7 +79,7 @@ export function ditherIntroMacroScale(): BlockScale {
 }
 
 export function ditherMesoScale(): BlockScale {
-  return isSafari()
+  return isLowPowerCanvas()
     ? { blockPx: 10, lag: 0.08, spread: 0.15 }
     : DITHER_MESO_SCALE;
 }
@@ -105,7 +112,7 @@ export function ditherBufferLayout(
   let bufferW = Math.max(1, Math.round(cssW * dpr * scale));
   let bufferH = Math.max(1, Math.round(cssH * dpr * scale));
 
-  if (isSafari()) {
+  if (isLowPowerCanvas()) {
     const maxPixels = 400_000;
     const pixels = bufferW * bufferH;
     if (pixels > maxPixels) {
@@ -128,11 +135,11 @@ export function introBufferLayout(
   cssW: number,
   cssH: number,
 ): DitherBufferLayout {
-  const scale = isSafari() ? 0.45 : 0.55;
+  const scale = isLowPowerCanvas() ? 0.45 : 0.55;
   let bufferW = Math.max(1, Math.round(cssW * scale));
   let bufferH = Math.max(1, Math.round(cssH * scale));
 
-  const maxPixels = isSafari() ? 320_000 : 480_000;
+  const maxPixels = isLowPowerCanvas() ? 320_000 : 480_000;
   const pixels = bufferW * bufferH;
   if (pixels > maxPixels) {
     const shrink = Math.sqrt(maxPixels / pixels);
@@ -150,11 +157,11 @@ export function cardStitchBufferLayout(
   cssW: number,
   cssH: number,
 ): DitherBufferLayout {
-  const scale = isSafari() ? 0.42 : 0.48;
+  const scale = isLowPowerCanvas() ? 0.42 : 0.48;
   let bufferW = Math.max(1, Math.round(cssW * scale));
   let bufferH = Math.max(1, Math.round(cssH * scale));
 
-  const maxPixels = isSafari() ? 180_000 : 280_000;
+  const maxPixels = isLowPowerCanvas() ? 180_000 : 280_000;
   const pixels = bufferW * bufferH;
   if (pixels > maxPixels) {
     const shrink = Math.sqrt(maxPixels / pixels);
@@ -167,5 +174,5 @@ export function cardStitchBufferLayout(
 
 /** Intro canvas target ~30fps — steadier than uneven heavy frames. */
 export function introFrameIntervalMs(): number {
-  return isSafari() ? 50 : 33;
+  return isLowPowerCanvas() ? 50 : 33;
 }

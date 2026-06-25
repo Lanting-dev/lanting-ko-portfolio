@@ -38,7 +38,11 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link href={ZH_TW_FONT_STYLESHEET} rel="stylesheet" />
+        <link
+          href={ZH_TW_FONT_STYLESHEET}
+          rel="stylesheet"
+          crossOrigin="anonymous"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var l=localStorage.getItem(${JSON.stringify(LOCALE_STORAGE_KEY)});if(l==="zh-TW")document.documentElement.lang="zh-Hant";}catch(e){}})();`,

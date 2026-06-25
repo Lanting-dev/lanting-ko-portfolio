@@ -9,11 +9,10 @@ import { FooterSection } from "@/components/footer/FooterSection";
 import { DitherPageIntro } from "@/components/dither/DitherPageIntro";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
+import { ScrollRhythmHUD } from "@/components/scroll/ScrollRhythmHUD";
 import { HeroParallaxScene } from "./HeroParallaxScene";
 import { ParallaxEngineProvider } from "./ParallaxEngineProvider";
-
-/** ~300vh — title morph and bio reveal before Work. */
-const SCROLL_TRACK_VH = 300;
 
 type StageRefs = {
   projectTrackRef: RefObject<HTMLElement | null>;
@@ -42,6 +41,7 @@ export function ParallaxLandingClient() {
   const heroCaptureRef = useRef<HTMLDivElement>(null);
 
   const reducedMotion = usePrefersReducedMotion();
+  const heroTrackVh = useScrollTrackVh("hero");
   const { home } = useLocale();
   const [introComplete, setIntroComplete] = useState(false);
   const [heroEnter, setHeroEnter] = useState(false);
@@ -102,7 +102,7 @@ export function ParallaxLandingClient() {
       <section
         ref={heroTrackRef}
         className="relative"
-        style={{ height: `${SCROLL_TRACK_VH}vh` }}
+        style={{ height: `${heroTrackVh}vh` }}
       >
         <div className="hero-sticky sticky top-0 flex h-dvh w-full flex-col page-shell">
           <div
@@ -127,6 +127,7 @@ export function ParallaxLandingClient() {
         <ParallaxStage
           refs={{ projectTrackRef, aboutTrackRef, footerTrackRef }}
         />
+        <ScrollRhythmHUD />
       </ParallaxEngineProvider>
     </>
   );

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState, type RefObject } from "react"
 import { clamp } from "@/lib/parallax/interpolate";
 import {
   PROJECT_DETAIL_START,
-  PROJECT_SCROLL_VH,
 } from "@/lib/projects/projectScroll";
+import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
 import {
   computeScatterProgress,
   getProjectFocusIndexStable,
@@ -30,6 +30,7 @@ export function ProjectScrollSection({
   const { ui } = useLocale();
   const projects = useLocalizedProjects(VISIBLE_PROJECTS);
   const progress = useParallaxValue((s) => s.projectProgress);
+  const projectTrackVh = useScrollTrackVh("project");
   const focusIndexRef = useRef(-1);
   const reducedMotion = usePrefersReducedMotion();
   const pointerTiltRef = useRef({ x: 0, y: 0 }) as PointerTiltRef;
@@ -93,7 +94,7 @@ export function ProjectScrollSection({
       ref={setPinTrackRef}
       id="work"
       className="project-scroll-pin relative w-full"
-      style={{ height: `${PROJECT_SCROLL_VH}vh` }}
+      style={{ height: `${projectTrackVh}vh` }}
     >
       <div
         className="project-scatter-sticky sticky top-0 mx-auto flex h-dvh w-full max-w-[1440px] flex-col items-center justify-center page-shell"

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { memo, useState } from "react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import {
   ProjectCubeScene,
   type PointerTiltRef,
@@ -37,8 +38,34 @@ export const ProjectCard = memo(function ProjectCard({
   stackShiftPx = 0,
   stackDelayMs = 0,
 }: ProjectCardProps) {
+  const isMobile = useIsMobile();
   const [hovered, setHovered] = useState(false);
   const cubeHovered = scatterInteractive && hovered;
+  const useFlatArt = isMobile && backdrop;
+  const artSrc = project.colorSrc ?? project.src;
+
+  const cardMedia = useFlatArt ? (
+    <div className="project-card-art" aria-hidden={backdrop}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={artSrc}
+        alt={backdrop ? "" : project.alt}
+        className="project-card-art-img"
+        draggable={false}
+      />
+    </div>
+  ) : (
+    <ProjectCubeScene
+      greySrc={project.src}
+      colorSrc={artSrc}
+      seed={cardIndex * 53}
+      hovered={cubeHovered}
+      focused={focused}
+      pointerTiltRef={scatterInteractive ? pointerTiltRef : undefined}
+      pointerParallax={scatterInteractive}
+      pointerEngaged={pointerEngaged}
+    />
+  );
 
   const cardBody = (
     <div
@@ -54,16 +81,7 @@ export const ProjectCard = memo(function ProjectCard({
       onMouseLeave={scatterInteractive ? () => setHovered(false) : undefined}
     >
       <div className="project-card-frame relative z-10 overflow-visible rounded-[20px]">
-        <ProjectCubeScene
-          greySrc={project.src}
-          colorSrc={project.colorSrc ?? project.src}
-          seed={cardIndex * 53}
-          hovered={cubeHovered}
-          focused={focused}
-          pointerTiltRef={scatterInteractive ? pointerTiltRef : undefined}
-          pointerParallax={scatterInteractive}
-          pointerEngaged={pointerEngaged}
-        />
+        {cardMedia}
       </div>
     </div>
   );

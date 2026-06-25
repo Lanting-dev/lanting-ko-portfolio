@@ -160,14 +160,35 @@ function CameraFraming({ aspect }: { aspect: number }) {
   return null;
 }
 
+function InvalidateOnProgress({
+  aboutProgress,
+  active,
+}: {
+  aboutProgress: number;
+  active: boolean;
+}) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (active) invalidate();
+  }, [aboutProgress, active, invalidate]);
+
+  return null;
+}
+
 function AboutCubeSceneInner({
   aboutProgress,
   aspect,
-}: Omit<AboutCubeCanvasProps, "width" | "height"> & { aspect: number }) {
+  active,
+}: Omit<AboutCubeCanvasProps, "width" | "height"> & {
+  aspect: number;
+  active: boolean;
+}) {
   const anchorGroupRef = useRef<THREE.Group>(null);
 
   return (
     <>
+      <InvalidateOnProgress aboutProgress={aboutProgress} active={active} />
       <CameraFraming aspect={aspect} />
       <ambientLight intensity={1.15} />
       <Suspense fallback={null}>
@@ -190,14 +211,18 @@ export default function AboutCubeCanvas({
       className="about-cube-canvas"
       style={{ width, height }}
       dpr={[1, 2]}
-      frameloop={active ? "always" : "never"}
+      frameloop={active ? "demand" : "never"}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       camera={{ fov: 36, near: 0.05, far: 30 }}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);
       }}
     >
-      <AboutCubeSceneInner aspect={aspect} aboutProgress={aboutProgress} />
+      <AboutCubeSceneInner
+        aspect={aspect}
+        aboutProgress={aboutProgress}
+        active={active}
+      />
     </Canvas>
   );
 }
