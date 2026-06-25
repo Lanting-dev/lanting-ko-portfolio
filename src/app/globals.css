@@ -541,14 +541,14 @@ a:hover {
   height: 100%;
 }
 
-/* Flat card art — greyscale base + colour crossfade on focus/hover. */
+/* Flat card art — transparent colour mockups over cube or scatter backdrop. */
 .project-card-art {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 20px;
-  background: #f4f4f1;
+  background: transparent;
 }
 
 .project-card-art-blend {
@@ -561,7 +561,8 @@ a:hover {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .project-card-art-color {
@@ -642,33 +643,12 @@ a:hover {
   z-index: 2;
 }
 
-.project-scatter-sticky[data-detail-active="true"]
-  .project-scatter-card:not(.is-focused) {
-  filter: grayscale(1) saturate(0.42) brightness(0.94);
-}
-
-.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused.is-morphing {
-  filter: none;
+.project-scatter-sticky[data-detail-active="true"] .project-scatter-card {
   pointer-events: none;
-}
-
-.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused.is-settled {
-  pointer-events: none;
-}
-
-.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused.is-morphing .project-card {
-  transition: none;
 }
 
 .project-scatter-sticky[data-detail-active="true"] .project-scatter-card .project-card {
-  transition: filter 0.45s ease;
-}
-
-.project-scatter-sticky[data-detail-active="true"]
-  .project-scatter-card.is-focused.is-morphing
-  .project-card-frame {
-  transform: none;
-  box-shadow: 0 18px 50px rgb(0 0 0 / 0.1);
+  transition: filter 0.6s ease;
 }
 
 .project-scatter-card .project-card[data-backdrop="true"] .project-card-caption {
@@ -679,14 +659,25 @@ a:hover {
   cursor: pointer;
 }
 
-/* Centre detail stage — image left, copy right */
+/* Centre detail stage — image left, copy right; sized to panel only (not full viewport). */
 .project-detail-wrap {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  top: 50%;
   z-index: 20;
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
+  background: transparent;
+}
+
+.project-detail-stage[data-visible="false"] {
+  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 
@@ -702,31 +693,50 @@ a:hover {
   align-items: center;
   justify-content: center;
   gap: clamp(2.25rem, 4vw, 4.5rem);
+  box-sizing: border-box;
   width: fit-content;
-  max-width: calc(100% - 2rem);
+  max-width: min(920px, calc(100% - 2rem));
   margin-inline: auto;
+  padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.75rem);
+  border-radius: 28px;
+  border: 1px solid rgb(255 255 255 / 0.55);
+  background: rgb(255 255 255 / 0.62);
+  box-shadow:
+    0 24px 60px rgb(0 0 0 / 0.07),
+    0 1px 0 rgb(255 255 255 / 0.8) inset;
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  backdrop-filter: blur(24px) saturate(1.25);
+  contain: layout style;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .project-detail-panel {
+    background: rgb(255 255 255 / 0.94);
+  }
 }
 
 .project-detail-media {
   position: relative;
+  display: grid;
   flex: 0 0 clamp(210px, 22vw, 290px);
   aspect-ratio: 2400 / 3028;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #f4f4f1;
+  overflow: visible;
+  background: transparent;
 }
 
 .project-detail-image--from,
 .project-detail-image--to {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
 }
 
 .project-detail-image {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .project-detail-copy {
@@ -737,6 +747,18 @@ a:hover {
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+}
+
+.project-detail-copy-stack {
+  display: grid;
+  flex: 0 1 clamp(280px, 27vw, 400px);
+  width: clamp(280px, 27vw, 400px);
+  min-width: 0;
+}
+
+.project-detail-copy-stack > .project-detail-copy {
+  grid-area: 1 / 1;
+  width: 100%;
 }
 
 .project-detail-title {
@@ -774,15 +796,16 @@ a:hover {
   .project-detail-panel {
     flex-direction: column;
     align-items: flex-start;
-    box-sizing: border-box;
     width: calc(100% - 1rem);
     max-width: 24rem;
     gap: 1.25rem;
     padding: 1rem;
     border: 1px solid rgb(0 0 0 / 0.08);
     border-radius: 24px;
-    background: rgb(255 255 255 / 0.94);
+    background: rgb(255 255 255 / 0.72);
     box-shadow: 0 18px 50px rgb(0 0 0 / 0.08);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    backdrop-filter: blur(20px) saturate(1.2);
   }
 
   .project-detail-media {
@@ -794,9 +817,13 @@ a:hover {
     flex-basis: auto;
   }
 
-  .project-scatter-sticky[data-detail-active="true"]
-    .project-scatter-card:not(.is-focused) {
-    opacity: 0.12 !important;
+  .project-detail-copy-stack {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .project-scatter-sticky[data-detail-active="true"] .project-scatter-card {
+    opacity: 1 !important;
   }
 
   .project-detail-meta {

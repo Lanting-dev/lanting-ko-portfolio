@@ -157,6 +157,7 @@ function getScatterCardLayoutNumeric(
   index: number,
   scatterT: number,
   projectProgress: number,
+  backdrop = false,
 ): ScatterLayoutNumeric {
   const target = SCATTER_TARGETS[index % SCATTER_TARGETS.length];
   const stack = SCATTER_STACK[index % SCATTER_STACK.length];
@@ -166,7 +167,10 @@ function getScatterCardLayoutNumeric(
   const topPct = SCATTER_CLUSTER.y + (target.y - SCATTER_CLUSTER.y) * ease;
   const stackX = stack.dx * (1 - ease);
   const stackY = stack.dy * (1 - ease);
-  const driftY = ease > 0.92 ? (projectProgress - 0.5) * target.drift : 0;
+  const driftY =
+    backdrop || ease <= 0.92
+      ? 0
+      : (projectProgress - 0.5) * target.drift;
   const scale = 0.84 + ease * 0.16;
   const enter = clamp(projectProgress / 0.08, 0, 1);
 
@@ -249,13 +253,10 @@ export function getHopDetailMediaOpacity(
     opacity = Math.max(opacity, 1 - smoothstep(hopMorphT / HOP_DETAIL_EXIT_END));
   }
 
-  if (hopMorphT > HOP_MEDIA_HANDOFF_START) {
+  if (hopMorphT > 0) {
     opacity = Math.max(
       opacity,
-      smoothstep(
-        (hopMorphT - HOP_MEDIA_HANDOFF_START) /
-          (1 - HOP_MEDIA_HANDOFF_START),
-      ),
+      smoothstep(clamp(hopMorphT / 0.4, 0, 1)),
     );
   }
 
@@ -292,9 +293,10 @@ export function getScatterCardLayout(
   index: number,
   scatterT: number,
   projectProgress: number,
+  backdrop = false,
 ): ScatterCardLayout {
   return layoutNumericToStyle(
-    getScatterCardLayoutNumeric(index, scatterT, projectProgress),
+    getScatterCardLayoutNumeric(index, scatterT, projectProgress, backdrop),
   );
 }
 
@@ -309,7 +311,7 @@ export function getFocusedMorphLayout(
 ): ScatterCardLayout | null {
   if (focusIndex < 0 || index !== focusIndex || morphT <= 0) return null;
 
-  const start = getScatterCardLayoutNumeric(index, scatterT, projectProgress);
+  const start = getScatterCardLayoutNumeric(index, scatterT, projectProgress, false);
   const endTarget = mobile ? DETAIL_HERO_TARGET_MOBILE : DETAIL_HERO_TARGET;
   const end: ScatterLayoutNumeric = {
     ...endTarget,

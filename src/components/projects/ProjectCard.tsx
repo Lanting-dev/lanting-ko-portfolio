@@ -79,9 +79,9 @@ export const ProjectCard = memo(function ProjectCard({
             seed={cardIndex * 53}
             hovered={cubeHovered}
             focused={focused}
-            pointerTiltRef={scatterInteractive ? pointerTiltRef : undefined}
+            pointerTiltRef={pointerTiltRef}
             pointerParallax={scatterInteractive}
-            pointerEngaged={pointerEngaged}
+            pointerEngaged={scatterInteractive && pointerEngaged}
           />
         </div>
         <div
@@ -99,9 +99,9 @@ export const ProjectCard = memo(function ProjectCard({
         seed={cardIndex * 53}
         hovered={cubeHovered}
         focused={focused}
-        pointerTiltRef={scatterInteractive ? pointerTiltRef : undefined}
+        pointerTiltRef={pointerTiltRef}
         pointerParallax={scatterInteractive}
-        pointerEngaged={pointerEngaged}
+        pointerEngaged={scatterInteractive && pointerEngaged}
       />
     );
 
@@ -124,14 +124,20 @@ export const ProjectCard = memo(function ProjectCard({
     </div>
   );
 
-  const linkedBody =
-    scatterInteractive && project.href ? (
-      <Link href={project.href} className="block" aria-label={project.alt}>
-        {cardBody}
-      </Link>
-    ) : (
-      cardBody
-    );
+  const cardInner = project.href ? (
+    <Link
+      href={project.href}
+      className="block"
+      aria-label={project.alt}
+      tabIndex={scatterInteractive ? 0 : -1}
+      aria-hidden={!scatterInteractive}
+      style={{ pointerEvents: scatterInteractive ? "auto" : "none" }}
+    >
+      {cardBody}
+    </Link>
+  ) : (
+    cardBody
+  );
 
   return (
     <article
@@ -142,7 +148,7 @@ export const ProjectCard = memo(function ProjectCard({
       data-morph-flat={morphFlat ? "true" : undefined}
       data-hovered={cubeHovered ? "true" : undefined}
     >
-      {backdrop && !scatterInteractive ? cardBody : linkedBody}
+      {cardInner}
     </article>
   );
 });

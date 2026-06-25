@@ -7,12 +7,47 @@ import { useLocalizedProject } from "@/hooks/useLocalizedProject";
 
 type ProjectDetailStageProps = {
   project: ProjectItem;
-  fromProject?: ProjectItem;
+  fromProject: ProjectItem;
   imageBlend?: number;
   visible: boolean;
   mediaOpacity?: number;
-  copyOpacity?: number;
+  /** Fade-in for first corner morph entry only (not hop crossfade). */
+  entryCopyOpacity?: number;
 };
+
+function ProjectDetailCopy({
+  project,
+  opacity = 1,
+}: {
+  project: ProjectItem;
+  opacity?: number;
+}) {
+  const { ui } = useLocale();
+  const localized = useLocalizedProject(project);
+
+  return (
+    <div
+      className="project-detail-copy"
+      style={{ opacity }}
+      aria-hidden={opacity < 0.05}
+    >
+      {localized.title ? (
+        <h3 className="project-detail-title">{localized.title}</h3>
+      ) : null}
+      {localized.meta ? (
+        <p className="project-detail-meta">{localized.meta}</p>
+      ) : null}
+      {localized.description ? (
+        <p className="project-detail-desc">{localized.description}</p>
+      ) : null}
+      {localized.href ? (
+        <Link href={localized.href} className="site-cta project-detail-cta">
+          {ui.work.viewCaseStudy}
+        </Link>
+      ) : null}
+    </div>
+  );
+}
 
 export function ProjectDetailStage({
   project,
@@ -20,14 +55,17 @@ export function ProjectDetailStage({
   imageBlend = 1,
   visible,
   mediaOpacity = 1,
-  copyOpacity = 1,
+  entryCopyOpacity = 1,
 }: ProjectDetailStageProps) {
-  const { ui } = useLocale();
   const localized = useLocalizedProject(project);
-  const fromLocalized = useLocalizedProject(fromProject ?? project);
+  const fromLocalized = useLocalizedProject(fromProject);
   const imageSrc = localized.colorSrc ?? localized.src;
   const fromImageSrc = fromLocalized.colorSrc ?? fromLocalized.src;
-  const hopping = fromProject != null && fromProject.id !== project.id;
+  const hopping = fromProject.id !== project.id;
+  const fromImageOpacity = hopping ? 1 - imageBlend : 0;
+  const toImageOpacity = hopping ? imageBlend : 1;
+  const fromCopyOpacity = hopping ? 1 - imageBlend : 0;
+  const toCopyOpacity = hopping ? imageBlend : entryCopyOpacity;
 
   return (
     <div
@@ -41,56 +79,29 @@ export function ProjectDetailStage({
           style={{ opacity: mediaOpacity }}
           aria-hidden={mediaOpacity < 0.05}
         >
-          {hopping ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={fromImageSrc}
-                alt=""
-                className="project-detail-image project-detail-image--from"
-                style={{ opacity: 1 - imageBlend }}
-                draggable={false}
-                aria-hidden
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageSrc}
-                alt={localized.alt}
-                className="project-detail-image project-detail-image--to"
-                style={{ opacity: imageBlend }}
-                draggable={false}
-              />
-            </>
-          ) : (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={imageSrc}
-              alt={localized.alt}
-              className="project-detail-image"
-              draggable={false}
-            />
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={fromImageSrc}
+            alt=""
+            className="project-detail-image project-detail-image--from"
+            style={{ opacity: fromImageOpacity }}
+            draggable={false}
+            aria-hidden={!hopping || fromImageOpacity < 0.05}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageSrc}
+            alt={localized.alt}
+            className="project-detail-image project-detail-image--to"
+            style={{ opacity: toImageOpacity }}
+            draggable={false}
+            aria-hidden={hopping && toImageOpacity < 0.05}
+          />
         </div>
 
-        <div
-          className="project-detail-copy"
-          style={{ opacity: copyOpacity }}
-          aria-hidden={copyOpacity < 0.05}
-        >
-          {localized.title ? (
-            <h3 className="project-detail-title">{localized.title}</h3>
-          ) : null}
-          {localized.meta ? (
-            <p className="project-detail-meta">{localized.meta}</p>
-          ) : null}
-          {localized.description ? (
-            <p className="project-detail-desc">{localized.description}</p>
-          ) : null}
-          {localized.href ? (
-            <Link href={localized.href} className="site-cta project-detail-cta">
-              {ui.work.viewCaseStudy}
-            </Link>
-          ) : null}
+        <div className="project-detail-copy-stack">
+          <ProjectDetailCopy project={fromProject} opacity={fromCopyOpacity} />
+          <ProjectDetailCopy project={project} opacity={toCopyOpacity} />
         </div>
       </div>
     </div>

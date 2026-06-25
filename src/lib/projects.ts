@@ -14,7 +14,7 @@ export type ProjectItem = {
   hidden?: boolean;
 };
 
-const PROJECT_CARD_COLOR_VERSION = "2026-06-23";
+const PROJECT_CARD_COLOR_VERSION = "2026-06-25";
 const projectColorAsset = (path: string) =>
   `${path}?v=${PROJECT_CARD_COLOR_VERSION}`;
 

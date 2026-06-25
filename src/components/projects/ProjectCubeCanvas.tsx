@@ -111,7 +111,6 @@ function ProjectCube({
   }, [colorMap, greyMap, invalidate]);
 
   const groupRef = useRef<THREE.Group>(null);
-  const colorBackplateRef = useRef<THREE.MeshBasicMaterial>(null);
   const colorPlaneRef = useRef<THREE.MeshBasicMaterial>(null);
 
   const stitch = useMemo(() => {
@@ -182,9 +181,6 @@ function ProjectCube({
 
   const applyColorMix = (colorAmount: number) => {
     greyFrontMaterial.opacity = 1 - colorAmount;
-    if (colorBackplateRef.current) {
-      colorBackplateRef.current.opacity = colorAmount;
-    }
     if (colorPlaneRef.current) {
       colorPlaneRef.current.opacity = colorAmount;
     }
@@ -254,16 +250,6 @@ function ProjectCube({
       <mesh material={materials}>
         <boxGeometry args={[BOX_W, BOX_H, BOX_D]} />
       </mesh>
-      <mesh position={[0, 0, BOX_D / 2 + 0.001]}>
-        <planeGeometry args={[BOX_W, BOX_H]} />
-        <meshBasicMaterial
-          ref={colorBackplateRef}
-          color={0xffffff}
-          toneMapped={false}
-          transparent
-          opacity={0}
-        />
-      </mesh>
       <mesh position={[0, 0, BOX_D / 2 + 0.003]}>
         <planeGeometry args={[BOX_W, BOX_H]} />
         <meshBasicMaterial
@@ -271,6 +257,8 @@ function ProjectCube({
           map={colorMap}
           toneMapped={false}
           transparent
+          alphaTest={0.02}
+          depthWrite={false}
           opacity={0}
         />
       </mesh>
