@@ -204,6 +204,90 @@ export function isHopMorphComplete(
   return getHopMorphT(projectProgress, focusIndex) >= 1;
 }
 
+/** Scroll progress band where morph hero crossfades into detail media. */
+export const HOP_MEDIA_HANDOFF_START = 0.78;
+
+/** Fade out settled detail media at the start of a new hop segment. */
+export const HOP_DETAIL_EXIT_END = 0.16;
+
+/** In-panel image crossfade when hopping between projects (no corner remorph). */
+export const HOP_IN_PANEL_BLEND_END = 0.38;
+
+export function isProjectHop(
+  inDetail: boolean,
+  hopMorphT: number,
+  focusIndex: number,
+  settledProjectIndex: number,
+  wasDetailSettled: boolean,
+): boolean {
+  return (
+    inDetail &&
+    wasDetailSettled &&
+    focusIndex >= 0 &&
+    settledProjectIndex >= 0 &&
+    focusIndex !== settledProjectIndex &&
+    hopMorphT < 1
+  );
+}
+
+export function getHopInPanelImageBlend(hopMorphT: number): number {
+  return smoothstep(clamp(hopMorphT / HOP_IN_PANEL_BLEND_END, 0, 1));
+}
+
+export function getHopDetailMediaOpacity(
+  hopMorphT: number,
+  inDetail: boolean,
+  carryFromSettled: boolean,
+  hoppingInPanel: boolean,
+): number {
+  if (!inDetail) return 0;
+  if (hoppingInPanel) return 1;
+
+  let opacity = 0;
+
+  if (carryFromSettled && hopMorphT < HOP_DETAIL_EXIT_END) {
+    opacity = Math.max(opacity, 1 - smoothstep(hopMorphT / HOP_DETAIL_EXIT_END));
+  }
+
+  if (hopMorphT > HOP_MEDIA_HANDOFF_START) {
+    opacity = Math.max(
+      opacity,
+      smoothstep(
+        (hopMorphT - HOP_MEDIA_HANDOFF_START) /
+          (1 - HOP_MEDIA_HANDOFF_START),
+      ),
+    );
+  }
+
+  return opacity;
+}
+
+/** Morphing scatter hero — visible until handoff into detail media completes. */
+export function getMorphHeroOpacity(
+  hopMorphT: number,
+  isFocusedMorphing: boolean,
+): number {
+  if (!isFocusedMorphing || hopMorphT >= 1) return 0;
+
+  if (hopMorphT <= HOP_MEDIA_HANDOFF_START) return 1;
+
+  return (
+    1 -
+    smoothstep(
+      (hopMorphT - HOP_MEDIA_HANDOFF_START) / (1 - HOP_MEDIA_HANDOFF_START),
+    )
+  );
+}
+
+/** Crossfade WebGL cube → flat color art at morph start (desktop). */
+export function getMorphFlatBlend(
+  hopMorphT: number,
+  isMorphing: boolean,
+): number {
+  if (!isMorphing) return 0;
+  return 1;
+}
+
 export function getScatterCardLayout(
   index: number,
   scatterT: number,

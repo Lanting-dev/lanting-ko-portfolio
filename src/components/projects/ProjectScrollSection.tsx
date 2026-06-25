@@ -9,10 +9,15 @@ import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
 import {
   computeScatterProgress,
   getFocusedMorphLayout,
+  getHopDetailMediaOpacity,
+  getHopInPanelImageBlend,
   getHopMorphT,
+  getMorphFlatBlend,
+  getMorphHeroOpacity,
   getProjectFocusIndexStable,
   getScatterCardLayout,
-  isHopMorphComplete,
+  HOP_DETAIL_EXIT_END,
+  isProjectHop,
 } from "@/lib/projects/projectScatter";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
@@ -37,6 +42,8 @@ export function ProjectScrollSection({
   const projectTrackVh = useScrollTrackVh("project");
   const isMobile = useIsMobile();
   const focusIndexRef = useRef(-1);
+  const wasDetailSettledRef = useRef(false);
+  const settledProjectIndexRef = useRef(0);
   const reducedMotion = usePrefersReducedMotion();
   const pointerTiltRef = useRef({ x: 0, y: 0 }) as PointerTiltRef;
   const [pointerEngaged, setPointerEngaged] = useState(false);
@@ -46,10 +53,53 @@ export function ProjectScrollSection({
   focusIndexRef.current = focusIndex;
   const inDetail = focusIndex >= 0;
   const hopMorphT = getHopMorphT(progress, focusIndex);
-  const hopMorphComplete =
-    reducedMotion || isHopMorphComplete(progress, focusIndex);
+  const hopMorphComplete = reducedMotion || hopMorphT >= 1;
   const scatterHold = scatterT >= 0.98 && progress < PROJECT_DETAIL_START;
   const scatterInteractive = !inDetail;
+
+  if (hopMorphComplete && focusIndex >= 0) {
+    wasDetailSettledRef.current = true;
+    settledProjectIndexRef.current = focusIndex;
+  } else if (
+    inDetail &&
+    hopMorphT > HOP_DETAIL_EXIT_END &&
+    hopMorphT < 0.5
+  ) {
+    wasDetailSettledRef.current = false;
+  }
+
+  const carryFromSettled =
+    wasDetailSettledRef.current &&
+    inDetail &&
+    hopMorphT < HOP_DETAIL_EXIT_END &&
+    focusIndex !== settledProjectIndexRef.current;
+
+  const hoppingInPanel = isProjectHop(
+    inDetail,
+    hopMorphT,
+    focusIndex,
+    settledProjectIndexRef.current,
+    wasDetailSettledRef.current,
+  );
+
+  const hopImageBlend = hoppingInPanel ? getHopInPanelImageBlend(hopMorphT) : 1;
+
+  const detailMediaOpacity = reducedMotion
+    ? inDetail
+      ? 1
+      : 0
+    : getHopDetailMediaOpacity(
+        hopMorphT,
+        inDetail,
+        carryFromSettled,
+        hoppingInPanel,
+      );
+
+  const detailProject = projects[focusIndex >= 0 ? focusIndex : 0] ?? projects[0];
+  const fromDetailProject =
+    hoppingInPanel && settledProjectIndexRef.current >= 0
+      ? projects[settledProjectIndexRef.current]
+      : undefined;
 
   useEffect(() => {
     if (!inDetail) return;
@@ -85,7 +135,9 @@ export function ProjectScrollSection({
   const detailCopyOpacity = inDetail
     ? reducedMotion
       ? 1
-      : clamp((hopMorphT - 0.35) / 0.65, 0, 1)
+      : hoppingInPanel
+        ? clamp((hopImageBlend - 0.12) / 0.88, 0, 1)
+        : clamp((hopMorphT - 0.35) / 0.65, 0, 1)
     : 0;
 
   const setPinTrackRef = useCallback(
@@ -94,9 +146,6 @@ export function ProjectScrollSection({
     },
     [trackRef],
   );
-
-  const activeProject =
-    focusIndex >= 0 ? projects[focusIndex] : projects[0];
 
   return (
     <section
@@ -108,7 +157,7 @@ export function ProjectScrollSection({
       <div
         className="project-scatter-sticky sticky top-0 mx-auto flex h-dvh w-full max-w-[1440px] flex-col items-center justify-center page-shell"
         data-detail-active={inDetail ? "true" : "false"}
-        data-hop-morph={inDetail && !hopMorphComplete ? "true" : "false"}
+        data-hop-morph={inDetail && !hopMorphComplete && !hoppingInPanel ? "true" : "false"}
         data-scatter-phase={
           scatterT < 0.04
             ? "cluster"
@@ -137,9 +186,11 @@ export function ProjectScrollSection({
           aria-hidden={!inDetail}
         >
           <ProjectDetailStage
-            project={activeProject}
+            project={detailProject}
+            fromProject={fromDetailProject}
+            imageBlend={hopImageBlend}
             visible={inDetail}
-            mediaVisible={hopMorphComplete}
+            mediaOpacity={detailMediaOpacity}
             copyOpacity={detailCopyOpacity}
           />
         </div>
@@ -147,8 +198,9 @@ export function ProjectScrollSection({
         {projects.map((project, i) => {
           const layout = getScatterCardLayout(i, scatterT, progress);
           const isFocused = inDetail && i === focusIndex;
+          const useCornerMorph = isFocused && hopMorphT < 1 && !hoppingInPanel;
           const morphLayout =
-            isFocused && !hopMorphComplete
+            useCornerMorph
               ? getFocusedMorphLayout(
                   i,
                   scatterT,
@@ -159,15 +211,28 @@ export function ProjectScrollSection({
                 )
               : null;
           const activeLayout = morphLayout ?? layout;
-          const isMorphing = isFocused && !hopMorphComplete;
+          const isMorphing = useCornerMorph;
+          const morphHeroOpacity = getMorphHeroOpacity(hopMorphT, isMorphing);
+          const morphFlatBlend = getMorphFlatBlend(hopMorphT, isMorphing);
+          const backdropOpacity = 0.22 * layout.opacity;
 
-          const cardOpacity = inDetail
-            ? isFocused
-              ? isMorphing
-                ? 1
-                : 0
-              : 0.22 * layout.opacity
-            : layout.opacity;
+          let cardOpacity = layout.opacity;
+          if (inDetail) {
+            if (isMorphing) {
+              cardOpacity = morphHeroOpacity;
+            } else if (isFocused && hopMorphComplete) {
+              cardOpacity = 0;
+            } else if (
+              hoppingInPanel &&
+              i === settledProjectIndexRef.current
+            ) {
+              cardOpacity =
+                backdropOpacity *
+                clamp(hopMorphT / 0.18, 0, 1);
+            } else if (inDetail) {
+              cardOpacity = backdropOpacity;
+            }
+          }
 
           return (
             <div
@@ -178,7 +243,9 @@ export function ProjectScrollSection({
                 top: activeLayout.top,
                 opacity: cardOpacity,
                 transform: activeLayout.transform,
-                zIndex: activeLayout.zIndex,
+                zIndex: isMorphing ? 30 : activeLayout.zIndex,
+                visibility:
+                  isFocused && hopMorphComplete ? "hidden" : "visible",
               }}
             >
               <ProjectCard
@@ -186,7 +253,8 @@ export function ProjectScrollSection({
                 cardIndex={i}
                 backdrop
                 focused={false}
-                morphFlat={isMorphing}
+                morphFlat={isMorphing && morphFlatBlend >= 0.999}
+                morphFlatBlend={morphFlatBlend}
                 scatterInteractive={scatterInteractive}
                 pointerTiltRef={pointerTiltRef}
                 pointerEngaged={pointerEngaged}

@@ -20,6 +20,8 @@ type ProjectCardProps = {
   scatterInteractive?: boolean;
   /** Scroll morph — flat color art instead of WebGL cube. */
   morphFlat?: boolean;
+  /** 0→1 crossfade from cube to flat art during morph. */
+  morphFlatBlend?: number;
   pointerTiltRef?: PointerTiltRef;
   pointerEngaged?: boolean;
   /** Entrance: stacked over card 0 until the ball lands, then springs apart. */
@@ -35,6 +37,7 @@ export const ProjectCard = memo(function ProjectCard({
   backdrop = false,
   scatterInteractive = false,
   morphFlat = false,
+  morphFlatBlend = 0,
   pointerTiltRef,
   pointerEngaged = false,
   stacked = false,
@@ -44,10 +47,11 @@ export const ProjectCard = memo(function ProjectCard({
   const isMobile = useIsMobile();
   const [hovered, setHovered] = useState(false);
   const cubeHovered = scatterInteractive && hovered;
-  const useFlatArt = morphFlat || (isMobile && backdrop);
+  const flatBlend = Math.max(morphFlat ? 1 : 0, morphFlatBlend);
+  const useFlatOnly = flatBlend >= 0.999 || (isMobile && backdrop);
   const artSrc = project.colorSrc ?? project.src;
 
-  const cardMedia = useFlatArt ? (
+  const flatArt = (
     <div className="project-card-art" aria-hidden={backdrop}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -57,18 +61,49 @@ export const ProjectCard = memo(function ProjectCard({
         draggable={false}
       />
     </div>
-  ) : (
-    <ProjectCubeScene
-      greySrc={project.src}
-      colorSrc={artSrc}
-      seed={cardIndex * 53}
-      hovered={cubeHovered}
-      focused={focused}
-      pointerTiltRef={scatterInteractive ? pointerTiltRef : undefined}
-      pointerParallax={scatterInteractive}
-      pointerEngaged={pointerEngaged}
-    />
   );
+
+  const cardMedia =
+    useFlatOnly ? (
+      flatArt
+    ) : flatBlend > 0 ? (
+      <div className="project-card-art-blend relative h-full w-full">
+        <div
+          className="absolute inset-0"
+          style={{ opacity: 1 - flatBlend }}
+          aria-hidden={flatBlend > 0.5}
+        >
+          <ProjectCubeScene
+            greySrc={project.src}
+            colorSrc={artSrc}
+            seed={cardIndex * 53}
+            hovered={cubeHovered}
+            focused={focused}
+            pointerTiltRef={scatterInteractive ? pointerTiltRef : undefined}
+            pointerParallax={scatterInteractive}
+            pointerEngaged={pointerEngaged}
+          />
+        </div>
+        <div
+          className="absolute inset-0"
+          style={{ opacity: flatBlend }}
+          aria-hidden={flatBlend < 0.5}
+        >
+          {flatArt}
+        </div>
+      </div>
+    ) : (
+      <ProjectCubeScene
+        greySrc={project.src}
+        colorSrc={artSrc}
+        seed={cardIndex * 53}
+        hovered={cubeHovered}
+        focused={focused}
+        pointerTiltRef={scatterInteractive ? pointerTiltRef : undefined}
+        pointerParallax={scatterInteractive}
+        pointerEngaged={pointerEngaged}
+      />
+    );
 
   const cardBody = (
     <div
