@@ -643,25 +643,32 @@ a:hover {
   filter: grayscale(1) saturate(0.42) brightness(0.94);
 }
 
-.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused {
+.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused.is-morphing {
   filter: none;
+  visibility: visible;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused.is-settled {
   opacity: 0 !important;
   visibility: hidden;
   pointer-events: none;
+}
+
+.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused.is-morphing .project-card {
+  transition: none;
 }
 
 .project-scatter-sticky[data-detail-active="true"] .project-scatter-card .project-card {
   transition: filter 0.45s ease;
 }
 
-.project-scatter-sticky[data-detail-active="true"] .project-scatter-card.is-focused .project-card {
-  transition: none;
-}
-
 .project-scatter-sticky[data-detail-active="true"]
-  .project-scatter-card.is-focused
+  .project-scatter-card.is-focused.is-morphing
   .project-card-frame {
   transform: none;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.1);
 }
 
 .project-scatter-card .project-card[data-backdrop="true"] .project-card-caption {
@@ -681,7 +688,6 @@ a:hover {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  transition: opacity 0.45s ease;
 }
 
 .project-detail-stage {
@@ -689,6 +695,7 @@ a:hover {
   pointer-events: auto;
   display: flex;
   justify-content: center;
+  transition: opacity 0.22s ease;
 }
 
 .project-detail-panel {
@@ -707,7 +714,7 @@ a:hover {
   border-radius: 18px;
   overflow: hidden;
   background: #f4f4f1;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.28s ease;
 }
 
 .project-detail-image {
@@ -725,7 +732,7 @@ a:hover {
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.35s ease;
 }
 
 .project-detail-title {

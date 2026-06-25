@@ -18,6 +18,8 @@ type ProjectCardProps = {
   backdrop?: boolean;
   /** Scatter phase: hover color, link, pointer parallax. */
   scatterInteractive?: boolean;
+  /** Scroll morph — flat color art instead of WebGL cube. */
+  morphFlat?: boolean;
   pointerTiltRef?: PointerTiltRef;
   pointerEngaged?: boolean;
   /** Entrance: stacked over card 0 until the ball lands, then springs apart. */
@@ -32,6 +34,7 @@ export const ProjectCard = memo(function ProjectCard({
   focused = false,
   backdrop = false,
   scatterInteractive = false,
+  morphFlat = false,
   pointerTiltRef,
   pointerEngaged = false,
   stacked = false,
@@ -41,7 +44,7 @@ export const ProjectCard = memo(function ProjectCard({
   const isMobile = useIsMobile();
   const [hovered, setHovered] = useState(false);
   const cubeHovered = scatterInteractive && hovered;
-  const useFlatArt = isMobile && backdrop;
+  const useFlatArt = morphFlat || (isMobile && backdrop);
   const artSrc = project.colorSrc ?? project.src;
 
   const cardMedia = useFlatArt ? (
@@ -101,6 +104,7 @@ export const ProjectCard = memo(function ProjectCard({
       data-focused={focused ? "true" : undefined}
       data-backdrop={backdrop ? "true" : undefined}
       data-scatter-interactive={scatterInteractive ? "true" : undefined}
+      data-morph-flat={morphFlat ? "true" : undefined}
       data-hovered={cubeHovered ? "true" : undefined}
     >
       {backdrop && !scatterInteractive ? cardBody : linkedBody}

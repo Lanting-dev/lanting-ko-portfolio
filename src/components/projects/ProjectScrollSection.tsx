@@ -8,13 +8,17 @@ import {
 import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
 import {
   computeScatterProgress,
+  getFocusedMorphLayout,
+  getHopMorphT,
   getProjectFocusIndexStable,
   getScatterCardLayout,
+  isHopMorphComplete,
 } from "@/lib/projects/projectScatter";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { useLocalizedProjects } from "@/hooks/useLocalizedProject";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { ProjectCard } from "./ProjectCard";
 import type { PointerTiltRef } from "./ProjectCubeScene";
@@ -31,6 +35,7 @@ export function ProjectScrollSection({
   const projects = useLocalizedProjects(VISIBLE_PROJECTS);
   const progress = useParallaxValue((s) => s.projectProgress);
   const projectTrackVh = useScrollTrackVh("project");
+  const isMobile = useIsMobile();
   const focusIndexRef = useRef(-1);
   const reducedMotion = usePrefersReducedMotion();
   const pointerTiltRef = useRef({ x: 0, y: 0 }) as PointerTiltRef;
@@ -40,6 +45,9 @@ export function ProjectScrollSection({
   const focusIndex = getProjectFocusIndexStable(progress, focusIndexRef.current);
   focusIndexRef.current = focusIndex;
   const inDetail = focusIndex >= 0;
+  const hopMorphT = getHopMorphT(progress, focusIndex);
+  const hopMorphComplete =
+    reducedMotion || isHopMorphComplete(progress, focusIndex);
   const scatterHold = scatterT >= 0.98 && progress < PROJECT_DETAIL_START;
   const scatterInteractive = !inDetail;
 
@@ -74,10 +82,11 @@ export function ProjectScrollSection({
       ? sectionEnter
       : clamp(1 - (progress - PROJECT_DETAIL_START) / 0.08, 0, 1);
 
-  const detailOpacity =
-    progress < PROJECT_DETAIL_START
-      ? 0
-      : clamp((progress - PROJECT_DETAIL_START) / 0.07, 0, 1);
+  const detailCopyOpacity = inDetail
+    ? reducedMotion
+      ? 1
+      : clamp((hopMorphT - 0.35) / 0.65, 0, 1)
+    : 0;
 
   const setPinTrackRef = useCallback(
     (node: HTMLElement | null) => {
@@ -99,6 +108,7 @@ export function ProjectScrollSection({
       <div
         className="project-scatter-sticky sticky top-0 mx-auto flex h-dvh w-full max-w-[1440px] flex-col items-center justify-center page-shell"
         data-detail-active={inDetail ? "true" : "false"}
+        data-hop-morph={inDetail && !hopMorphComplete ? "true" : "false"}
         data-scatter-phase={
           scatterT < 0.04
             ? "cluster"
@@ -124,31 +134,51 @@ export function ProjectScrollSection({
 
         <div
           className="project-detail-wrap"
-          style={{ opacity: detailOpacity }}
           aria-hidden={!inDetail}
         >
-          <ProjectDetailStage project={activeProject} visible={inDetail} />
+          <ProjectDetailStage
+            project={activeProject}
+            visible={inDetail}
+            mediaVisible={hopMorphComplete}
+            copyOpacity={detailCopyOpacity}
+          />
         </div>
 
         {projects.map((project, i) => {
           const layout = getScatterCardLayout(i, scatterT, progress);
           const isFocused = inDetail && i === focusIndex;
+          const morphLayout =
+            isFocused && !hopMorphComplete
+              ? getFocusedMorphLayout(
+                  i,
+                  scatterT,
+                  progress,
+                  focusIndex,
+                  hopMorphT,
+                  isMobile,
+                )
+              : null;
+          const activeLayout = morphLayout ?? layout;
+          const isMorphing = isFocused && !hopMorphComplete;
+
           const cardOpacity = inDetail
             ? isFocused
-              ? 0
+              ? isMorphing
+                ? 1
+                : 0
               : 0.22 * layout.opacity
             : layout.opacity;
 
           return (
             <div
               key={project.id}
-              className={`project-scatter-card${isFocused ? " is-focused" : ""}${scatterT < 0.98 ? " is-clustered" : ""}`}
+              className={`project-scatter-card${isFocused ? " is-focused" : ""}${isMorphing ? " is-morphing" : ""}${hopMorphComplete && isFocused ? " is-settled" : ""}${scatterT < 0.98 ? " is-clustered" : ""}`}
               style={{
-                left: layout.left,
-                top: layout.top,
+                left: activeLayout.left,
+                top: activeLayout.top,
                 opacity: cardOpacity,
-                transform: layout.transform,
-                zIndex: layout.zIndex,
+                transform: activeLayout.transform,
+                zIndex: activeLayout.zIndex,
               }}
             >
               <ProjectCard
@@ -156,6 +186,7 @@ export function ProjectScrollSection({
                 cardIndex={i}
                 backdrop
                 focused={false}
+                morphFlat={isMorphing}
                 scatterInteractive={scatterInteractive}
                 pointerTiltRef={pointerTiltRef}
                 pointerEngaged={pointerEngaged}

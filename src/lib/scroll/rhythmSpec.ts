@@ -31,13 +31,52 @@ export const MOBILE_TRACK_MULTIPLIER: Record<ScrollSection, number> = {
   footer: 1.25,
 };
 
+/**
+ * Desktop scrollable distance per section in px (at reference laptop height).
+ * Track vh scales inversely with viewport height so tall monitors do not
+ * require proportionally more wheel travel.
+ */
+export const DESKTOP_SCROLLABLE_PX: Record<ScrollSection, number> = {
+  hero: Math.max(0, HERO_SCROLL_VH - 100) * 9,
+  project: Math.max(0, PROJECT_SCROLL_VH - 100) * 9,
+  about: Math.max(0, ABOUT_SCROLL_VH - 100) * 9,
+  footer: Math.max(0, FOOTER_SCROLL_VH - 100) * 9,
+};
+
+const REFERENCE_VIEWPORT_HEIGHT = 900;
+
 export function trackVhForViewport(
   section: ScrollSection,
   mobile: boolean,
+  viewportHeight = REFERENCE_VIEWPORT_HEIGHT,
 ): number {
   const base = SCROLL_TRACKS[section];
-  if (!mobile) return base;
-  return Math.round(base * MOBILE_TRACK_MULTIPLIER[section]);
+
+  if (mobile) {
+    return Math.round(base * MOBILE_TRACK_MULTIPLIER[section]);
+  }
+
+  const height = Math.max(1, viewportHeight);
+  const scrollableVhFromPx =
+    (DESKTOP_SCROLLABLE_PX[section] * 100) / height;
+
+  return Math.round(100 + scrollableVhFromPx);
+}
+
+export function desktopScrollableVh(
+  viewportHeight = REFERENCE_VIEWPORT_HEIGHT,
+): number {
+  return (Object.keys(SCROLL_TRACKS) as ScrollSection[]).reduce(
+    (sum, section) =>
+      sum + scrollableVh(trackVhForViewport(section, false, viewportHeight)),
+    0,
+  );
+}
+
+export function desktopScrollablePx(
+  viewportHeight = REFERENCE_VIEWPORT_HEIGHT,
+): number {
+  return (desktopScrollableVh(viewportHeight) * viewportHeight) / 100;
 }
 
 export function mobileScrollableVh(): number {

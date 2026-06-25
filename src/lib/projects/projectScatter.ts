@@ -2,6 +2,7 @@ import { clamp } from "@/lib/parallax/interpolate";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 import {
   PROJECT_DETAIL_START,
+  PROJECT_HOP_MORPH_FRACTION,
   PROJECT_SCATTER_END,
   PROJECT_SCATTER_START,
 } from "@/lib/projects/projectScroll";
@@ -87,36 +88,150 @@ export function getProjectFocusIndexStable(
   return index;
 }
 
-export function getScatterCardLayout(
-  index: number,
-  scatterT: number,
-  projectProgress: number,
-): {
+/** Detail hero slot — left of centre, aligned with `.project-detail-media`. */
+const DETAIL_HERO_TARGET = {
+  leftPct: 33,
+  topPct: 50,
+  stackX: 0,
+  stackY: 0,
+  driftY: 0,
+  scale: 1.36,
+} as const;
+
+const DETAIL_HERO_TARGET_MOBILE = {
+  leftPct: 50,
+  topPct: 44,
+  stackX: 0,
+  stackY: 0,
+  driftY: 0,
+  scale: 1.05,
+} as const;
+
+export type ScatterCardLayout = {
   left: string;
   top: string;
   opacity: number;
   transform: string;
   zIndex: number;
-} {
+};
+
+type ScatterLayoutNumeric = {
+  leftPct: number;
+  topPct: number;
+  stackX: number;
+  stackY: number;
+  driftY: number;
+  scale: number;
+  opacity: number;
+  zIndex: number;
+};
+
+function layoutNumericToStyle(layout: ScatterLayoutNumeric): ScatterCardLayout {
+  return {
+    left: `${layout.leftPct}%`,
+    top: `${layout.topPct}%`,
+    opacity: layout.opacity,
+    transform: `translate(calc(-50% + ${layout.stackX.toFixed(1)}px), calc(-50% + ${layout.stackY.toFixed(1)}px)) translateY(${layout.driftY.toFixed(1)}px) scale(${layout.scale.toFixed(3)})`,
+    zIndex: layout.zIndex,
+  };
+}
+
+function lerpScatterLayout(
+  start: ScatterLayoutNumeric,
+  end: ScatterLayoutNumeric,
+  t: number,
+): ScatterLayoutNumeric {
+  return {
+    leftPct: start.leftPct + (end.leftPct - start.leftPct) * t,
+    topPct: start.topPct + (end.topPct - start.topPct) * t,
+    stackX: start.stackX + (end.stackX - start.stackX) * t,
+    stackY: start.stackY + (end.stackY - start.stackY) * t,
+    driftY: start.driftY * (1 - t) + end.driftY * t,
+    scale: start.scale + (end.scale - start.scale) * t,
+    opacity: start.opacity + (end.opacity - start.opacity) * t,
+    zIndex: Math.max(start.zIndex, 30),
+  };
+}
+
+function getScatterCardLayoutNumeric(
+  index: number,
+  scatterT: number,
+  projectProgress: number,
+): ScatterLayoutNumeric {
   const target = SCATTER_TARGETS[index % SCATTER_TARGETS.length];
   const stack = SCATTER_STACK[index % SCATTER_STACK.length];
   const ease = smoothstep(scatterT);
 
-  const x = SCATTER_CLUSTER.x + (target.x - SCATTER_CLUSTER.x) * ease;
-  const y = SCATTER_CLUSTER.y + (target.y - SCATTER_CLUSTER.y) * ease;
-
+  const leftPct = SCATTER_CLUSTER.x + (target.x - SCATTER_CLUSTER.x) * ease;
+  const topPct = SCATTER_CLUSTER.y + (target.y - SCATTER_CLUSTER.y) * ease;
   const stackX = stack.dx * (1 - ease);
   const stackY = stack.dy * (1 - ease);
   const driftY = ease > 0.92 ? (projectProgress - 0.5) * target.drift : 0;
   const scale = 0.84 + ease * 0.16;
-
   const enter = clamp(projectProgress / 0.08, 0, 1);
 
   return {
-    left: `${x}%`,
-    top: `${y}%`,
+    leftPct,
+    topPct,
+    stackX,
+    stackY,
+    driftY,
+    scale,
     opacity: 0.15 + enter * 0.85,
-    transform: `translate(calc(-50% + ${stackX.toFixed(1)}px), calc(-50% + ${stackY.toFixed(1)}px)) translateY(${driftY.toFixed(1)}px) scale(${scale.toFixed(3)})`,
     zIndex: index + 1 + Math.round((1 - ease) * 4),
   };
+}
+
+/** 0→1 at the start of each detail segment — drives scatter → hero morph. */
+export function getHopMorphT(
+  projectProgress: number,
+  focusIndex: number,
+): number {
+  if (focusIndex < 0) return 0;
+
+  const count = VISIBLE_PROJECTS.length;
+  const seg = (1 - PROJECT_DETAIL_START) / count;
+  const segStart = PROJECT_DETAIL_START + focusIndex * seg;
+  const local = clamp((projectProgress - segStart) / seg, 0, 1);
+
+  return smoothstep(clamp(local / PROJECT_HOP_MORPH_FRACTION, 0, 1));
+}
+
+export function isHopMorphComplete(
+  projectProgress: number,
+  focusIndex: number,
+): boolean {
+  return getHopMorphT(projectProgress, focusIndex) >= 1;
+}
+
+export function getScatterCardLayout(
+  index: number,
+  scatterT: number,
+  projectProgress: number,
+): ScatterCardLayout {
+  return layoutNumericToStyle(
+    getScatterCardLayoutNumeric(index, scatterT, projectProgress),
+  );
+}
+
+/** Focused card morph from scatter corner toward the detail hero slot. */
+export function getFocusedMorphLayout(
+  index: number,
+  scatterT: number,
+  projectProgress: number,
+  focusIndex: number,
+  morphT: number,
+  mobile = false,
+): ScatterCardLayout | null {
+  if (focusIndex < 0 || index !== focusIndex || morphT <= 0) return null;
+
+  const start = getScatterCardLayoutNumeric(index, scatterT, projectProgress);
+  const endTarget = mobile ? DETAIL_HERO_TARGET_MOBILE : DETAIL_HERO_TARGET;
+  const end: ScatterLayoutNumeric = {
+    ...endTarget,
+    opacity: 1,
+    zIndex: 30,
+  };
+
+  return layoutNumericToStyle(lerpScatterLayout(start, end, morphT));
 }

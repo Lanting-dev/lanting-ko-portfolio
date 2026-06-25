@@ -1,6 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useViewportHeight } from "@/hooks/useViewportHeight";
 import {
   trackVhForViewport,
   type ScrollSection,
@@ -8,5 +9,6 @@ import {
 
 export function useScrollTrackVh(section: ScrollSection): number {
   const isMobile = useIsMobile();
-  return trackVhForViewport(section, isMobile);
+  const viewportHeight = useViewportHeight();
+  return trackVhForViewport(section, isMobile, viewportHeight);
 }

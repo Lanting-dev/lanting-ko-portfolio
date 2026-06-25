@@ -12,6 +12,9 @@ export const PROJECT_SCATTER_END = 0.28;
 /** Sequential centre detail begins after the scatter beat holds. */
 export const PROJECT_DETAIL_START = 0.34;
 
+/** Fraction of each project segment used for scatter → detail hero morph. */
+export const PROJECT_HOP_MORPH_FRACTION = 0.15;
+
 /** Last portion of project scroll — ball rolls off the final card and falls to profile. */
 export const PROJECT_EXIT_SCROLL_FRACTION = 0.24;
 
