@@ -11,8 +11,14 @@ import {
 } from "@/lib/projects/projectScroll";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 
-/** Hero pin track — title morph and bio reveal before Work. */
-export const HERO_SCROLL_VH = 300;
+/** Hero pin track — 80vh sticky + 20vh peek / scroll cue. */
+export const HERO_SCROLL_VH = 100;
+
+/** Sticky hero stage height (not full viewport). */
+export const HERO_STICKY_VH = 80;
+
+/** Viewport slice below the hero that previews the next section. */
+export const HERO_PEEK_VH = 100 - HERO_STICKY_VH;
 
 export const SCROLL_TRACKS = {
   hero: HERO_SCROLL_VH,
@@ -25,7 +31,7 @@ export type ScrollSection = keyof typeof SCROLL_TRACKS;
 
 /** Mobile pin track height multipliers (narrow viewport). */
 export const MOBILE_TRACK_MULTIPLIER: Record<ScrollSection, number> = {
-  hero: 0.85,
+  hero: 0.88,
   project: 0.7,
   about: 0.8,
   footer: 1.25,
@@ -37,7 +43,7 @@ export const MOBILE_TRACK_MULTIPLIER: Record<ScrollSection, number> = {
  * require proportionally more wheel travel.
  */
 export const DESKTOP_SCROLLABLE_PX: Record<ScrollSection, number> = {
-  hero: Math.max(0, HERO_SCROLL_VH - 100) * 9,
+  hero: Math.max(0, HERO_SCROLL_VH - HERO_STICKY_VH) * 9,
   project: Math.max(0, PROJECT_SCROLL_VH - 100) * 9,
   about: Math.max(0, ABOUT_SCROLL_VH - 100) * 9,
   footer: Math.max(0, FOOTER_SCROLL_VH - 100) * 9,
@@ -59,8 +65,9 @@ export function trackVhForViewport(
   const height = Math.max(1, viewportHeight);
   const scrollableVhFromPx =
     (DESKTOP_SCROLLABLE_PX[section] * 100) / height;
+  const stickyVh = section === "hero" ? HERO_STICKY_VH : 100;
 
-  return Math.round(100 + scrollableVhFromPx);
+  return Math.round(stickyVh + scrollableVhFromPx);
 }
 
 export function desktopScrollableVh(
@@ -68,7 +75,11 @@ export function desktopScrollableVh(
 ): number {
   return (Object.keys(SCROLL_TRACKS) as ScrollSection[]).reduce(
     (sum, section) =>
-      sum + scrollableVh(trackVhForViewport(section, false, viewportHeight)),
+      sum +
+      scrollableVh(
+        trackVhForViewport(section, false, viewportHeight),
+        section === "hero" ? HERO_STICKY_VH : 100,
+      ),
     0,
   );
 }
@@ -82,13 +93,17 @@ export function desktopScrollablePx(
 export function mobileScrollableVh(): number {
   return (Object.keys(SCROLL_TRACKS) as ScrollSection[]).reduce(
     (sum, section) =>
-      sum + scrollableVh(trackVhForViewport(section, true)),
+      sum +
+      scrollableVh(
+        trackVhForViewport(section, true),
+        section === "hero" ? HERO_STICKY_VH : 100,
+      ),
     0,
   );
 }
 
 export type ScrollPhase =
-  | { section: "hero"; phase: "bio_reveal" | "hold" | "morph" | "ball_fall" }
+  | { section: "hero"; phase: "peek" | "hold" | "ball_fall" }
   | {
       section: "project";
       phase: "enter" | "scatter" | "hold" | "detail" | "exit";
@@ -106,9 +121,9 @@ export type RhythmFlag = {
   message: string;
 };
 
-/** Scrollable distance inside a pin track (track height minus one viewport). */
-export function scrollableVh(trackVh: number): number {
-  return Math.max(0, trackVh - 100);
+/** Scrollable distance inside a pin track (track height minus sticky stage). */
+export function scrollableVh(trackVh: number, stickyVh = 100): number {
+  return Math.max(0, trackVh - stickyVh);
 }
 
 /** Approximate vh consumed by a progress span within a section track. */
@@ -117,7 +132,8 @@ export function progressSpanVh(
   start: number,
   end: number,
 ): number {
-  return scrollableVh(SCROLL_TRACKS[section]) * Math.max(0, end - start);
+  const sticky = section === "hero" ? HERO_STICKY_VH : 100;
+  return scrollableVh(SCROLL_TRACKS[section], sticky) * Math.max(0, end - start);
 }
 
 export function getActiveSection(snapshot: ParallaxSnapshot): ScrollSection {
@@ -134,13 +150,10 @@ export function getScrollPhase(snapshot: ParallaxSnapshot): ScrollPhase {
     snapshot;
 
   if (heroProgress < 1 && projectProgress <= 0) {
-    if (heroProgress < PARALLAX_PHASE.riseEnd) {
-      return { section: "hero", phase: "bio_reveal" };
-    }
     if (heroProgress < PARALLAX_PHASE.morphEnd) {
       return heroProgress < PARALLAX_PHASE.fallEnd
-        ? { section: "hero", phase: "hold" }
-        : { section: "hero", phase: "morph" };
+        ? { section: "hero", phase: "peek" }
+        : { section: "hero", phase: "hold" };
     }
     return { section: "hero", phase: "ball_fall" };
   }
@@ -231,16 +244,16 @@ export function diagnoseRhythm(): RhythmFlag[] {
       range: [PROJECT_SCATTER_END, PROJECT_DETAIL_START],
       vhApprox: holdVh,
       severity: holdVh > 60 ? "high" : "medium",
-      message: `Work hold gap ${(PROJECT_SCATTER_END * 100).toFixed(0)}–${(PROJECT_DETAIL_START * 100).toFixed(0)}% (~${holdVh.toFixed(0)}vh)`,
+      message: `Work hold gap ${(PROJECT_SCATTER_END * 100).toFixed(0)} to ${(PROJECT_DETAIL_START * 100).toFixed(0)}% (~${holdVh.toFixed(0)}vh)`,
     });
   }
 
-  const heroHoldVh = progressSpanVh("hero", PARALLAX_PHASE.riseEnd, PARALLAX_PHASE.fallEnd);
-  if (heroHoldVh > 55) {
+  const heroHoldVh = progressSpanVh("hero", PARALLAX_PHASE.fallEnd, PARALLAX_PHASE.morphEnd);
+  if (heroHoldVh > 20) {
     flags.push({
       type: "dead_zone",
       section: "hero",
-      range: [PARALLAX_PHASE.riseEnd, PARALLAX_PHASE.fallEnd],
+      range: [PARALLAX_PHASE.fallEnd, PARALLAX_PHASE.morphEnd],
       vhApprox: heroHoldVh,
       severity: "medium",
       message: `Hero title hold ~${heroHoldVh.toFixed(0)}vh before morph`,
@@ -264,7 +277,7 @@ export function diagnoseRhythm(): RhythmFlag[] {
   return flags;
 }
 
-/** No high/medium rhythm flags — loop may auto-stop. */
+/** No high/medium rhythm flags , loop may auto-stop. */
 export function isRhythmConverged(): boolean {
   return !diagnoseRhythm().some(
     (f) => f.severity === "high" || f.severity === "medium",

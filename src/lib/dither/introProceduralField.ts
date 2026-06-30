@@ -10,7 +10,7 @@ function hash01(x: number, y: number): number {
   return heckelWhiteNoiseThreshold(x * 127.1 + 311.7, y * 269.5 + 183.3);
 }
 
-/** Bilinear smooth value noise — low-frequency, Perlin-like. */
+/** Bilinear smooth value noise , low-frequency, Perlin-like. */
 function smoothValueNoise(x: number, y: number): number {
   const ix = Math.floor(x);
   const iy = Math.floor(y);
@@ -58,7 +58,7 @@ function fbm(x: number, y: number, t: number): number {
 }
 
 /**
- * Dynamic B/W luminance — smooth floating light/shadow (reference).
+ * Dynamic B/W luminance , smooth floating light/shadow (reference).
  * Dither + jitter read this map; field stays grain-free.
  */
 export function sampleIntroHeckelLuminance(
@@ -97,7 +97,7 @@ export function sampleIntroHeckelLuminance(
   return clamp(Math.pow(shaped, 0.98), 0.03, 1);
 }
 
-/** Grayscale tone from luminance — dither/jitter follow this. */
+/** Grayscale tone from luminance , dither/jitter follow this. */
 export function lumToGray(lum: number): number {
   return Math.round(clamp(lum, 0, 1) * 255);
 }

@@ -28,7 +28,7 @@ export async function captureHeroIntro(
       cacheBust: true,
       backgroundColor: "#ffffff",
       skipAutoScale: true,
-      // Fonts are already loaded via document.fonts — avoid reading cross-origin
+      // Fonts are already loaded via document.fonts , avoid reading cross-origin
       // stylesheets (Google Fonts / next/font) which throws SecurityError.
       skipFonts: true,
     });

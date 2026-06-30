@@ -4,10 +4,10 @@ import { FlowerGraphicClient } from "./FlowerGraphicClient";
 
 export function HeroClient() {
   return (
-    <section className="relative flex flex-1 flex-col justify-center overflow-visible py-6 md:py-10">
-      <div className="relative w-full overflow-visible">
+    <section className="relative flex flex-1 flex-col items-center justify-center overflow-visible py-6 md:py-10">
+      <div className="relative w-full overflow-visible text-center">
         <h1
-          className="type-display type-display-hero text-black"
+          className="type-display type-display-hero mx-auto w-fit max-w-full text-center text-black"
           aria-label="Lanting Ko"
         >
           <span className="relative block leading-none">

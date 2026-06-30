@@ -52,15 +52,15 @@ const zhTW: Record<string, LocalizedProjectFields> = {
     description: "一款多人繪畫遊戲，把看展變成 Gen Z 會想一起玩、一起比的社交體驗。",
   },
   gt: {
-    alt: "Gutenberg Technology · AI Course Builder research and product design",
-    title: "讓 AI 建課流程的系統狀態看得見",
+    alt: "Gutenberg Technology · AI Course Builder 研究與產品設計",
+    title: "讓 AI Course Builder 的系統狀態看得見",
     meta: "Gutenberg Technology · UX 研究 · 產品設計",
     description:
       "把 AI Course Builder 的系統狀態講清楚，讓使用者敢下決定，不用一直試錯。",
   },
   foru: {
     alt: "Amazon Music · For Ü 個人化推薦策略",
-    title: "讓 Amazon Music 走進日常的個人化推薦策略",
+    title: "用 For Ü 讓 Amazon Music 走進日常",
     meta: "Amazon Music · 使用者研究 · 產品設計",
     description:
       "以跨生態系推薦、日常情境歌單與 Maestro AI 建歌單，提升個人化體驗；資料來源則由使用者自行控管。",

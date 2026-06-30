@@ -8,9 +8,13 @@ export type RasterizeDisplayTextOptions = {
   fontFamily: string;
   letterSpacing: string;
   lineGapPx: number;
+  fontWeight?: string | number;
+  padX?: number;
+  padY?: number;
+  textAlign?: CanvasTextAlign;
 };
 
-/** Rasterize display lines into buffer pixels — same grid density as intro capture. */
+/** Rasterize display lines into buffer pixels , same grid density as intro capture. */
 export async function rasterizeDisplayText(
   options: RasterizeDisplayTextOptions,
 ): Promise<ImageData | null> {
@@ -20,7 +24,7 @@ export async function rasterizeDisplayText(
     await document.fonts.ready;
   }
 
-  const { lines, cssW, cssH, fontSizePx, fontFamily, letterSpacing, lineGapPx } =
+  const { lines, cssW, cssH, fontSizePx, fontFamily, letterSpacing, lineGapPx, fontWeight = 400, padX = 0, padY = 0, textAlign = "left" } =
     options;
 
   const { bufferW, bufferH } = introBufferLayout(cssW, cssH);
@@ -40,13 +44,15 @@ export async function rasterizeDisplayText(
   ctx.fillRect(0, 0, cssW, cssH);
 
   ctx.fillStyle = "#000000";
-  ctx.font = `400 ${fontSizePx}px ${fontFamily}`;
+  ctx.font = `${fontWeight} ${fontSizePx}px ${fontFamily}`;
   ctx.textBaseline = "top";
+  ctx.textAlign = textAlign;
   ctx.letterSpacing = letterSpacing;
 
-  let y = 0;
+  let y = padY;
   for (const line of lines) {
-    ctx.fillText(line.toUpperCase(), 0, y);
+    const x = textAlign === "center" ? cssW / 2 : padX;
+    ctx.fillText(line.toUpperCase(), x, y);
     y += fontSizePx + lineGapPx;
   }
 

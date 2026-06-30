@@ -4,7 +4,7 @@ import {
   sampleIntroHeckelLuminance,
 } from "./introProceduralField";
 
-/** Animated floating luminance — alias for intro gradient field. */
+/** Animated floating luminance , alias for intro gradient field. */
 export function sampleIntroMeshLuminance(
   u: number,
   v: number,

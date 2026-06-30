@@ -6,7 +6,7 @@ export type ProjectItem = {
   alt: string;
   accent: string;
   href?: string;
-  /** Card caption — readable without opening the case study. */
+  /** Card caption , readable without opening the case study. */
   title?: string;
   meta?: string;
   description?: string;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Monoton, Sora } from "next/font/google";
+import { Sora } from "next/font/google";
 import { AppProviders } from "@/app/providers";
 import { ScrollToTopOnLoad } from "@/components/ScrollToTopOnLoad";
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n/locale";
@@ -9,13 +9,7 @@ import "./globals.css";
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",
-  weight: ["400", "500", "600"],
-});
-
-const monoton = Monoton({
-  subsets: ["latin"],
-  variable: "--font-display",
-  weight: "400",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -49,7 +43,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${sora.variable} ${monoton.variable} antialiased`}>
+      <body className={`${sora.variable} antialiased`}>
         <script
           dangerouslySetInnerHTML={{
             __html:

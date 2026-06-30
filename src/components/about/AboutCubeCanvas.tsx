@@ -11,13 +11,12 @@ import {
 } from "react";
 import * as THREE from "three";
 import { PROFILE_ASSET } from "@/lib/assets";
-import {
-  CUBE_FACE_PALETTE,
-  CUBE_FACE_STITCH_SEED,
-} from "@/lib/about/cubeFacePalette";
+import { cubeFaceColor } from "@/lib/about/cubeFacePalette";
 import { getAboutSceneValues } from "@/lib/about/aboutScroll";
-import { StitchCanvasTexture } from "@/lib/about/stitchThreeTexture";
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+
+function faceColor(id: Parameters<typeof cubeFaceColor>[0]): THREE.Color {
+  return new THREE.Color(cubeFaceColor(id));
+}
 
 const DEG = Math.PI / 180;
 /** Slightly inset so rotated corners stay inside the canvas. */
@@ -31,60 +30,22 @@ type ProfileCubeProps = {
 };
 
 function ProfileCube({ aboutProgress, anchorGroupRef }: ProfileCubeProps) {
-  const reducedMotion = usePrefersReducedMotion();
   const profileMap = useTexture(PROFILE_ASSET);
   profileMap.colorSpace = THREE.SRGBColorSpace;
 
   const progressRef = useRef(aboutProgress);
   progressRef.current = aboutProgress;
 
-  const stitch = useMemo(
-    () => ({
-      right: new StitchCanvasTexture(
-        CUBE_FACE_PALETTE.right,
-        CUBE_FACE_STITCH_SEED.right,
-      ),
-      left: new StitchCanvasTexture(
-        CUBE_FACE_PALETTE.left,
-        CUBE_FACE_STITCH_SEED.left,
-      ),
-      top: new StitchCanvasTexture(
-        CUBE_FACE_PALETTE.top,
-        CUBE_FACE_STITCH_SEED.top,
-      ),
-      bottom: new StitchCanvasTexture(
-        CUBE_FACE_PALETTE.bottom,
-        CUBE_FACE_STITCH_SEED.bottom,
-      ),
-      back: new StitchCanvasTexture(
-        CUBE_FACE_PALETTE.back,
-        CUBE_FACE_STITCH_SEED.back,
-      ),
-    }),
-    [],
-  );
-
-  useEffect(
-    () => () => {
-      stitch.right.dispose();
-      stitch.left.dispose();
-      stitch.top.dispose();
-      stitch.bottom.dispose();
-      stitch.back.dispose();
-    },
-    [stitch],
-  );
-
   const materials = useMemo(
     () => [
-      new THREE.MeshBasicMaterial({ map: stitch.right.texture }),
-      new THREE.MeshBasicMaterial({ map: stitch.left.texture }),
-      new THREE.MeshBasicMaterial({ map: stitch.top.texture }),
-      new THREE.MeshBasicMaterial({ map: stitch.bottom.texture }),
+      new THREE.MeshBasicMaterial({ color: faceColor("right") }),
+      new THREE.MeshBasicMaterial({ color: faceColor("left") }),
+      new THREE.MeshBasicMaterial({ color: faceColor("top") }),
+      new THREE.MeshBasicMaterial({ color: faceColor("bottom") }),
       new THREE.MeshBasicMaterial({ map: profileMap }),
-      new THREE.MeshBasicMaterial({ map: stitch.back.texture }),
+      new THREE.MeshBasicMaterial({ color: faceColor("back") }),
     ],
-    [profileMap, stitch],
+    [profileMap],
   );
 
   useEffect(
@@ -94,15 +55,7 @@ function ProfileCube({ aboutProgress, anchorGroupRef }: ProfileCubeProps) {
     [materials],
   );
 
-  useFrame(({ clock }) => {
-    const timeMs = clock.elapsedTime * 1000;
-    const animate = !reducedMotion;
-    stitch.right.paint(timeMs, animate);
-    stitch.left.paint(timeMs, animate);
-    stitch.top.paint(timeMs, animate);
-    stitch.bottom.paint(timeMs, animate);
-    stitch.back.paint(timeMs, animate);
-
+  useFrame(() => {
     const spin = anchorGroupRef.current;
     if (!spin) return;
 

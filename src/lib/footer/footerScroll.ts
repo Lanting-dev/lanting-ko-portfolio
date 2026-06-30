@@ -1,7 +1,7 @@
 import { clamp, easeOutCubic } from "@/lib/dither/bayer";
 
-/** Scroll track after About — homepage: sand assembles into "LET’S TALK". */
-export const FOOTER_SCROLL_VH = 120;
+/** Scroll track after About , homepage: footer holds the contact meta. */
+export const FOOTER_SCROLL_VH = 100;
 
 function phase(t: number, start: number, end: number): number {
   if (end <= start) return t >= end ? 1 : 0;

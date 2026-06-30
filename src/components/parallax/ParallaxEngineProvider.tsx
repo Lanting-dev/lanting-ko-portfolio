@@ -10,6 +10,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import { HERO_STICKY_VH } from "@/lib/scroll/rhythmSpec";
 import { clamp } from "@/lib/parallax/interpolate";
 import {
   computeSnapshot,
@@ -39,7 +40,7 @@ const INITIAL_SNAPSHOT = computeSnapshot({
 
 // Fallback so the parallax hooks are safe outside a provider (the reduced-motion
 // static layout renders the same sections with no engine). Subscribers never
-// fire, so values stay at the progress-0 snapshot — matching the static layout.
+// fire, so values stay at the progress-0 snapshot , matching the static layout.
 const FALLBACK_ENGINE: EngineApi = {
   snapshotRef: { current: INITIAL_SNAPSHOT },
   register: () => () => {},
@@ -76,12 +77,9 @@ function writeHeroVars(snapshot: ParallaxSnapshot): void {
   const root = document.documentElement.style;
   const { hero } = snapshot;
   root.setProperty("--hero-split", hero.splitOpacity.toFixed(4));
-  root.setProperty("--hero-title-scale", hero.titleScale.toFixed(4));
   root.setProperty("--hero-title-y", hero.titleYOffset.toFixed(2));
+  root.setProperty("--hero-title-scale", hero.titleScale.toFixed(4));
   root.setProperty("--hero-rowgap", hero.rowGapEm.toFixed(4));
-  root.setProperty("--hero-bio-reveal", hero.bioReveal.toFixed(4));
-  root.setProperty("--hero-bio-ty", hero.bioTranslateY.toFixed(2));
-  root.setProperty("--hero-bio-opacity", hero.bioOpacity.toFixed(4));
 }
 
 export function ParallaxEngineProvider({
@@ -117,9 +115,10 @@ export function ParallaxEngineProvider({
     const update = () => {
       frame = 0;
       const vh = window.innerHeight;
+      const heroStickyPx = (vh * HERO_STICKY_VH) / 100;
 
       const snapshot = computeSnapshot({
-        hero: readProgress(heroTrackRef.current, 0, vh),
+        hero: readProgress(heroTrackRef.current, 0, heroStickyPx),
         project: readProgress(projectTrackRef.current, 0, vh),
         about: readProgress(aboutTrackRef.current, vh * ABOUT_LEAD_RATIO, vh),
         footer: readProgress(footerTrackRef.current, 0, vh),
@@ -168,7 +167,7 @@ export function useParallaxGates(): ParallaxGates {
   return useContext(GatesContext);
 }
 
-/** Imperative per-frame callback — for components that write the DOM directly
+/** Imperative per-frame callback , for components that write the DOM directly
  *  (e.g. the project track transform) without re-rendering. */
 export function useParallaxFrame(cb: FrameCb): void {
   const engine = useEngine();
@@ -186,7 +185,7 @@ export function useParallaxSnapshotRef(): RefObject<ParallaxSnapshot> {
 }
 
 /** Subscribe to a derived slice of the snapshot. Re-renders the calling
- *  component only when the selected value changes — so a section churns only
+ *  component only when the selected value changes , so a section churns only
  *  while its own progress is moving, never on a sibling's scroll. */
 export function useParallaxValue<T>(
   selector: (snapshot: ParallaxSnapshot) => T,

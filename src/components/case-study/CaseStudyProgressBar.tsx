@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-/** Fixed top scroll-progress bar — scaleX tracks page scroll (0 → 1). */
+/** Fixed top scroll-progress bar , scaleX tracks page scroll (0 → 1). */
 export function CaseStudyProgressBar() {
   const ref = useRef<HTMLDivElement>(null);
 

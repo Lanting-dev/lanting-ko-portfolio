@@ -4,6 +4,7 @@ const en = {
   nav: {
     brand: "Lanting • Design",
     work: "Work",
+    lab: "Ideas",
     about: "About",
     menu: "Menu",
     close: "Close",
@@ -15,6 +16,15 @@ const en = {
     heading: "Work",
     subheading: "Selected product design work",
     viewCaseStudy: "View case study →",
+  },
+  lab: {
+    headingAria: "Ideas",
+    subheading: "Small ideas in UI, space, and code",
+    viewProject: "View project →",
+    backToLab: "← Back to Ideas",
+    withLabel: "Team",
+    roleLabel: "Role",
+    stackLabel: "Stack",
   },
   about: {
     heading: "About",
@@ -81,6 +91,7 @@ const zhTW = {
   nav: {
     brand: "Lanting • Design",
     work: "作品",
+    lab: "Ideas",
     about: "關於",
     menu: "選單",
     close: "關閉",
@@ -92,6 +103,15 @@ const zhTW = {
     heading: "作品",
     subheading: "精選產品設計案例",
     viewCaseStudy: "看案例 →",
+  },
+  lab: {
+    headingAria: "想法",
+    subheading: "介面、空間與程式的小想法",
+    viewProject: "看專案 →",
+    backToLab: "← 返回 Ideas",
+    withLabel: "團隊",
+    roleLabel: "角色",
+    stackLabel: "技術",
   },
   about: {
     heading: "關於",
@@ -157,6 +177,7 @@ export type UiMessages = {
   nav: {
     brand: string;
     work: string;
+    lab: string;
     about: string;
     menu: string;
     close: string;
@@ -168,6 +189,15 @@ export type UiMessages = {
     heading: string;
     subheading: string;
     viewCaseStudy: string;
+  };
+  lab: {
+    headingAria: string;
+    subheading: string;
+    viewProject: string;
+    backToLab: string;
+    withLabel: string;
+    roleLabel: string;
+    stackLabel: string;
   };
   about: {
     heading: string;

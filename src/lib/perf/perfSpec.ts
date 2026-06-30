@@ -102,7 +102,7 @@ export function diagnosePerf(): PerfFlag[] {
   );
 }
 
-/** No high/medium perf flags — loop may auto-stop. */
+/** No high/medium perf flags , loop may auto-stop. */
 export function isPerfConverged(): boolean {
   return !diagnosePerf().some(
     (f) => f.severity === "high" || f.severity === "medium",

@@ -15,7 +15,7 @@ export {
   type HeckelThresholdMode,
 } from "./heckelDither";
 
-/** Sparse film dust — white-noise speckle on empty areas. */
+/** Sparse film dust , white-noise speckle on empty areas. */
 export function dustSpeck(
   x: number,
   y: number,

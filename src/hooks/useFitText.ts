@@ -18,7 +18,7 @@ const REF_FONT_PX = 200;
 export function useFitText<
   W extends HTMLElement,
   F extends HTMLElement,
->(text: string) {
+>(text: string, fillRatio = 1) {
   const widthRef = useRef<W>(null);
   const fontRef = useRef<F>(null);
   const [fontSize, setFontSize] = useState<number | null>(null);
@@ -46,7 +46,9 @@ export function useFitText<
       const natural = measurer.getBoundingClientRect().width;
       measurer.remove();
       if (available > 0 && natural > 0) {
-        setFontSize((available / natural) * REF_FONT_PX);
+        // fillRatio < 1 leaves a safety margin so rounded glyphs (e.g. the "G")
+        // don't read as clipped against the edge.
+        setFontSize((available / natural) * REF_FONT_PX * fillRatio);
       }
     };
 
@@ -67,7 +69,7 @@ export function useFitText<
       observer.disconnect();
       if (measurer.isConnected) measurer.remove();
     };
-  }, [text]);
+  }, [text, fillRatio]);
 
   return { widthRef, fontRef, fontSize };
 }

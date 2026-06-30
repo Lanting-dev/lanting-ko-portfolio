@@ -13,7 +13,6 @@ const ProjectCubeCanvas = dynamic(() => import("./ProjectCubeCanvas"), {
 type ProjectCubeSceneProps = {
   greySrc: string;
   colorSrc: string;
-  seed: number;
   hovered: boolean;
   focused: boolean;
   pointerTiltRef?: PointerTiltRef;
@@ -24,7 +23,6 @@ type ProjectCubeSceneProps = {
 export const ProjectCubeScene = memo(function ProjectCubeScene({
   greySrc,
   colorSrc,
-  seed,
   hovered,
   focused,
   pointerTiltRef,
@@ -87,7 +85,6 @@ export const ProjectCubeScene = memo(function ProjectCubeScene({
           colorSrc={colorSrc}
           width={dimensions.width}
           height={dimensions.height}
-          seed={seed}
           hovered={hovered}
           focused={focused}
           pointerTiltRef={pointerTiltRef}

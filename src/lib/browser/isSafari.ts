@@ -1,4 +1,4 @@
-/** Safari (desktop + iOS) — canvas + sticky quirks. */
+/** Safari (desktop + iOS) , canvas + sticky quirks. */
 export function isSafari(): boolean {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent;

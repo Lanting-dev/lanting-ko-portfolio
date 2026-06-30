@@ -7,7 +7,7 @@ type AboutCopyProps = {
   aboutProgress: number;
 };
 
-/** About bio copy — right column on desktop, below cube on mobile. */
+/** About bio copy , right column on desktop, below cube on mobile. */
 export function AboutCopy({ aboutProgress }: AboutCopyProps) {
   const { home } = useLocale();
   const copyIn = smoothstepEase((aboutProgress - 0.2) / 0.3);

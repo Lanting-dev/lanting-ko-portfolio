@@ -7,7 +7,7 @@ type UseInViewOnceOptions = {
   threshold?: number | number[];
 };
 
-/** Fires once when the element scrolls into the viewport — no eager mount check. */
+/** Fires once when the element scrolls into the viewport , no eager mount check. */
 export function useInViewOnce<T extends Element>(
   options: UseInViewOnceOptions = {},
 ): { ref: RefObject<T | null>; inView: boolean } {

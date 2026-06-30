@@ -1,7 +1,7 @@
 import { clamp } from "@/lib/dither/bayer";
 
 /** Vertical scroll track height for sticky Work pin (cluster → scatter → detail). */
-export const PROJECT_SCROLL_VH = 640;
+export const PROJECT_SCROLL_VH = 440;
 
 /** Cards stay clustered until the ball nears Work (~project progress). */
 export const PROJECT_SCATTER_START = 0.06;
@@ -15,7 +15,7 @@ export const PROJECT_DETAIL_START = 0.34;
 /** Fraction of each project segment used for scatter → detail hero morph. */
 export const PROJECT_HOP_MORPH_FRACTION = 0.15;
 
-/** Last portion of project scroll — ball rolls off the final card and falls to profile. */
+/** Last portion of project scroll , ball rolls off the final card and falls to profile. */
 export const PROJECT_EXIT_SCROLL_FRACTION = 0.24;
 
 /** Map raw project progress to hop-only progress (0→1 across card hops). */
@@ -47,7 +47,7 @@ export function isAboutRicochetScrollActive(aboutProgress: number): boolean {
   return aboutProgress > ABOUT_RICOCHET_SCROLL_START;
 }
 
-/** Roll, fall, and hold at profile impact — one continuous project-rider ball. */
+/** Roll, fall, and hold at profile impact , one continuous project-rider ball. */
 export function isProjectEntryBallActive(
   exitT: number,
   _aboutProgress: number,
@@ -55,7 +55,7 @@ export function isProjectEntryBallActive(
   return exitT > 0 && exitT < 0.995;
 }
 
-/** Left inset before the first card — centers card 1 in the scroll viewport at rest. */
+/** Left inset before the first card , centers card 1 in the scroll viewport at rest. */
 export function getProjectScrollStartPad(
   viewportWidth: number,
   cardWidth: number,
@@ -89,7 +89,7 @@ export function getProjectTrackLayout(
   return { startPad, endPad, maxOffset };
 }
 
-/** Card whose centre is closest to the scroll viewport centre — drives auto-focus. */
+/** Card whose centre is closest to the scroll viewport centre , drives auto-focus. */
 export function getFocusedProjectCardIndex(
   hopProgress: number,
   cardCount: number,

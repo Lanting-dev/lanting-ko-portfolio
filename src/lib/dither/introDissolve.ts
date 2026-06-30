@@ -10,7 +10,7 @@ export type IntroDissolveConfig = {
 };
 
 /**
- * Black veil dissolves via blue-noise — reveals mesh gradient underneath.
+ * Black veil dissolves via blue-noise , reveals mesh gradient underneath.
  * No block squares, no white stipple on top of the gradient.
  */
 export function renderIntroDissolve(

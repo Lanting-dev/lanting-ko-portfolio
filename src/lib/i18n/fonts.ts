@@ -1,4 +1,4 @@
-/** justfont jf open 粉圓 — loaded via Google Fonts as Huninn. */
+/** justfont jf open 粉圓 , loaded via Google Fonts as Huninn. */
 export const ZH_TW_FONT_FAMILY =
   '"Huninn", "PingFang TC", "Microsoft JhengHei", sans-serif';
 

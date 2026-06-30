@@ -8,7 +8,7 @@ import {
 import { renderIntroMeshGradient } from "@/lib/dither/introMeshGradient";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
-/** Animated fluid mesh gradient — intro background. */
+/** Animated fluid mesh gradient , intro background. */
 export function IntroMeshBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -80,7 +80,7 @@ function pixelRevealMix(
 }
 
 /**
- * Cross (+) halftone — cell-center darkness drives arm length (stable +/star shape).
+ * Cross (+) halftone , cell-center darkness drives arm length (stable +/star shape).
  */
 export function renderCrossHalftone(
   ctx: CanvasRenderingContext2D,

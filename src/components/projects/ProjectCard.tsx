@@ -14,11 +14,11 @@ type ProjectCardProps = {
   cardIndex?: number;
   /** Scroll-driven highlight for scatter backdrop mode. */
   focused?: boolean;
-  /** Non-interactive scatter cube — no hover, no side caption. */
+  /** Non-interactive scatter cube , no hover, no side caption. */
   backdrop?: boolean;
   /** Scatter phase: hover color, link, pointer parallax. */
   scatterInteractive?: boolean;
-  /** Scroll morph — flat color art instead of WebGL cube. */
+  /** Scroll morph , flat color art instead of WebGL cube. */
   morphFlat?: boolean;
   /** 0→1 crossfade from cube to flat art during morph. */
   morphFlatBlend?: number;
@@ -46,7 +46,8 @@ export const ProjectCard = memo(function ProjectCard({
 }: ProjectCardProps) {
   const isMobile = useIsMobile();
   const [hovered, setHovered] = useState(false);
-  const cubeHovered = scatterInteractive && hovered;
+  const scatterHover = scatterInteractive && !backdrop;
+  const cubeHovered = scatterHover && hovered;
   const flatBlend = Math.max(morphFlat ? 1 : 0, morphFlatBlend);
   const useFlatOnly = flatBlend >= 0.999 || (isMobile && backdrop);
   const artSrc = project.colorSrc ?? project.src;
@@ -76,7 +77,6 @@ export const ProjectCard = memo(function ProjectCard({
           <ProjectCubeScene
             greySrc={project.src}
             colorSrc={artSrc}
-            seed={cardIndex * 53}
             hovered={cubeHovered}
             focused={focused}
             pointerTiltRef={pointerTiltRef}
@@ -96,7 +96,6 @@ export const ProjectCard = memo(function ProjectCard({
       <ProjectCubeScene
         greySrc={project.src}
         colorSrc={artSrc}
-        seed={cardIndex * 53}
         hovered={cubeHovered}
         focused={focused}
         pointerTiltRef={pointerTiltRef}
@@ -115,8 +114,8 @@ export const ProjectCard = memo(function ProjectCard({
         opacity: stacked && cardIndex !== 0 ? 0 : 1,
         transition: `transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${stackDelayMs}ms, opacity 0.5s ease ${stackDelayMs}ms`,
       }}
-      onMouseEnter={scatterInteractive ? () => setHovered(true) : undefined}
-      onMouseLeave={scatterInteractive ? () => setHovered(false) : undefined}
+      onMouseEnter={scatterHover ? () => setHovered(true) : undefined}
+      onMouseLeave={scatterHover ? () => setHovered(false) : undefined}
     >
       <div className="project-card-frame relative z-10 overflow-visible rounded-[20px]">
         {cardMedia}

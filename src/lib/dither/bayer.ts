@@ -1,4 +1,4 @@
-/** 8×8 Bayer matrix for ordered dither — retro print / CRT feel */
+/** 8×8 Bayer matrix for ordered dither , retro print / CRT feel */
 export const BAYER_8 = [
   [0, 32, 8, 40, 2, 34, 10, 42],
   [48, 16, 56, 24, 50, 18, 58, 26],

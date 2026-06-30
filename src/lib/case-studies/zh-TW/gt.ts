@@ -2,7 +2,7 @@ import type { GtStep } from "../gt";
 
 export const GT_CASE_STUDY_ZH = {
   slug: "gt",
-  title: "讓 AI 建課流程的系統狀態看得見",
+  title: "讓 AI Course Builder 的系統狀態看得見",
   meta: [
     { label: "專案期程", value: "12 週" },
     { label: "團隊", value: "Lanting K., Claire P., Jeffery Y., Aswathi T." },

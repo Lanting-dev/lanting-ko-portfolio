@@ -16,7 +16,7 @@ export function readBallSize(): number {
   );
 }
 
-/** Ball bottom rests on card frame top — sits in bleed padding above the card. */
+/** Ball bottom rests on card frame top , sits in bleed padding above the card. */
 export function ballNotchTransform(sx = 1, sy = 1, rotateDeg = 0): string {
   if (Math.abs(rotateDeg) < 0.05) {
     return `translate(-50%, -100%) scale(${sx}, ${sy})`;
@@ -24,7 +24,7 @@ export function ballNotchTransform(sx = 1, sy = 1, rotateDeg = 0): string {
   return `translate(-50%, -100%) rotate(${rotateDeg.toFixed(2)}deg) scale(${sx}, ${sy})`;
 }
 
-/** Notch anchor — scale squash/stretch from the landing point, not the ball center. */
+/** Notch anchor , scale squash/stretch from the landing point, not the ball center. */
 export const BALL_NOTCH_ORIGIN = "50% 100%";
 
 /** Ball centre while nested in the hero "O". */
@@ -46,7 +46,7 @@ export function ballCenterToNotchBottom(
   };
 }
 
-/** Ball bottom rests on the shelf / copy boundary — never past the paragraph top. */
+/** Ball bottom rests on the shelf / copy boundary , never past the paragraph top. */
 export function readBioBallRestPoint(
   shelfRect: DOMRect,
   textRect: DOMRect,

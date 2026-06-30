@@ -16,9 +16,9 @@ export const BALL_SCATTER_SPAN = 0.08;
 export type FallPoint = { x: number; y: number };
 
 export type FallWaypoints = {
-  /** Notch-bottom anchor at detach — frozen once. */
+  /** Notch-bottom anchor at detach , frozen once. */
   start: FallPoint;
-  /** Notch-bottom anchor at card cluster — live while Work is pinned. */
+  /** Notch-bottom anchor at card cluster , live while Work is pinned. */
   impact: FallPoint;
 };
 
@@ -88,8 +88,8 @@ export function readLiveImpactCenter(
 
 /**
  * Two-segment fall:
- * 1) Hero — drop straight down from O (no off-screen targets).
- * 2) Project — glide from hero exit into the pinned cluster impact.
+ * 1) Hero , drop straight down from O (no off-screen targets).
+ * 2) Project , glide from hero exit into the pinned cluster impact.
  */
 export function heroBallFallPose(
   journey: number,
@@ -155,7 +155,7 @@ export function heroBallFallOpacity(journey: number): number {
   return 1 - clamp((journey - 0.95) / 0.05, 0, 1);
 }
 
-/** Cards scatter only after the ball hits — driven purely by ball journey. */
+/** Cards scatter only after the ball hits , driven purely by ball journey. */
 export function computeBallScatterProgress(ballJourney: number): number {
   if (ballJourney < BALL_ARRIVE_AT - 0.01) return 0;
   return smoothstep(

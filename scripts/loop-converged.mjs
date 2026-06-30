@@ -71,8 +71,8 @@ function rhythmConverged() {
   const holdVh = scrollable(projectVh) * (detailStart - scatterEnd);
   if (holdVh > 45) return false;
 
-  const heroHoldVh = scrollable(heroVh) * (0.48 - 0.22);
-  if (heroHoldVh > 55) return false;
+  const heroHoldVh = scrollable(heroVh) * (0.32 - 0.1);
+  if (heroHoldVh > 20) return false;
 
   const total =
     scrollable(heroVh) +

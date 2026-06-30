@@ -18,6 +18,7 @@ import {
 } from "@/lib/projects/projectScatter";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
+import { ScrambleWord } from "@/components/ScrambleWord";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { useLocalizedProjects } from "@/hooks/useLocalizedProject";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
@@ -127,19 +128,10 @@ export function ProjectScrollSection({
   }, [pointerTiltRef]);
 
   const sectionEnter = clamp(progress / 0.08, 0, 1);
-  const preDetailFade = clamp(
-    (progress - (PROJECT_DETAIL_START - 0.06)) / 0.06,
-    0,
-    1,
-  );
 
-  const introOpacity = inDetail
-    ? 0
-    : progress < PROJECT_DETAIL_START
-      ? sectionEnter * (1 - preDetailFade)
-      : clamp(1 - (progress - PROJECT_DETAIL_START) / 0.08, 0, 1);
-
-  const introHidden = inDetail || introOpacity < 0.02;
+  // "Work" fades in on enter, then stays put , no fade-out as cards scatter.
+  const introOpacity = sectionEnter;
+  const introHidden = introOpacity < 0.02;
 
   const scatterTForCards = scatterT >= 0.98 ? 1 : scatterT;
   const scatterBackdrop = scatterT >= 0.98;
@@ -178,11 +170,13 @@ export function ProjectScrollSection({
           style={{
             opacity: introOpacity,
             visibility: introHidden ? "hidden" : "visible",
-            transform: `translateY(${(1 - sectionEnter) * 18}px)`,
           }}
         >
-          <h2 className="section-bigword project-scatter-word">Work</h2>
-          <p className="project-scatter-intro">{ui.work.subheading}</p>
+          <ScrambleWord
+            text="Work"
+            className="project-scatter-word"
+            holdScrollUntilDone
+          />
         </div>
 
         {projects.map((project, i) => {

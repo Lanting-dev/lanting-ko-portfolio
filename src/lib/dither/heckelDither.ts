@@ -7,7 +7,7 @@ import { BLUE_NOISE_TILE_SIZE, sampleBlueNoiseTile } from "./blueNoiseTile";
 
 export type HeckelThresholdMode = "bayer" | "blue" | "white" | "blend";
 
-/** Rec. 709 luminance — matches article GLSL weights. */
+/** Rec. 709 luminance , matches article GLSL weights. */
 export function heckelLuminance(r: number, g: number, b: number): number {
   return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
 }
@@ -23,7 +23,7 @@ export function heckelBlueNoiseThreshold(x: number, y: number): number {
   return sampleBlueNoiseTile(x, y);
 }
 
-/** 8×8 Bayer — article `bayerMatrix8x8[y * 8 + x]`. */
+/** 8×8 Bayer , article `bayerMatrix8x8[y * 8 + x]`. */
 export function heckelBayerThreshold(x: number, y: number): number {
   return bayerThreshold(x, y);
 }
@@ -85,7 +85,7 @@ export function heckelQuantizeScalar(
 }
 
 /**
- * Lum-driven stipple gray — dot brightness follows local light/shadow.
+ * Lum-driven stipple gray , dot brightness follows local light/shadow.
  * `level` from Heckel quantize; output scales by lum so bright regions read lighter.
  */
 export function heckelLumDitherGray(
@@ -101,7 +101,7 @@ export function heckelLumDitherGray(
   return Math.round(l * level * 255);
 }
 
-/** Gap tone between stipple dots — still lum-tinted, darker than dots. */
+/** Gap tone between stipple dots , still lum-tinted, darker than dots. */
 export function heckelLumDitherGapGray(
   lum: number,
   x: number,
@@ -115,7 +115,7 @@ export function heckelLumDitherGapGray(
   return Math.round(l * level * 0.38 * 255);
 }
 
-/** Article RGB quantize — per channel with shared threshold. */
+/** Article RGB quantize , per channel with shared threshold. */
 export function heckelQuantizeRgb(
   r: number,
   g: number,

@@ -24,7 +24,7 @@ import {
 } from "@/lib/case-studies/nga";
 import { useCaseStudy } from "@/hooks/useCaseStudy";
 
-/** Reference crop for NGA mockups — viewport window, full PNG revealed on scroll. */
+/** Reference crop for NGA mockups , viewport window, full PNG revealed on scroll. */
 const NGA_MOCKUP_REVEAL_ASPECT: Partial<Record<string, number>> = {
   "drawing-assist": 1024 / 606,
   reactions: 1024 / 619,

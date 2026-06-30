@@ -2,14 +2,14 @@
 
 import { type RefObject } from "react";
 import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
-import { SectionBigWord } from "@/components/SectionBigWord";
+import { ScrambleWord } from "@/components/ScrambleWord";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
 import { AboutCopy } from "./AboutCopy";
 import { AboutCubeScene } from "./AboutCubeScene";
 
 type AboutSectionProps = {
   trackRef?: RefObject<HTMLElement | null>;
-  /** Static stack for reduced-motion — no scroll pin. */
+  /** Static stack for reduced-motion , no scroll pin. */
   staticLayout?: boolean;
 };
 
@@ -24,9 +24,7 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
     <div
       className={`about-layout${staticLayout ? " about-layout--static" : ""}`}
     >
-      <SectionBigWord progress={revealProgress} className="about-bigword">
-        About
-      </SectionBigWord>
+      <ScrambleWord text="About" className="about-bigword" />
 
       <div className="about-cube-wrap">
         <AboutCubeScene aboutProgress={revealProgress} />

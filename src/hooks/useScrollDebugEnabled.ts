@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/** Scroll rhythm HUD — enable with `?scroll-debug=1` or `localStorage.scrollDebug = "1"`. */
+/** Scroll rhythm HUD , enable with `?scroll-debug=1` or `localStorage.scrollDebug = "1"`. */
 export function useScrollDebugEnabled(): boolean {
   const [enabled, setEnabled] = useState(false);
 

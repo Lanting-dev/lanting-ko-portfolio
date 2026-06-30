@@ -12,7 +12,7 @@ const foruAsset = (path: string) => `${path}?v=${FORU_ASSET_VERSION}`;
 export const FORU_CASE_STUDY_ZH = {
   slug: "foru",
   kicker: "For Ü",
-  title: "讓 Amazon Music 走進日常的個人化推薦策略",
+  title: "用 For Ü 讓 Amazon Music 走進日常",
   meta: [
     { label: "專案期程", value: "4 週" },
     { label: "團隊", value: "Allison Chen, Lanting Ko" },

@@ -88,7 +88,7 @@ export function getProjectFocusIndexStable(
   return index;
 }
 
-/** Detail hero slot — left of centre, aligned with `.project-detail-media`. */
+/** Detail hero slot , left of centre, aligned with `.project-detail-media`. */
 const DETAIL_HERO_TARGET = {
   leftPct: 33,
   topPct: 50,
@@ -186,7 +186,7 @@ function getScatterCardLayoutNumeric(
   };
 }
 
-/** 0→1 at the start of each detail segment — drives scatter → hero morph. */
+/** 0→1 at the start of each detail segment , drives scatter → hero morph. */
 export function getHopMorphT(
   projectProgress: number,
   focusIndex: number,
@@ -263,7 +263,7 @@ export function getHopDetailMediaOpacity(
   return opacity;
 }
 
-/** Morphing scatter hero — visible until handoff into detail media completes. */
+/** Morphing scatter hero , visible until handoff into detail media completes. */
 export function getMorphHeroOpacity(
   hopMorphT: number,
   isFocusedMorphing: boolean,

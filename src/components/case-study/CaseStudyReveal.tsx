@@ -10,7 +10,7 @@ type CaseStudyRevealProps = {
   motion?: "none" | "scale";
 };
 
-/** Static passthrough — entrance animations are currently disabled. */
+/** Static passthrough , entrance animations are currently disabled. */
 export function CaseStudyReveal({
   children,
   className = "",

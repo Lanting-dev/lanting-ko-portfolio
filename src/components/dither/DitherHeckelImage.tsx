@@ -33,7 +33,7 @@ type DitherHeckelImageProps = {
   fit?: "cover" | "contain";
   revealRange?: readonly [number, number];
   progressRef?: RefObject<number>;
-  /** Full-screen intro — lower internal res, pixel size 2 like article demo. */
+  /** Full-screen intro , lower internal res, pixel size 2 like article demo. */
   useIntroLayout?: boolean;
   onReady?: () => void;
 };

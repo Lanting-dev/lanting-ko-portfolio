@@ -12,7 +12,7 @@ export const ABOUT_RICOCHET_END = 0.4;
 /** Scroll progress: cube finishes isometric spin */
 export const ABOUT_SPIN_END_PROGRESS = 0.76;
 
-/** About rider handoff — after entry fall impacts profile (mirrors Hero→Project settle). */
+/** About rider handoff , after entry fall impacts profile (mirrors Hero→Project settle). */
 export const ABOUT_BALL_HANDOFF = ABOUT_DROP_END;
 
 /** @deprecated use ABOUT_BALL_HANDOFF */

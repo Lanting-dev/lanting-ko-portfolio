@@ -3,21 +3,21 @@ import { isSafari } from "@/lib/browser/isSafari";
 import type { BlockScale } from "./blockReveal";
 import { DITHER_MACRO_SCALE, DITHER_MESO_SCALE } from "./blockReveal";
 
-/** Safari + narrow viewports — lower canvas res and frame rate. */
+/** Safari + narrow viewports , lower canvas res and frame rate. */
 function isLowPowerCanvas(): boolean {
   if (typeof window === "undefined") return false;
   return isSafari() || isMobileViewport();
 }
 
-/** CSS-pixel defaults — scaled by devicePixelRatio at render time. */
+/** CSS-pixel defaults , scaled by devicePixelRatio at render time. */
 export const DITHER_PIXEL_SIZE = 2;
-/** Heckel `colorNum` — 4 = smooth gradients; 2 = harsh B/W print. */
+/** Heckel `colorNum` , 4 = smooth gradients; 2 = harsh B/W print. */
 export const DITHER_COLOR_NUM = 4;
-/** Bayer + blue noise blend — structured pattern with softer organic breakup. */
+/** Bayer + blue noise blend , structured pattern with softer organic breakup. */
 export const DITHER_THRESHOLD_MODE = "blend" as const;
 export const DITHER_BLUE_BLEND = 0.35;
 
-/** Cross (+) halftone cell size in buffer pixels — visible star arms. */
+/** Cross (+) halftone cell size in buffer pixels , visible star arms. */
 export const CROSS_HALFTONE_CELL = 4;
 export const CROSS_HALFTONE_ARM_WIDTH = 1;
 
@@ -26,23 +26,23 @@ export const CROSS_STITCH_CELL = 6;
 export const CROSS_STITCH_INSET = 1;
 export const CROSS_STITCH_THREAD = 1;
 
-/** Project cards — coarser 4×4 X for visible stitch texture. */
+/** Project cards , coarser 4×4 X for visible stitch texture. */
 export const CROSS_STITCH_CELL_CARD = 4;
 export const CROSS_STITCH_INSET_CARD = 0;
 export const CROSS_STITCH_THREAD_CARD = 1;
 
-/** Live grain on stitch threads — used during drift dissolve. */
+/** Live grain on stitch threads , used during drift dissolve. */
 export const CROSS_STITCH_NOISE_AMP = 14;
 export const CROSS_STITCH_NOISE_DROPOUT = 0.04;
 /** Horizontal sand scatter at drift=1 (buffer px). */
 export const CROSS_STITCH_DRIFT_SPREAD = 11;
-/** Downward fall distance at drift=1 — applied with gravity ease. */
+/** Downward fall distance at drift=1 , applied with gravity ease. */
 export const CROSS_STITCH_DRIFT_FALL = 36;
 /** Max sand pile height as fraction of canvas (at drift=1). */
 export const CROSS_STITCH_PILE_BAND = 0.14;
-/** Intro exit — taller heap so sand reads flush with viewport bottom. */
+/** Intro exit , taller heap so sand reads flush with viewport bottom. */
 export const CROSS_STITCH_INTRO_PILE_BAND = 0.32;
-/** Footer sand garden — pile within the dome, not a thin strip. */
+/** Footer sand garden , pile within the dome, not a thin strip. */
 export const CROSS_STITCH_FOOTER_PILE_BAND = 0.48;
 
 export type DitherRenderMode = "heckel" | "cross";
@@ -54,7 +54,7 @@ export function ditherDeviceScale(): number {
   return Math.min(window.devicePixelRatio || 1, 2);
 }
 
-/** Internal canvas scale — low-power targets render smaller and upscale via CSS. */
+/** Internal canvas scale , low-power targets render smaller and upscale via CSS. */
 export function ditherRenderScale(): number {
   return isLowPowerCanvas() ? 0.5 : 1;
 }
@@ -130,7 +130,7 @@ export function ditherBufferLayout(
   return { bufferW, bufferH, pixelSize };
 }
 
-/** Full-screen intro — lower internal res, capped pixels (all browsers). */
+/** Full-screen intro , lower internal res, capped pixels (all browsers). */
 export function introBufferLayout(
   cssW: number,
   cssH: number,
@@ -152,7 +152,7 @@ export function introBufferLayout(
   return { bufferW, bufferH, pixelSize };
 }
 
-/** Project card stitch — lower internal res so X reads like intro. */
+/** Project card stitch , lower internal res so X reads like intro. */
 export function cardStitchBufferLayout(
   cssW: number,
   cssH: number,
@@ -172,7 +172,7 @@ export function cardStitchBufferLayout(
   return { bufferW, bufferH, pixelSize: DITHER_PIXEL_SIZE };
 }
 
-/** Intro canvas target ~30fps — steadier than uneven heavy frames. */
+/** Intro canvas target ~30fps , steadier than uneven heavy frames. */
 export function introFrameIntervalMs(): number {
   return isLowPowerCanvas() ? 50 : 33;
 }

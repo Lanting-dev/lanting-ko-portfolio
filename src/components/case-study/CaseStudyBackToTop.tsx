@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
-/** Floating circular "back to top" button — appears after scrolling down. */
+/** Floating circular "back to top" button , appears after scrolling down. */
 export function CaseStudyBackToTop() {
   const { ui } = useLocale();
   const [visible, setVisible] = useState(false);

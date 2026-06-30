@@ -31,17 +31,17 @@ export type HeckelImageRenderConfig = {
   blueBlend?: number;
   /** 0 = full Heckel dither, 1 = sharp source pixels */
   reveal?: number;
-  /** Stagger reveal by block — intro only. */
+  /** Stagger reveal by block , intro only. */
   blockReveal?: boolean;
   blockRevealSeed?: number;
   macroScale?: BlockScale;
   mesoScale?: BlockScale;
-  /** Canvas fill outside image bounds — default white. */
+  /** Canvas fill outside image bounds , default white. */
   backgroundRgb?: [number, number, number];
 };
 
 /**
- * Heckel post-process — pixel snap, sample image, RGB quantize + Bayer dither.
+ * Heckel post-process , pixel snap, sample image, RGB quantize + Bayer dither.
  * @see https://blog.maximeheckel.com/posts/the-art-of-dithering-and-retro-shading-web/
  */
 export function renderHeckelImageDither(

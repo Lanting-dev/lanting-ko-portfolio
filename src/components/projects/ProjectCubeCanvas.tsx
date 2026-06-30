@@ -4,14 +4,13 @@ import { useTexture } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import {
-  CUBE_FACE_PALETTE,
-  CUBE_FACE_STITCH_SEED,
-  type CubeFaceId,
-} from "@/lib/about/cubeFacePalette";
-import { StitchCanvasTexture } from "@/lib/about/stitchThreeTexture";
+import { cubeFaceColor, type CubeFaceId } from "@/lib/about/cubeFacePalette";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { PointerTiltRef } from "@/components/projects/ProjectCubeScene";
+
+function faceColor(id: CubeFaceId): THREE.Color {
+  return new THREE.Color(cubeFaceColor(id));
+}
 
 const DEG = Math.PI / 180;
 /** Portrait front face matches the project card art (600 × 755). */
@@ -19,7 +18,7 @@ const CARD_ASPECT = 600 / 755;
 const BOX_W = 1;
 const BOX_H = BOX_W / CARD_ASPECT;
 const BOX_D = 0.42;
-/** Resting 3D pose — cards tilt when not scroll-centred. */
+/** Resting 3D pose , cards tilt when not scroll-centred. */
 const BASE_YAW = -0.5;
 const BASE_PITCH = 0.26;
 const ROT_LERP = 0.12;
@@ -76,7 +75,6 @@ function DemandRenderOnChange({
 function ProjectCube({
   greySrc,
   colorSrc,
-  seed,
   engagedRef,
   engaged,
   focusedRef,
@@ -88,7 +86,6 @@ function ProjectCube({
 }: {
   greySrc: string;
   colorSrc: string;
-  seed: number;
   engagedRef: EngagedRef;
   engaged: boolean;
   focusedRef: { current: boolean };
@@ -113,41 +110,15 @@ function ProjectCube({
   const groupRef = useRef<THREE.Group>(null);
   const colorPlaneRef = useRef<THREE.MeshBasicMaterial>(null);
 
-  const stitch = useMemo(() => {
-    const make = (id: CubeFaceId) =>
-      new StitchCanvasTexture(
-        CUBE_FACE_PALETTE[id],
-        CUBE_FACE_STITCH_SEED[id] + seed,
-      );
-    return {
-      right: make("right"),
-      left: make("left"),
-      top: make("top"),
-      bottom: make("bottom"),
-      back: make("back"),
-    };
-  }, [seed]);
-
-  useEffect(
-    () => () => {
-      stitch.right.dispose();
-      stitch.left.dispose();
-      stitch.top.dispose();
-      stitch.bottom.dispose();
-      stitch.back.dispose();
-    },
-    [stitch],
-  );
-
   const sideMaterials = useMemo(
     () => [
-      new THREE.MeshBasicMaterial({ map: stitch.right.texture }),
-      new THREE.MeshBasicMaterial({ map: stitch.left.texture }),
-      new THREE.MeshBasicMaterial({ map: stitch.top.texture }),
-      new THREE.MeshBasicMaterial({ map: stitch.bottom.texture }),
-      new THREE.MeshBasicMaterial({ map: stitch.back.texture }),
+      new THREE.MeshBasicMaterial({ color: faceColor("right") }),
+      new THREE.MeshBasicMaterial({ color: faceColor("left") }),
+      new THREE.MeshBasicMaterial({ color: faceColor("top") }),
+      new THREE.MeshBasicMaterial({ color: faceColor("bottom") }),
+      new THREE.MeshBasicMaterial({ color: faceColor("back") }),
     ],
-    [stitch],
+    [],
   );
 
   const greyFrontMaterial = useMemo(
@@ -332,7 +303,6 @@ type ProjectCubeCanvasProps = {
   colorSrc: string;
   width: number;
   height: number;
-  seed: number;
   hovered: boolean;
   focused: boolean;
   pointerTiltRef?: PointerTiltRef;
@@ -345,7 +315,6 @@ export default function ProjectCubeCanvas({
   colorSrc,
   width,
   height,
-  seed,
   hovered,
   focused,
   pointerTiltRef,
@@ -406,7 +375,6 @@ export default function ProjectCubeCanvas({
         <ProjectCube
           greySrc={greySrc}
           colorSrc={colorSrc}
-          seed={seed}
           engagedRef={engagedRef}
           engaged={engaged}
           focusedRef={focusedRef}

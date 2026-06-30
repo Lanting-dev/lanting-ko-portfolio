@@ -29,10 +29,8 @@ export const CUBE_FACE_PALETTE: Record<CubeFaceId, CubeFaceTone> = {
   },
 };
 
-export const CUBE_FACE_STITCH_SEED: Record<CubeFaceId, number> = {
-  top: 211,
-  right: 227,
-  left: 243,
-  back: 259,
-  bottom: 271,
-};
+/** CSS rgb() string for a cube face's flat fill colour. */
+export function cubeFaceColor(id: CubeFaceId): string {
+  const [r, g, b] = CUBE_FACE_PALETTE[id].background;
+  return `rgb(${r},${g},${b})`;
+}

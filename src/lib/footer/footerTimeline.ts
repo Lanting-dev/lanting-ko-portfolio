@@ -22,7 +22,7 @@ function easeInCubic(t: number): number {
   return t * t * t;
 }
 
-/** Scroll-triggered footer — sand forms → ball drops → impact scatter → copy. */
+/** Scroll-triggered footer , sand forms → ball drops → impact scatter → copy. */
 export function getFooterTimelineValues(t: number): FooterTimelineValues {
   const clamped = clamp(t, 0, 1);
   const sandProgress = easeOutCubic(phase(clamped, 0, 0.22));

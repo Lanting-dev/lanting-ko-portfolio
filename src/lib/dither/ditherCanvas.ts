@@ -32,7 +32,7 @@ export type DitherRenderConfig = DitherLumGridConfig & {
 };
 
 /**
- * Scatter overlay — same Heckel RGB quantize when image lum source is provided.
+ * Scatter overlay , same Heckel RGB quantize when image lum source is provided.
  */
 export function renderDitherScatter(
   ctx: CanvasRenderingContext2D,
