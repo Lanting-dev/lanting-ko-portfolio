@@ -17,8 +17,10 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
   // Drives the big word, cube spin, and copy. Re-renders only while the about
   // track is scrubbing (aboutProgress is pinned at 1 through the footer).
   const aboutProgress = useParallaxValue((s) => s.aboutProgress);
+  const projectProgress = useParallaxValue((s) => s.projectProgress);
   const aboutTrackVh = useScrollTrackVh("about");
   const revealProgress = staticLayout ? 1 : aboutProgress;
+  const workIncomplete = !staticLayout && projectProgress < 0.995;
 
   const layout = (
     <div
@@ -52,7 +54,9 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
       id="about"
       className="about-scroll-pin relative w-full bg-white"
       style={{ height: `${aboutTrackVh}vh` }}
+      data-work-incomplete={workIncomplete ? "true" : undefined}
       aria-label="About Lan-Ting Ko"
+      aria-hidden={workIncomplete}
     >
       <div className="about-scroll-sticky page-shell relative z-[1]">
         {layout}

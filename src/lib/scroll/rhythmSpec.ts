@@ -3,10 +3,8 @@ import { FOOTER_SCROLL_VH } from "@/lib/footer/footerScroll";
 import { PARALLAX_PHASE } from "@/lib/parallax/heroParallax";
 import type { ParallaxSnapshot } from "@/lib/parallax/parallaxSnapshot";
 import {
-  PROJECT_DETAIL_START,
   PROJECT_EXIT_SCROLL_FRACTION,
-  PROJECT_SCATTER_END,
-  PROJECT_SCATTER_START,
+  PROJECT_STACK_INTRO_END,
   PROJECT_SCROLL_VH,
 } from "@/lib/projects/projectScroll";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
@@ -106,7 +104,7 @@ export type ScrollPhase =
   | { section: "hero"; phase: "peek" | "hold" | "ball_fall" }
   | {
       section: "project";
-      phase: "enter" | "scatter" | "hold" | "detail" | "exit";
+      phase: "enter" | "stack" | "exit";
       cardIndex?: number;
     }
   | { section: "about"; phase: "ricochet" | "cube_spin" | "settle" }
@@ -159,14 +157,8 @@ export function getScrollPhase(snapshot: ParallaxSnapshot): ScrollPhase {
   }
 
   if (projectProgress > 0 && projectProgress < 1) {
-    if (projectProgress < PROJECT_SCATTER_START) {
+    if (projectProgress < PROJECT_STACK_INTRO_END) {
       return { section: "project", phase: "enter" };
-    }
-    if (projectProgress < PROJECT_SCATTER_END) {
-      return { section: "project", phase: "scatter" };
-    }
-    if (projectProgress < PROJECT_DETAIL_START) {
-      return { section: "project", phase: "hold" };
     }
 
     const exitStart = 1 - PROJECT_EXIT_SCROLL_FRACTION;
@@ -175,12 +167,16 @@ export function getScrollPhase(snapshot: ParallaxSnapshot): ScrollPhase {
     }
 
     const count = VISIBLE_PROJECTS.length;
-    const seg = count > 0 ? (exitStart - PROJECT_DETAIL_START) / count : 1;
+    const stackSpan = exitStart - PROJECT_STACK_INTRO_END;
+    const stackT =
+      stackSpan > 0
+        ? (projectProgress - PROJECT_STACK_INTRO_END) / stackSpan
+        : 0;
     const cardIndex = Math.min(
       count - 1,
-      Math.max(0, Math.floor((projectProgress - PROJECT_DETAIL_START) / seg)),
+      Math.max(0, Math.floor(stackT * count)),
     );
-    return { section: "project", phase: "detail", cardIndex };
+    return { section: "project", phase: "stack", cardIndex };
   }
 
   if (aboutProgress > 0 && aboutProgress < 1) {
@@ -208,17 +204,15 @@ export function getScrollPhase(snapshot: ParallaxSnapshot): ScrollPhase {
 
 export function formatScrollPhase(phase: ScrollPhase): string {
   const section = phase.section === "project" ? "work" : phase.section;
-  if (phase.section === "project" && phase.phase === "detail") {
-    return `${section}.detail[${phase.cardIndex ?? 0}]`;
+  if (phase.section === "project" && phase.phase === "stack") {
+    return `${section}.stack[${phase.cardIndex ?? 0}]`;
   }
   return `${section}.${phase.phase}`;
 }
 
 export const RHYTHM_MILESTONES = [
   { id: "hero.ball_detach", section: "hero" as const, at: PARALLAX_PHASE.morphEnd },
-  { id: "work.scatter_start", section: "project" as const, at: PROJECT_SCATTER_START },
-  { id: "work.scatter_done", section: "project" as const, at: PROJECT_SCATTER_END },
-  { id: "work.detail_start", section: "project" as const, at: PROJECT_DETAIL_START },
+  { id: "work.stack_start", section: "project" as const, at: PROJECT_STACK_INTRO_END },
   {
     id: "work.exit_start",
     section: "project" as const,
@@ -231,22 +225,6 @@ export const RHYTHM_MILESTONES = [
 
 export function diagnoseRhythm(): RhythmFlag[] {
   const flags: RhythmFlag[] = [];
-
-  const holdVh = progressSpanVh(
-    "project",
-    PROJECT_SCATTER_END,
-    PROJECT_DETAIL_START,
-  );
-  if (holdVh > 45) {
-    flags.push({
-      type: "dead_zone",
-      section: "project",
-      range: [PROJECT_SCATTER_END, PROJECT_DETAIL_START],
-      vhApprox: holdVh,
-      severity: holdVh > 60 ? "high" : "medium",
-      message: `Work hold gap ${(PROJECT_SCATTER_END * 100).toFixed(0)} to ${(PROJECT_DETAIL_START * 100).toFixed(0)}% (~${holdVh.toFixed(0)}vh)`,
-    });
-  }
 
   const heroHoldVh = progressSpanVh("hero", PARALLAX_PHASE.fallEnd, PARALLAX_PHASE.morphEnd);
   if (heroHoldVh > 20) {

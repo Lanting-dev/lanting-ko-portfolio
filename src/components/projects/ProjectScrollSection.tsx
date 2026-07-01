@@ -1,140 +1,37 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import { clamp } from "@/lib/parallax/interpolate";
-import {
-  PROJECT_DETAIL_START,
-} from "@/lib/projects/projectScroll";
-import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
-import {
-  computeScatterProgress,
-  getHopDetailMediaOpacity,
-  getHopInPanelImageBlend,
-  getHopMorphT,
-  getProjectFocusIndexStable,
-  getScatterCardLayout,
-  HOP_DETAIL_EXIT_END,
-  isProjectHop,
-} from "@/lib/projects/projectScatter";
+import { useCallback, useRef, type RefObject, type CSSProperties } from "react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
-import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
+import { projectStackLayout } from "@/lib/projects/projectStack";
 import { ScrambleWord } from "@/components/ScrambleWord";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { useLocalizedProjects } from "@/hooks/useLocalizedProject";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { ProjectCard } from "./ProjectCard";
-import type { PointerTiltRef } from "./ProjectCubeScene";
-import { ProjectDetailStage } from "./ProjectDetailStage";
+import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
+import { ProjectStackCard } from "./ProjectStackCard";
 
 type ProjectScrollSectionProps = {
   trackRef?: RefObject<HTMLElement | null>;
 };
 
+function stackRoomStyle(layout: ReturnType<typeof projectStackLayout>): CSSProperties {
+  return {
+    height: `${layout.scrollRoom}vh`,
+    ["--project-stack-card-body-vh" as string]: `${layout.cardBody}vh`,
+    ["--project-stack-card-step-vh" as string]: `${layout.cardStep}vh`,
+  };
+}
+
 export function ProjectScrollSection({
   trackRef,
 }: ProjectScrollSectionProps) {
-  const { ui } = useLocale();
   const projects = useLocalizedProjects(VISIBLE_PROJECTS);
-  const progress = useParallaxValue((s) => s.projectProgress);
-  const projectTrackVh = useScrollTrackVh("project");
-  const focusIndexRef = useRef(-1);
-  const wasDetailSettledRef = useRef(false);
-  const settledProjectIndexRef = useRef(0);
+  const isMobile = useIsMobile();
+  const stackLayout = projectStackLayout(isMobile, projects.length);
   const reducedMotion = usePrefersReducedMotion();
-  const pointerTiltRef = useRef({ x: 0, y: 0 }) as PointerTiltRef;
-  const [pointerEngaged, setPointerEngaged] = useState(false);
-
-  const scatterT = computeScatterProgress(progress);
-  const focusIndex = getProjectFocusIndexStable(progress, focusIndexRef.current);
-  focusIndexRef.current = focusIndex;
-  const inDetail = focusIndex >= 0;
-  const hopMorphT = getHopMorphT(progress, focusIndex);
-  const hopMorphComplete = reducedMotion || hopMorphT >= 1;
-  const scatterHold = scatterT >= 0.98 && progress < PROJECT_DETAIL_START;
-
-  if (hopMorphComplete && focusIndex >= 0) {
-    wasDetailSettledRef.current = true;
-    settledProjectIndexRef.current = focusIndex;
-  }
-
-  if (!inDetail) {
-    wasDetailSettledRef.current = false;
-  }
-
-  const carryFromSettled =
-    wasDetailSettledRef.current &&
-    inDetail &&
-    hopMorphT < HOP_DETAIL_EXIT_END &&
-    focusIndex !== settledProjectIndexRef.current;
-
-  const hoppingInPanel = isProjectHop(
-    inDetail,
-    hopMorphT,
-    focusIndex,
-    settledProjectIndexRef.current,
-    wasDetailSettledRef.current,
-  );
-
-  const hopImageBlend = hoppingInPanel ? getHopInPanelImageBlend(hopMorphT) : 1;
-
-  const detailMediaOpacity = reducedMotion
-    ? inDetail
-      ? 1
-      : 0
-    : hoppingInPanel
-      ? 1
-      : getHopDetailMediaOpacity(
-          hopMorphT,
-          inDetail,
-          carryFromSettled,
-          false,
-        );
-
-  const entryCopyOpacity =
-    inDetail && !hoppingInPanel && !hopMorphComplete
-      ? reducedMotion
-        ? 1
-        : clamp((hopMorphT - 0.25) / 0.35, 0, 1)
-      : 1;
-
-  const detailProject = projects[focusIndex >= 0 ? focusIndex : 0] ?? projects[0];
-  const fromDetailProject =
-    settledProjectIndexRef.current >= 0
-      ? projects[settledProjectIndexRef.current]
-      : detailProject;
-
-  useEffect(() => {
-    if (inDetail) {
-      pointerTiltRef.current = { x: 0, y: 0 };
-    }
-  }, [inDetail, pointerTiltRef]);
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (inDetail || reducedMotion) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      pointerTiltRef.current = {
-        x: clamp(((e.clientX - rect.left) / rect.width - 0.5) * 2, -1, 1),
-        y: clamp(((e.clientY - rect.top) / rect.height - 0.5) * 2, -1, 1),
-      };
-      setPointerEngaged(true);
-    },
-    [inDetail, reducedMotion, pointerTiltRef],
-  );
-
-  const handlePointerLeave = useCallback(() => {
-    pointerTiltRef.current = { x: 0, y: 0 };
-    setPointerEngaged(false);
-  }, [pointerTiltRef]);
-
-  const sectionEnter = clamp(progress / 0.08, 0, 1);
-
-  // "Work" fades in on enter, then stays put , no fade-out as cards scatter.
-  const introOpacity = sectionEnter;
-  const introHidden = introOpacity < 0.02;
-
-  const scatterTForCards = scatterT >= 0.98 ? 1 : scatterT;
-  const scatterBackdrop = scatterT >= 0.98;
+  const workImpactRef = useRef<HTMLDivElement>(null);
+  const projectProgress = useParallaxValue((s) => s.projectProgress);
+  const headingPinned = projectProgress > 0.01 && projectProgress < 0.995;
 
   const setPinTrackRef = useCallback(
     (node: HTMLElement | null) => {
@@ -143,96 +40,62 @@ export function ProjectScrollSection({
     [trackRef],
   );
 
+  if (reducedMotion) {
+    return (
+      <section id="work" className="project-stack-static page-shell py-14 md:py-20">
+        <ScrambleWord text="Work" className="project-stack-static-word" />
+        <ul className="project-stack-static-list">
+          {projects.map((project, index) => (
+            <li key={project.id}>
+              <ProjectStackCard project={project} index={index} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
   return (
     <section
       ref={setPinTrackRef}
       id="work"
-      className="project-scroll-pin relative w-full"
-      style={{ height: `${projectTrackVh}vh` }}
+      className="project-stack-pin relative w-full"
+      style={{ height: `${stackLayout.section}vh` }}
+      data-work-impact
     >
       <div
-        className="project-scatter-sticky sticky top-0 mx-auto flex h-dvh w-full max-w-[1440px] flex-col items-center justify-center page-shell"
-        data-detail-active={inDetail ? "true" : "false"}
-        data-scatter-phase={
-          scatterT < 0.04
-            ? "cluster"
-            : scatterT < 0.98
-              ? "scatter"
-              : scatterHold
-                ? "hold"
-                : "detail"
-        }
-        onPointerMove={!inDetail && !reducedMotion ? handlePointerMove : undefined}
-        onPointerLeave={!inDetail ? handlePointerLeave : undefined}
+        className={`project-stack-heading page-shell${headingPinned ? " is-pinned" : ""}`}
+        aria-hidden={!headingPinned}
       >
-        <div
-          className="project-scatter-center"
-          style={{
-            opacity: introOpacity,
-            visibility: introHidden ? "hidden" : "visible",
-          }}
-        >
-          <ScrambleWord
-            text="Work"
-            className="project-scatter-word"
-            holdScrollUntilDone
-          />
-        </div>
-
-        {projects.map((project, i) => {
-          const layout = getScatterCardLayout(
-            i,
-            scatterTForCards,
-            progress,
-            scatterBackdrop,
-          );
-          const isFocused = inDetail && i === focusIndex;
-          const cardOpacity = scatterT >= 0.98 ? 1 : layout.opacity;
-
-          return (
-            <div
-              key={project.id}
-              className={`project-scatter-card${isFocused ? " is-focused" : ""}${scatterT < 0.98 ? " is-clustered" : ""}`}
-              style={{
-                left: layout.left,
-                top: layout.top,
-                opacity: cardOpacity,
-                transform: layout.transform,
-                zIndex: layout.zIndex,
-              }}
-            >
-              <ProjectCard
-                project={project}
-                cardIndex={i}
-                backdrop
-                focused={false}
-                scatterInteractive={!inDetail}
-                pointerTiltRef={pointerTiltRef}
-                pointerEngaged={pointerEngaged}
-              />
-            </div>
-          );
-        })}
-
-        <div
-          className="project-detail-wrap"
-          aria-hidden={!inDetail}
-          style={{
-            opacity: inDetail ? 1 : 0,
-            visibility: inDetail ? "visible" : "hidden",
-            pointerEvents: inDetail ? "auto" : "none",
-          }}
-        >
-          <ProjectDetailStage
-            project={detailProject}
-            fromProject={fromDetailProject}
-            imageBlend={hopImageBlend}
-            visible={inDetail}
-            mediaOpacity={detailMediaOpacity}
-            entryCopyOpacity={entryCopyOpacity}
-          />
-        </div>
+        <ScrambleWord text="Work" className="project-stack-word" />
       </div>
+
+      <div
+        className="project-stack-intro-spacer"
+        style={{ height: `${stackLayout.intro}vh` }}
+        aria-hidden="true"
+      />
+
+      <div
+        className="project-stack-scroll-room page-shell"
+        style={stackRoomStyle(stackLayout)}
+      >
+        {projects.map((project, index) => (
+          <ProjectStackCard
+            key={project.id}
+            project={project}
+            index={index}
+            impactRef={index === 0 ? workImpactRef : undefined}
+            stackOffsetVh={index > 0 ? stackLayout.cardStep : 0}
+          />
+        ))}
+      </div>
+
+      <div
+        className="project-stack-exit-segment"
+        style={{ height: `${stackLayout.exit}vh` }}
+        aria-hidden="true"
+      />
     </section>
   );
 }

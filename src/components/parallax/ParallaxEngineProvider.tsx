@@ -20,9 +20,8 @@ import {
   type ParallaxSnapshot,
 } from "@/lib/parallax/parallaxSnapshot";
 
-/** About track leads its progress by ~0.46vh so the rising cube meets the ball
- *  exactly when the bounce should fire (matches the old `aboutLead`). */
-const ABOUT_LEAD_RATIO = 0.46;
+/** About progress starts when the About track enters the viewport (no lead-in). */
+const ABOUT_LEAD_RATIO = 0;
 
 type FrameCb = (snapshot: ParallaxSnapshot) => void;
 

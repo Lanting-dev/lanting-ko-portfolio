@@ -619,6 +619,245 @@ a:hover {
   overflow: visible;
 }
 
+/* ,,, Work card stack , sticky peel with peeking headers ,,, */
+.project-stack-pin {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  overflow: visible;
+  --project-stack-heading-top: clamp(0.5rem, 2.5vh, 2rem);
+  --project-stack-card-top-base: clamp(4.75rem, 11vh, 6.25rem);
+  --project-stack-card-top-step: 44px;
+}
+
+.project-stack-heading {
+  position: absolute;
+  top: var(--project-stack-heading-top);
+  left: 0;
+  right: 0;
+  z-index: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  text-align: left;
+  pointer-events: none;
+}
+
+.project-stack-heading.is-pinned {
+  position: fixed;
+  top: var(--project-stack-heading-top);
+  height: auto;
+  overflow: visible;
+  visibility: visible;
+}
+
+.project-stack-intro-spacer {
+  pointer-events: none;
+}
+
+.project-stack-word {
+  font-size: var(--type-bigword);
+  text-align: left;
+  line-height: 0.95;
+}
+
+.project-stack-scroll-room {
+  position: relative;
+}
+
+.project-stack-card {
+  position: -webkit-sticky;
+  position: sticky;
+  top: calc(
+    var(--project-stack-card-top-base) +
+      var(--stack-index, 0) * var(--project-stack-card-top-step)
+  );
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  padding-top: clamp(0.35rem, 1vh, 0.65rem);
+  isolation: isolate;
+  will-change: transform;
+}
+
+.project-stack-card-tab {
+  position: absolute;
+  top: 0;
+  left: clamp(1.25rem, 3vw, 2.5rem);
+  z-index: 2;
+  margin: 0;
+  padding: 0.45rem 1rem 0.35rem;
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  background: rgb(255 255 255 / 0.62);
+  box-shadow:
+    0 8px 24px rgb(0 0 0 / 0.05),
+    0 1px 0 rgb(255 255 255 / 0.8) inset;
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  backdrop-filter: blur(24px) saturate(1.25);
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(0.62rem, 0.82vw, 0.74rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(0 0 0 / 0.82);
+  white-space: nowrap;
+}
+
+.project-stack-card-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: stretch;
+  height: var(--project-stack-card-body-vh, 62vh);
+  min-height: 0;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: clamp(24px, 3.5vw, 40px);
+  background: rgb(255 255 255 / 0.62);
+  box-shadow:
+    0 24px 60px rgb(0 0 0 / 0.07),
+    0 1px 0 rgb(255 255 255 / 0.8) inset;
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  backdrop-filter: blur(24px) saturate(1.25);
+  overflow: hidden;
+  contain: layout style;
+}
+
+.project-stack-card-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.65rem, 1.4vh, 1rem);
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.project-stack-card-index {
+  margin: 0;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(0.72rem, 0.95vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(0 0 0 / 0.45);
+}
+
+.project-stack-card-title {
+  margin: 0;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: rgb(0 0 0 / 0.92);
+}
+
+.project-stack-card-meta {
+  margin: 0;
+  font-size: clamp(0.78rem, 1vw, 0.9rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgb(0 0 0 / 0.58);
+}
+
+.project-stack-card-desc {
+  margin: 0;
+  max-width: 36ch;
+  font-size: clamp(0.92rem, 1.15vw, 1.05rem);
+  line-height: 1.55;
+  color: rgb(0 0 0 / 0.68);
+}
+
+.project-stack-card-cta {
+  align-self: flex-start;
+  margin-top: clamp(0.35rem, 1vh, 0.75rem);
+}
+
+.project-stack-card-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  height: 100%;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  border-radius: clamp(16px, 2vw, 24px);
+  background: rgb(255 255 255 / 0.35);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.75);
+  overflow: hidden;
+}
+
+.project-stack-card-art {
+  position: relative;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center 42%;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .project-stack-card-tab,
+  .project-stack-card-inner {
+    background: rgb(255 255 255 / 0.94);
+  }
+
+  .project-stack-card-media {
+    background: rgb(248 248 248 / 0.96);
+  }
+}
+
+.project-stack-static-word {
+  font-size: var(--type-bigword);
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+.project-stack-static-list {
+  display: grid;
+  gap: clamp(1.25rem, 3vh, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-stack-static-list .project-stack-card {
+  position: relative;
+  top: auto;
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  .project-stack-card-tab {
+    left: clamp(0.85rem, 4vw, 1.25rem);
+    max-width: calc(100% - 2rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .project-stack-card-inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 38%) minmax(0, 1fr);
+    height: var(--project-stack-card-body-vh, 72vh);
+    padding: clamp(1rem, 4vw, 1.35rem);
+  }
+
+  .project-stack-card-media {
+    order: -1;
+    min-height: 0;
+  }
+
+  .project-stack-card-art {
+    min-height: 0;
+  }
+}
+
 .project-scroll-sticky {
   position: -webkit-sticky;
   position: sticky;
@@ -1162,6 +1401,11 @@ a:hover {
   z-index: 1;
   isolation: isolate;
   margin-top: var(--section-gap);
+}
+
+.about-scroll-pin[data-work-incomplete="true"] {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .about-layout--static {
@@ -4707,27 +4951,35 @@ a:hover {
   grid-template-columns: 1fr auto;
   grid-template-rows: auto auto;
   gap: 0.75rem 1rem;
-  padding: 0.75rem;
-  border: 2px solid #000000;
-  border-radius: 16px;
+  padding: 0.85rem;
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: clamp(18px, 4.5vw, 22px);
   text-decoration: none;
   color: inherit;
-  background: #ffffff;
+  background: rgb(255 255 255 / 0.62);
+  box-shadow:
+    0 20px 48px rgb(0 0 0 / 0.07),
+    0 1px 0 rgb(255 255 255 / 0.8) inset;
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  backdrop-filter: blur(24px) saturate(1.25);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  contain: layout style;
 }
 
 .lab-mobile-card:focus-visible {
-  outline: 2px solid #111;
-  outline-offset: 2px;
+  outline: 2px solid rgb(0 0 0 / 0.35);
+  outline-offset: 3px;
 }
 
 .lab-mobile-card-media {
   grid-column: 1 / -1;
   aspect-ratio: 16 / 10;
-  border-radius: 10px;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  border-radius: clamp(12px, 3vw, 14px);
   overflow: hidden;
-  background: #000000;
+  background: rgb(255 255 255 / 0.35);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.75);
 }
 
 .lab-mobile-card-media-el {
@@ -4741,6 +4993,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  min-width: 0;
 }
 
 .lab-mobile-card-tag {
@@ -4748,24 +5001,37 @@ a:hover {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgb(0 0 0 /0.45);
+  color: rgb(0 0 0 / 0.45);
 }
 
 .lab-mobile-card-title {
   font-family: var(--font-sora), system-ui, sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
+  line-height: 1.2;
+  color: rgb(0 0 0 / 0.92);
 }
 
 .lab-mobile-card-year {
   font-size: 0.75rem;
-  color: rgb(0 0 0 /0.45);
+  color: rgb(0 0 0 / 0.45);
 }
 
 .lab-mobile-card-cta {
   align-self: end;
   font-size: 0.8rem;
   font-weight: 500;
+  color: rgb(0 0 0 / 0.68);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lab-mobile-card {
+    background: rgb(255 255 255 / 0.94);
+  }
+
+  .lab-mobile-card-media {
+    background: rgb(248 248 248 / 0.96);
+  }
 }
 
 /* Lab showcase page */

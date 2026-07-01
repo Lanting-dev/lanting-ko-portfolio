@@ -58,24 +58,17 @@ function mobileScrollableVh() {
 }
 
 function rhythmConverged() {
-  const scatterEnd = num("src/lib/projects/projectScroll.ts", "PROJECT_SCATTER_END");
-  const detailStart = num(
-    "src/lib/projects/projectScroll.ts",
-    "PROJECT_DETAIL_START",
-  );
   const projectVh = num("src/lib/projects/projectScroll.ts", "PROJECT_SCROLL_VH");
   const heroVh = num("src/lib/scroll/rhythmSpec.ts", "HERO_SCROLL_VH");
+  const heroSticky = num("src/lib/scroll/rhythmSpec.ts", "HERO_STICKY_VH");
   const aboutVh = num("src/lib/about/aboutScroll.ts", "ABOUT_SCROLL_VH");
   const footerVh = num("src/lib/footer/footerScroll.ts", "FOOTER_SCROLL_VH");
 
-  const holdVh = scrollable(projectVh) * (detailStart - scatterEnd);
-  if (holdVh > 45) return false;
-
-  const heroHoldVh = scrollable(heroVh) * (0.32 - 0.1);
+  const heroHoldVh = Math.max(0, heroVh - heroSticky) * (0.32 - 0.1);
   if (heroHoldVh > 20) return false;
 
   const total =
-    scrollable(heroVh) +
+    Math.max(0, heroVh - heroSticky) +
     scrollable(projectVh) +
     scrollable(aboutVh) +
     scrollable(footerVh);
