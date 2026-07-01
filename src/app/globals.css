@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: var(--font-sora);
-  --font-sora: var(--font-sora);
+  --font-display: var(--font-sora-next);
+  --font-sora: var(--font-sora-next);
 }
 
 *,
@@ -26,9 +26,9 @@ body {
   font-family: var(--font-sora), system-ui, sans-serif;
 }
 
-/* 繁體中文：justfont 粉圓體（Google Fonts: Huninn）取代 Sora */
+/* 繁體中文：英文維持 Sora，中文 fallback 到 justfont 粉圓體（Google Fonts: Huninn） */
 html[lang="zh-Hant"] body {
-  --font-sora: "Huninn", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-sora: var(--font-sora-next), "Huninn", "PingFang TC", "Microsoft JhengHei", sans-serif;
 }
 
 .site-cta {

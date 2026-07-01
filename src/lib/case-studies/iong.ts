@@ -59,7 +59,7 @@ export const IONG_CASE_STUDY = {
   world: {
     headline: "2070: A Low-Fertility Future",
     body:
-      "Declining birth rates and pressure on public health systems have turned food into a government-managed resource. The Republic of Valoria partners with private companies to establish IONG 養, a centralized nutrition program that supports population health without ever describing participation as mandatory.",
+      "Declining birth rates and pressure on public health systems have turned food into a government-managed resource. The government partners with private companies to establish IONG 養, a centralized nutrition program that supports population health without ever describing participation as mandatory.",
     context:
       "Citizens receive meals generated through continuous biometric analysis, using food made from processed surplus and alternative materials. The onboarding demo places you on the employee side of the system, revealing how health scoring, monitoring, and allocation operate from within the institution.",
     designQuestion:
