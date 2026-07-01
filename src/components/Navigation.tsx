@@ -11,7 +11,6 @@ export function Navigation() {
 
   const navLinks = [
     { href: "#work", label: ui.nav.work },
-    { href: "#lab", label: ui.nav.lab },
     { href: "#about", label: ui.nav.about },
   ] as const;
 
