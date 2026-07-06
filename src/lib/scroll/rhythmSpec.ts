@@ -9,11 +9,11 @@ import {
 } from "@/lib/projects/projectScroll";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 
-/** Hero pin track — 80vh sticky + 20vh peek / scroll cue. */
-export const HERO_SCROLL_VH = 100;
+/** Hero pin track. */
+export const HERO_SCROLL_VH = 88;
 
-/** Sticky hero stage height (not full viewport). */
-export const HERO_STICKY_VH = 80;
+/** Sticky hero stage height. */
+export const HERO_STICKY_VH = 88;
 
 /** Viewport slice below the hero that previews the next section. */
 export const HERO_PEEK_VH = 100 - HERO_STICKY_VH;
@@ -29,7 +29,7 @@ export type ScrollSection = keyof typeof SCROLL_TRACKS;
 
 /** Mobile pin track height multipliers (narrow viewport). */
 export const MOBILE_TRACK_MULTIPLIER: Record<ScrollSection, number> = {
-  hero: 0.88,
+  hero: 1,
   project: 0.7,
   about: 0.8,
   footer: 1.25,

@@ -13,7 +13,7 @@ export function ExperimentalShowcasePage({
 }) {
   return (
     <div className="lab-showcase-page">
-      <div className="page-shell mx-auto w-full max-w-[1440px]">
+      <div className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]">
         <ShowcaseNav />
       </div>
       <article className="lab-showcase-article">

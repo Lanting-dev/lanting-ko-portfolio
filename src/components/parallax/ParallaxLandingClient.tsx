@@ -2,18 +2,15 @@
 
 import { useCallback, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { Navigation } from "@/components/Navigation";
-import { HeroClient } from "@/components/HeroClient";
 import { ProjectSection } from "@/components/ProjectSection";
 import { ExperimentalSection } from "@/components/experimental/ExperimentalSection";
 import { AboutSection } from "@/components/about/AboutSection";
 import { FooterSection } from "@/components/footer/FooterSection";
 import { DitherPageIntro } from "@/components/dither/DitherPageIntro";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
 import { ScrollRhythmHUD } from "@/components/scroll/ScrollRhythmHUD";
 import { HeroParallaxScene } from "./HeroParallaxScene";
-import { HeroRibbonSection } from "./HeroRibbonSection";
 import { ParallaxEngineProvider } from "./ParallaxEngineProvider";
 
 type StageRefs = {
@@ -46,7 +43,6 @@ export function ParallaxLandingClient() {
 
   const reducedMotion = usePrefersReducedMotion();
   const heroTrackVh = useScrollTrackVh("hero");
-  const { home } = useLocale();
   const [introComplete, setIntroComplete] = useState(false);
   const [heroEnter, setHeroEnter] = useState(false);
 
@@ -76,18 +72,23 @@ export function ParallaxLandingClient() {
 
   if (reducedMotion) {
     return (
-      <div className="mx-auto flex min-h-dvh w-full max-w-[1440px] flex-col page-shell">
-        <Navigation />
-        <HeroClient />
-        <HeroRibbonSection />
-        <p className="type-body mb-10 ml-auto max-w-[500px] text-right text-black md:mb-12">
-          {home.heroBio}
-        </p>
+      <>
+        <div className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]">
+          <Navigation />
+        </div>
+        <section
+          className="relative"
+          style={{ height: `${heroTrackVh}vh` }}
+        >
+          <div className="hero-sticky relative z-[2] flex w-full flex-col page-shell">
+            <HeroParallaxScene />
+          </div>
+        </section>
         <ProjectSection />
         <AboutSection staticLayout />
         <ExperimentalSection />
         <FooterSection staticLayout />
-      </div>
+      </>
     );
   }
 
@@ -100,16 +101,15 @@ export function ParallaxLandingClient() {
         />
       ) : null}
 
+      <div className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]">
+        <Navigation />
+      </div>
+
       <section
         ref={heroTrackRef}
         className="relative"
         style={{ height: `${heroTrackVh}vh` }}
       >
-        <div className="hero-nav-overlay pointer-events-none absolute inset-x-0 top-0 z-[5] mx-auto w-full max-w-[1440px] page-shell">
-          <div className="pointer-events-auto">
-            <Navigation />
-          </div>
-        </div>
         <div className="hero-sticky relative z-[2] sticky top-0 flex w-full flex-col page-shell">
           <div
             ref={heroCaptureRef}
@@ -123,8 +123,6 @@ export function ParallaxLandingClient() {
           </div>
         </div>
       </section>
-
-      <HeroRibbonSection />
 
       <ParallaxEngineProvider
         heroTrackRef={heroTrackRef}

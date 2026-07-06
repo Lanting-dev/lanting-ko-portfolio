@@ -169,7 +169,7 @@ a:hover {
   justify-content: flex-start;
   text-align: center;
   overflow: visible;
-  padding-top: clamp(4.75rem, 12vh, 6.5rem);
+  padding-top: clamp(13rem, 22vh, 17rem);
   padding-bottom: clamp(1.25rem, 3vh, 2rem);
 }
 
@@ -406,15 +406,161 @@ a:hover {
 }
 
 .hero-sticky {
-  height: 80vh;
-  height: 80dvh;
-  overflow: visible;
-  --hero-peek-vh: 20vh;
+  height: 88vh;
+  height: 88dvh;
+  overflow: clip;
+  --hero-peek-vh: 12vh;
 }
 
-/* Kinetic ribbon — two-band flat cross. */
+.hero-photo-stack {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: 0;
+  height: 0;
+  perspective: 900px;
+  pointer-events: none;
+}
+
+.hero-photo-pane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(72px, 10vw, 128px);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid rgb(0 0 0 / 0.16);
+  border-radius: 6px;
+  background: #f4f0e8;
+  box-shadow: 0 22px 52px rgb(0 0 0 / 0.18);
+  transform: var(--hero-pane-transform);
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+}
+
+.hero-photo-pane img {
+  object-fit: cover;
+}
+
+/* Periphery only — top/side margins and bottom peek; avoid title + bio band. */
+.hero-photo-pane--one {
+  --hero-pane-transform: translate3d(calc(-50% - 52vmin), calc(-50% - 36vmin), -86px) rotateY(28deg) rotateZ(-8deg);
+  --hero-pane-opacity: 0.78;
+  opacity: var(--hero-pane-opacity);
+}
+
+.hero-photo-pane--two {
+  width: clamp(82px, 11.5vw, 148px);
+  --hero-pane-transform: translate3d(calc(-50% + 48vmin), calc(-50% - 38vmin), 32px) rotateY(-16deg) rotateZ(6deg);
+  --hero-pane-opacity: 0.96;
+  opacity: var(--hero-pane-opacity);
+}
+
+.hero-photo-pane--three {
+  --hero-pane-transform: translate3d(calc(-50% - 54vmin), calc(-50% + 10vmin), -12px) rotateY(22deg) rotateZ(-4deg);
+  --hero-pane-opacity: 0.82;
+  opacity: var(--hero-pane-opacity);
+}
+
+.hero-photo-pane--four {
+  --hero-pane-transform: translate3d(calc(-50% + 50vmin), calc(-50% + 12vmin), -64px) rotateY(-22deg) rotateZ(5deg);
+  --hero-pane-opacity: 0.74;
+  opacity: var(--hero-pane-opacity);
+}
+
+.hero-photo-pane--five {
+  /* bottom peek — below bio, clipped by hero-sticky */
+  z-index: 1;
+  --hero-pane-transform: translate3d(calc(-50% + 10vmin), calc(-50% + 50vmin), -120px) rotateY(-14deg) rotateZ(7deg);
+  --hero-pane-opacity: 0.62;
+  opacity: var(--hero-pane-opacity);
+}
+
+.hero-intro-enter.is-active .hero-photo-pane {
+  animation: hero-pane-scatter 780ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(90ms + var(--hero-pane-index, 0) * 55ms);
+}
+
+.hero-photo-pane--one {
+  --hero-pane-index: 0;
+}
+
+.hero-photo-pane--two {
+  --hero-pane-index: 1;
+}
+
+.hero-photo-pane--three {
+  --hero-pane-index: 2;
+}
+
+.hero-photo-pane--four {
+  --hero-pane-index: 3;
+}
+
+.hero-photo-pane--five {
+  --hero-pane-index: 4;
+}
+
+@keyframes hero-pane-scatter {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translate3d(-50%, -50%, 0) rotateY(0deg) rotateZ(0deg) scale(0.68);
+  }
+
+  62% {
+    opacity: 1;
+    filter: blur(0);
+    transform: var(--hero-pane-transform) scale(1.035);
+  }
+
+  100% {
+    opacity: var(--hero-pane-opacity, 1);
+    filter: blur(0);
+    transform: var(--hero-pane-transform) scale(1);
+  }
+}
+
+.hero-intro-copy {
+  position: relative;
+  z-index: 2;
+  width: min(560px, 100%);
+  margin-top: clamp(0.9rem, 2vh, 1.5rem);
+  color: #111111;
+  text-align: center;
+}
+
+.hero-intro-copy p {
+  margin: 0;
+}
+
+.hero-intro-copy p + p {
+  margin-top: 0.55rem;
+}
+
+.hero-kicker {
+  font-family: var(--font-display), var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(1.15rem, 2vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.hero-intro-copy p:not(.hero-kicker) {
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(0.82rem, 1.05vw, 0.98rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgb(0 0 0 / 0.68);
+}
+
+/* Kinetic ribbon — parallel bands, peek in hero overlap band then reveal on scroll. */
 .hero-ribbon-pin {
   --ribbon-kinetic: 0;
+  --ribbon-peek: 3vh;
+  --ribbon-peek-band: 20vh;
+  --ribbon-field-offset: 0vh;
+  --ribbon-stack-gap: clamp(0.35rem, 1.2vw, 0.65rem);
 }
 
 .hero-ribbon-stage {
@@ -423,25 +569,26 @@ a:hover {
 }
 
 .hero-ribbon-sticky {
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: clip;
 }
 
 .hero-ribbon-field {
   position: relative;
   width: 100%;
   height: 100%;
+  transform: translateY(var(--ribbon-field-offset, 0vh));
+  will-change: transform;
 }
 
 .kinetic-ribbon {
   --ribbon-h: clamp(6rem, 10.5vw, 8.5rem);
   --ribbon-drift: 28s;
   position: absolute;
-  left: 50%;
-  width: 185vw;
+  left: 0;
+  width: 100%;
   height: var(--ribbon-h);
   overflow: hidden;
-  transform-origin: center center;
+  transform: translateY(-50%);
 }
 
 .kinetic-ribbon--dark {
@@ -466,26 +613,20 @@ a:hover {
   backdrop-filter: blur(24px) saturate(1.25);
 }
 
-/* Single clean X — upper / lower, ±15° at full scroll. */
+/* Revealed layout — field offset animates the stack from hero peek band to center. */
 .kinetic-ribbon--a {
-  top: calc(14% + 24% * var(--ribbon-kinetic, 0));
+  top: calc(50% - var(--ribbon-h) / 2 - var(--ribbon-stack-gap) / 2);
   z-index: 2;
-  transform:
-    translate(calc(-64% + 8% * var(--ribbon-kinetic, 0)), -50%)
-    rotate(calc(-5deg + -10deg * var(--ribbon-kinetic, 0)));
 }
 
 .kinetic-ribbon--b {
-  top: calc(56% + 24% * var(--ribbon-kinetic, 0));
+  top: calc(50% + var(--ribbon-h) / 2 + var(--ribbon-stack-gap) / 2);
   z-index: 3;
-  transform:
-    translate(calc(-36% - 8% * var(--ribbon-kinetic, 0)), -50%)
-    rotate(calc(5deg + 10deg * var(--ribbon-kinetic, 0)));
 }
 
 .kinetic-ribbon__track {
   height: 100%;
-  transform: translateX(calc(-4vw - var(--ribbon-kinetic, 0) * 10vw));
+  transform: translateX(calc(-1vw - var(--ribbon-kinetic, 0) * 2vw));
 }
 
 .kinetic-ribbon__flow {
@@ -542,26 +683,11 @@ a:hover {
 
 @media (max-width: 768px) {
   .kinetic-ribbon {
-    width: 195vw;
     --ribbon-h: clamp(5rem, 17vw, 7.5rem);
   }
 
-  .kinetic-ribbon--a {
-    top: calc(16% + 20% * var(--ribbon-kinetic, 0));
-    transform:
-      translate(calc(-62% + 6% * var(--ribbon-kinetic, 0)), -50%)
-      rotate(calc(-5deg + -10deg * var(--ribbon-kinetic, 0)));
-  }
-
-  .kinetic-ribbon--b {
-    top: calc(54% + 22% * var(--ribbon-kinetic, 0));
-    transform:
-      translate(calc(-38% - 6% * var(--ribbon-kinetic, 0)), -50%)
-      rotate(calc(5deg + 10deg * var(--ribbon-kinetic, 0)));
-  }
-
   .kinetic-ribbon__track {
-    transform: translateX(calc(-3vw - var(--ribbon-kinetic, 0) * 8vw));
+    transform: translateX(calc(-0.5vw - var(--ribbon-kinetic, 0) * 1.5vw));
   }
 
   .kinetic-ribbon__line {
@@ -579,6 +705,34 @@ a:hover {
 @media (max-width: 768px) {
   .hero-stage-wrap {
     overflow-x: visible;
+  }
+
+  .hero-photo-pane {
+    width: clamp(56px, 18vw, 76px);
+    border-radius: 5px;
+    box-shadow: 0 14px 32px rgb(0 0 0 / 0.16);
+  }
+
+  .hero-photo-pane--one {
+    --hero-pane-transform: translate3d(calc(-50% - 42vmin), calc(-50% - 28vmin), -62px) rotateY(24deg) rotateZ(-6deg);
+  }
+
+  .hero-photo-pane--two {
+    width: clamp(62px, 20vw, 86px);
+    --hero-pane-transform: translate3d(calc(-50% + 38vmin), calc(-50% - 30vmin), 24px) rotateY(-14deg) rotateZ(5deg);
+  }
+
+  .hero-photo-pane--three {
+    --hero-pane-transform: translate3d(calc(-50% - 44vmin), calc(-50% + 10vmin), -12px) rotateY(18deg) rotateZ(-3deg);
+  }
+
+  .hero-photo-pane--four {
+    --hero-pane-transform: translate3d(calc(-50% + 40vmin), calc(-50% + 12vmin), -48px) rotateY(-20deg) rotateZ(4deg);
+  }
+
+  .hero-photo-pane--five {
+    --hero-pane-transform: translate3d(calc(-50% + 6vmin), calc(-50% + 44vmin), -82px) rotateY(-14deg) rotateZ(7deg);
+    --hero-pane-opacity: 0.56;
   }
 }
 
@@ -609,10 +763,24 @@ a:hover {
 
   .hero-title-stage {
     flex: 1 1 0;
-    justify-content: flex-start;
+    justify-content: center;
     min-height: 0;
-    padding-top: clamp(3.5rem, 12vh, 5.5rem);
-    padding-bottom: clamp(4.5rem, 12vh, 7rem);
+    padding-top: clamp(11.5rem, 31vh, 14rem);
+    padding-bottom: clamp(2rem, 8vh, 4.5rem);
+  }
+
+  .hero-intro-copy {
+    width: min(330px, 100%);
+    margin-top: clamp(0.9rem, 2.5vh, 1.35rem);
+  }
+
+  .hero-kicker {
+    font-size: clamp(1rem, 5vw, 1.28rem);
+  }
+
+  .hero-intro-copy p:not(.hero-kicker) {
+    font-size: clamp(0.74rem, 3.4vw, 0.86rem);
+    line-height: 1.5;
   }
 
   .hero-sticky {
@@ -657,12 +825,6 @@ a:hover {
     box-sizing: border-box;
   }
 
-  .about-copy-lead {
-    font-size: clamp(1.15rem, 5.2vw, 1.45rem);
-    font-weight: 600;
-    line-height: 1.12;
-    letter-spacing: -0.02em;
-  }
 }
 
 .project-scroll-pin {
@@ -693,9 +855,9 @@ a:hover {
   left: 0;
   right: 0;
   z-index: 3;
-  height: 0;
-  overflow: hidden;
-  visibility: hidden;
+  height: auto;
+  overflow: visible;
+  visibility: visible;
   text-align: left;
   pointer-events: none;
 }
@@ -1829,13 +1991,6 @@ a:hover {
     contain: layout style;
   }
 
-  .about-copy-lead {
-    font-size: clamp(1.15rem, 5.2vw, 1.45rem);
-    font-weight: 400;
-    line-height: 1.25;
-    letter-spacing: -0.005em;
-  }
-
   .about-copy-body {
     font-size: var(--type-body-size);
   }
@@ -2024,6 +2179,19 @@ a:hover {
 .site-nav {
   padding-block: clamp(0.75rem, 2vw, 1.25rem);
   pointer-events: none;
+}
+
+.site-nav-page-shell {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.site-nav-page-shell .site-nav {
+  position: relative;
+  top: auto;
+  z-index: auto;
 }
 
 .site-nav-pill {

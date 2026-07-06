@@ -2,7 +2,7 @@ import type { Locale } from "@/lib/i18n/locale";
 
 const en = {
   nav: {
-    brand: "Lanting • Design",
+    brand: "LANTING KO",
     work: "Work",
     lab: "Ideas",
     about: "About",
@@ -81,7 +81,7 @@ const en = {
     },
   },
   site: {
-    title: "Lanting Ko · Product Designer",
+    title: "Lanting Ko Product Designer",
     description:
       "Lanting is a product designer focused on structure, function, and visual craft.",
   },
@@ -89,7 +89,7 @@ const en = {
 
 const zhTW = {
   nav: {
-    brand: "Lanting • Design",
+    brand: "LANTING KO",
     work: "作品",
     lab: "Ideas",
     about: "關於",
@@ -168,7 +168,7 @@ const zhTW = {
     },
   },
   site: {
-    title: "Lanting Ko · 產品設計師",
+    title: "Lanting Ko 產品設計師",
     description: "Lanting 是一位重視結構、功能與視覺細節的產品設計師。",
   },
 } as const;

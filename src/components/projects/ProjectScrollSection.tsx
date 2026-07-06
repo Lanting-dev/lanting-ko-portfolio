@@ -42,7 +42,7 @@ export function ProjectScrollSection({
 
   if (reducedMotion) {
     return (
-      <section id="work" className="project-stack-static page-shell py-14 md:py-20">
+      <section id="work" className="project-stack-static page-shell pt-2 pb-14 md:pt-2 md:pb-20">
         <ScrambleWord text="Work" className="project-stack-static-word" />
         <ul className="project-stack-static-list">
           {projects.map((project, index) => (

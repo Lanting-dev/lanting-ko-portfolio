@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useFitText } from "@/hooks/useFitText";
 import {
   HERO_TITLE_FIT_RATIO,
@@ -7,6 +8,35 @@ import {
   HERO_TITLE_LETTER_SPACING,
   HERO_TITLE_ROW_GAP_EM,
 } from "@/lib/animation/heroTitleLayout";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
+
+const heroPanes = [
+  {
+    src: "/projects/Amazon Music.png",
+    alt: "Amazon Music For Ü project interface preview",
+    className: "hero-photo-pane hero-photo-pane--one",
+  },
+  {
+    src: "/projects/COPPER.png",
+    alt: "COPPER project interface preview",
+    className: "hero-photo-pane hero-photo-pane--two",
+  },
+  {
+    src: "/projects/GT.png",
+    alt: "Gaze Tutor project interface preview",
+    className: "hero-photo-pane hero-photo-pane--three",
+  },
+  {
+    src: "/projects/NGA.png",
+    alt: "NGA project interface preview",
+    className: "hero-photo-pane hero-photo-pane--four",
+  },
+  {
+    src: "/projects/IONG.png",
+    alt: "IONG project interface preview",
+    className: "hero-photo-pane hero-photo-pane--five",
+  },
+];
 
 /**
  * Hero title. Continuous scroll values arrive as CSS custom properties
@@ -14,6 +44,7 @@ import {
  * scrolling.
  */
 export function HeroParallaxScene() {
+  const { home } = useLocale();
   const {
     widthRef: titleFitRef,
     fontRef: titleFontRef,
@@ -24,23 +55,36 @@ export function HeroParallaxScene() {
   );
 
   return (
-    <div className="hero-scene relative flex min-h-0 flex-1 flex-col">
+    <div className="hero-scene relative flex min-h-0 w-full flex-1 flex-col">
       <div
         ref={titleFitRef}
         data-hero-intro-title
-        className="hero-title-stage relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible pt-6 pb-2 sm:pt-8 md:py-8 lg:py-12"
+        className="hero-title-stage relative flex min-h-0 w-full flex-1 flex-col items-center justify-center overflow-visible pt-6 pb-2 sm:pt-8 md:py-8 lg:py-12"
       >
         <div
-          className="relative flex w-full justify-center overflow-visible will-change-transform"
+          className="hero-title-wrap relative z-[2] flex w-full justify-center overflow-visible will-change-transform"
           style={{
             transform:
               "translateY(calc(var(--hero-title-y, 0) * 1px))",
             transformOrigin: "center center",
           }}
         >
+          <div className="hero-photo-stack" aria-hidden="true">
+            {heroPanes.map((pane, index) => (
+              <div className={pane.className} key={pane.src}>
+                <Image
+                  src={pane.src}
+                  alt={pane.alt}
+                  fill
+                  priority={index === 1}
+                  sizes="(max-width: 768px) 24vw, 180px"
+                />
+              </div>
+            ))}
+          </div>
           <h1
             ref={titleFontRef}
-            className="type-display w-fit max-w-full text-center text-black"
+            className="type-display relative z-[3] w-fit max-w-full text-center text-black"
             style={{
               ["--hero-rowgap" as string]: String(HERO_TITLE_ROW_GAP_EM),
               ["--type-display-row-gap" as string]:
@@ -65,6 +109,10 @@ export function HeroParallaxScene() {
               </span>
             </div>
           </h1>
+        </div>
+        <div className="hero-intro-copy">
+          <p className="hero-kicker">Hi, I&apos;m Lanting</p>
+          <p>{home.heroBio}</p>
         </div>
       </div>
     </div>

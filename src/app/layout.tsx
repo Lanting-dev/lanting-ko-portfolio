@@ -14,7 +14,7 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "Lanting Ko · Product Designer",
+  title: "Lanting Ko Product Designer",
   description:
     "Lanting is a product designer focused on structure, function, and visual craft.",
 };

@@ -3,12 +3,12 @@ export type RibbonTapeSlot = "a" | "b";
 export type RibbonTapeTextKey = "label" | "tagline";
 
 /** Ribbon copy — English only, independent of site locale toggle. */
-export const HERO_RIBBON_TAPE_LABEL = "PRODUCT DESIGNER · ";
+export const HERO_RIBBON_TAPE_LABEL = "I PLAN · I RESEARCH · I DESIGN · ";
 
-export const HERO_RIBBON_TAPE_TAGLINE = "WHAT KIND OF DESIGNER AM I? · ";
+export const HERO_RIBBON_TAPE_TAGLINE = "FOR SEAMLESS DAILY EXPERIENCES · ";
 
 export const HERO_RIBBON_ARIA =
-  "Product Designer — What kind of designer am I?";
+  "I plan, I research, I design — for seamless daily experiences";
 
 export function heroRibbonTapeText(key: RibbonTapeTextKey): string {
   switch (key) {
@@ -29,8 +29,8 @@ export type RibbonTapeConfig = {
   repeat?: number;
 };
 
-/** Two-band cross — one clean X, less visual noise. */
+/** Two parallel marquee bands — upper / lower, opposite drift. */
 export const RIBBON_TAPES: RibbonTapeConfig[] = [
-  { slot: "a", variant: "dark", textKey: "label", drift: 28 },
-  { slot: "b", variant: "light", textKey: "tagline", drift: -28, repeat: 5 },
+  { slot: "a", variant: "dark", textKey: "label", drift: 28, repeat: 4 },
+  { slot: "b", variant: "light", textKey: "tagline", drift: -28, repeat: 4 },
 ];

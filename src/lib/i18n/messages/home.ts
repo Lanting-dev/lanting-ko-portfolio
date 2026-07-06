@@ -2,7 +2,7 @@ import type { Locale } from "@/lib/i18n/locale";
 
 const en = {
   heroBio:
-    "Lanting is a product designer who cares about structure, function, and visual craft. She creates clear, thoughtful digital experiences grounded in how people actually use them.",
+    "I'm a product designer. I design products that make everyday experiences feel effortless. Experience in EdTech, accessibility, and museum experiences.",
   heroTapeLabel: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeTagline: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeExtraA: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
@@ -19,7 +19,7 @@ const en = {
 
 const zhTW = {
   heroBio:
-    "Lanting 是一位產品設計師，重視結構、功能與視覺細節。她從真實的使用情境出發，打造清楚、直覺的數位體驗。",
+    "我是產品設計師，設計讓日常體驗變得輕鬆自然的產品。深耕教育科技、無障礙設計與博物館體驗。",
   heroTapeLabel:
     "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
   heroTapeTagline:

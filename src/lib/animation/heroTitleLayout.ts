@@ -1,9 +1,9 @@
 /** Shared hero / intro title spec — keep in sync for seamless handoff. */
 export const HERO_INTRO_TITLE_LINES = ["LAN TING", "KO"] as const;
-export const HERO_TITLE_LETTER_SPACING = "-0.04em";
+export const HERO_TITLE_LETTER_SPACING = "0";
 export const HERO_TITLE_ROW_GAP_EM = 0.2;
 export const HERO_TITLE_FIT_TEXT = "LAN TING";
-export const HERO_TITLE_FIT_RATIO = 0.9;
+export const HERO_TITLE_FIT_RATIO = 0.62;
 
 export type HeroIntroTitleLayout = {
   lines: readonly string[];
