@@ -77,6 +77,7 @@ export function HeroRibbonSection({ trackRef: externalRef }: HeroRibbonSectionPr
                 variant={tape.variant}
                 slot={tape.slot}
                 drift={tape.drift}
+                repeat={tape.repeat}
               />
             ))}
           </div>

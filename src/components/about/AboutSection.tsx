@@ -2,6 +2,7 @@
 
 import { type RefObject } from "react";
 import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { ScrambleWord } from "@/components/ScrambleWord";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
 import { AboutCopy } from "./AboutCopy";
@@ -18,8 +19,9 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
   // track is scrubbing (aboutProgress is pinned at 1 through the footer).
   const aboutProgress = useParallaxValue((s) => s.aboutProgress);
   const projectProgress = useParallaxValue((s) => s.projectProgress);
+  const isMobile = useIsMobile();
   const aboutTrackVh = useScrollTrackVh("about");
-  const revealProgress = staticLayout ? 1 : aboutProgress;
+  const revealProgress = staticLayout || isMobile ? 1 : aboutProgress;
   const workIncomplete = !staticLayout && projectProgress < 0.995;
 
   const layout = (
@@ -28,11 +30,13 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
     >
       <ScrambleWord text="About" className="about-bigword" />
 
-      <div className="about-cube-wrap">
-        <AboutCubeScene aboutProgress={revealProgress} />
-      </div>
+      <div className="about-stage">
+        <div className="about-cube-wrap">
+          <AboutCubeScene aboutProgress={revealProgress} />
+        </div>
 
-      <AboutCopy aboutProgress={revealProgress} />
+        <AboutCopy aboutProgress={revealProgress} />
+      </div>
     </div>
   );
 

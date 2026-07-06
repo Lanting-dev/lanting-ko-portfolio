@@ -6,12 +6,19 @@ type KineticRibbonProps = {
   variant: "dark" | "light";
   slot: RibbonTapeSlot;
   drift: number;
+  repeat?: number;
 };
 
-const REPEAT_COUNT = 3;
+const DEFAULT_REPEAT_COUNT = 3;
 
-export function KineticRibbon({ label, variant, slot, drift }: KineticRibbonProps) {
-  const line = label.repeat(REPEAT_COUNT);
+export function KineticRibbon({
+  label,
+  variant,
+  slot,
+  drift,
+  repeat = DEFAULT_REPEAT_COUNT,
+}: KineticRibbonProps) {
+  const line = label.repeat(repeat);
   const reverse = drift < 0;
 
   return (

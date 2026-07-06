@@ -445,14 +445,25 @@ a:hover {
 }
 
 .kinetic-ribbon--dark {
-  background: #000000;
-  color: #ffffff;
+  background: rgb(0 0 0 / 0.52);
+  color: rgb(255 255 255 / 0.95);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  box-shadow:
+    0 12px 40px rgb(0 0 0 / 0.14),
+    0 1px 0 rgb(255 255 255 / 0.08) inset;
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  backdrop-filter: blur(20px) saturate(1.2);
 }
 
 .kinetic-ribbon--light {
-  background: #ffffff;
-  color: #000000;
-  border: 2px solid #000000;
+  background: rgb(255 255 255 / 0.58);
+  color: rgb(0 0 0 / 0.88);
+  border: 1px solid rgb(255 255 255 / 0.55);
+  box-shadow:
+    0 12px 40px rgb(0 0 0 / 0.07),
+    0 1px 0 rgb(255 255 255 / 0.82) inset;
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  backdrop-filter: blur(24px) saturate(1.25);
 }
 
 /* Single clean X — upper / lower, ±15° at full scroll. */
@@ -516,6 +527,17 @@ a:hover {
   line-height: 1.15;
   white-space: nowrap;
   font-feature-settings: "kern" 1;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .kinetic-ribbon--dark {
+    background: rgb(0 0 0 / 0.88);
+  }
+
+  .kinetic-ribbon--light {
+    background: rgb(255 255 255 / 0.94);
+    border-color: rgb(0 0 0 / 0.12);
+  }
 }
 
 @media (max-width: 768px) {
@@ -609,6 +631,37 @@ a:hover {
 
   .project-bigword {
     top: clamp(0.15rem, 1vh, 0.75rem);
+  }
+
+  /* Section bigwords — shared left edge inside page-shell */
+  .about-bigword,
+  .project-stack-word,
+  .project-stack-static-word,
+  .lab-section-word {
+    text-align: left;
+    justify-self: start;
+    align-self: start;
+    width: 100%;
+    margin-inline-start: 0;
+  }
+
+  .lab-scramble-heading {
+    justify-content: flex-start;
+    gap: 0.28em;
+  }
+
+  .lab-mobile-cards,
+  .lab-mobile-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .about-copy-lead {
+    font-size: clamp(1.15rem, 5.2vw, 1.45rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -754,9 +807,9 @@ a:hover {
 .project-stack-card-title {
   margin: 0;
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.12;
   letter-spacing: -0.02em;
   color: rgb(0 0 0 / 0.92);
 }
@@ -815,6 +868,10 @@ a:hover {
 
   .project-stack-card-media {
     background: rgb(248 248 248 / 0.96);
+  }
+
+  .about-copy {
+    background: rgb(255 255 255 / 0.94);
   }
 }
 
@@ -1434,29 +1491,33 @@ a:hover {
   width: 100%;
   height: 100%;
   min-height: 0;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  grid-template-columns: 1fr;
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
-    "bigword ."
-    "cube copy";
-  column-gap: clamp(2rem, 5vw, 4rem);
+    "bigword"
+    "stage";
   row-gap: clamp(0.75rem, 1.5vh, 1.25rem);
-  align-items: start;
-}
-
-.about-cube-wrap {
-  grid-area: cube;
-  position: relative;
-  z-index: 10;
-  justify-self: center;
-  align-self: start;
-  flex-shrink: 0;
+  align-items: stretch;
 }
 
 .about-stage {
-  aspect-ratio: 1 / 1;
-  max-height: min(calc(100dvh - 8rem), var(--about-card-height));
-  margin-inline: auto;
+  grid-area: stage;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  min-height: 0;
+  height: 100%;
+}
+
+.about-cube-wrap {
+  flex: 1 1 auto;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
 }
 
 .about-profile-flat {
@@ -1655,95 +1716,34 @@ a:hover {
   z-index: 0;
 }
 
-/* Readable copy column , right of cube, vertically centred with it. */
+/* Readable copy column , right of cube; frosted glass panel like Work cards. */
 .about-copy {
-  grid-area: copy;
+  flex: 0 0 min(560px, 42vw);
   position: relative;
-  align-self: start;
   width: 100%;
-  max-width: 420px;
-  padding-top: clamp(0.75rem, 2vh, 1.5rem);
+  max-width: 560px;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
   z-index: 20;
   color: #1a1a1a;
   pointer-events: auto;
-}
-
-@media (max-width: 960px) {
-  :root {
-    --about-project-gap: clamp(2rem, 8vw, 4rem);
-    --about-sticky-pad: clamp(20px, 3vh, 32px);
-    --about-cube-size: min(
-      calc(100vw - 2 * var(--page-gutter)),
-      340px
-    );
-  }
-
-  .about-scroll-sticky {
-    height: auto;
-    min-height: calc(100dvh - var(--about-project-gap));
-    padding-bottom: clamp(1.5rem, 5vh, 2.5rem);
-    overflow-x: clip;
-  }
-
-  .about-layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-      "bigword"
-      "cube"
-      "copy";
-    align-items: center;
-    gap: var(--about-stack-gap);
-    height: auto;
-    min-height: calc(
-      100dvh - var(--about-project-gap) - var(--about-sticky-pad)
-    );
-    padding-top: clamp(0.75rem, 2.5vh, 1.25rem);
-  }
-
-  .about-bigword {
-    justify-self: center;
-    max-width: 100%;
-    text-align: center;
-    margin-inline-start: 0;
-  }
-
-  .about-cube-wrap {
-    justify-self: center;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    transform: translateY(0);
-  }
-
-  .about-cube-scene {
-    width: min(var(--about-cube-size), calc(100vw - 2 * var(--page-gutter)));
-    height: calc(
-      min(var(--about-cube-size), calc(100vw - 2 * var(--page-gutter))) * 1.36
-    );
-  }
-
-  .about-copy {
-    justify-self: stretch;
-    align-self: start;
-    max-width: 100%;
-    padding-bottom: 0;
-  }
-
-  .about-copy-lead {
-    font-size: clamp(1.15rem, 5.2vw, 1.45rem);
-  }
-
-  .about-copy-body {
-    font-size: var(--type-body-size);
-  }
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: clamp(24px, 3.5vw, 40px);
+  background: rgb(255 255 255 / 0.62);
+  box-shadow:
+    0 24px 60px rgb(0 0 0 / 0.07),
+    0 1px 0 rgb(255 255 255 / 0.8) inset;
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  backdrop-filter: blur(24px) saturate(1.25);
+  overflow: hidden;
+  contain: layout style;
 }
 
 .about-copy-lead {
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(1.4rem, 2.4vw, 2.15rem);
-  line-height: 1.18;
-  letter-spacing: -0.005em;
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
   margin: 0 0 1.25em;
 }
 
@@ -1758,6 +1758,87 @@ a:hover {
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
   color: #3a3a3a;
+}
+
+@media (max-width: 960px) {
+  :root {
+    --about-project-gap: clamp(2rem, 8vw, 4rem);
+    --about-sticky-pad: clamp(20px, 3vh, 32px);
+    --about-cube-size: min(280px, 100%);
+  }
+
+  .about-scroll-sticky {
+    position: sticky;
+    top: var(--about-project-gap);
+    height: auto;
+    min-height: 0;
+    padding-bottom: clamp(1.5rem, 5vh, 2.5rem);
+    overflow: visible;
+  }
+
+  .about-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--about-stack-gap);
+    height: auto;
+    min-height: 0;
+    padding-top: clamp(0.75rem, 2.5vh, 1.25rem);
+  }
+
+  .about-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    gap: var(--about-stack-gap);
+  }
+
+  .about-bigword {
+    align-self: start;
+    max-width: 100%;
+    text-align: left;
+    margin-inline-start: 0;
+  }
+
+  .about-cube-wrap {
+    flex: none;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .about-cube-scene {
+    width: min(100%, var(--about-cube-size));
+    height: auto;
+    aspect-ratio: 1 / 1.22;
+    margin-inline: auto;
+  }
+
+  .about-copy {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    box-sizing: border-box;
+    padding: clamp(1.15rem, 4vw, 1.5rem);
+    overflow: hidden;
+    contain: layout style;
+  }
+
+  .about-copy-lead {
+    font-size: clamp(1.15rem, 5.2vw, 1.45rem);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+  }
+
+  .about-copy-body {
+    font-size: var(--type-body-size);
+  }
 }
 
 /* ,,, Footer , direct contact/meta ending ,,, */
@@ -4740,7 +4821,8 @@ a:hover {
 
 .lab-section {
   position: relative;
-  padding: clamp(4rem, 12vh, 7rem) 0 clamp(5rem, 14vh, 8rem);
+  padding-block: clamp(4rem, 12vh, 7rem) clamp(5rem, 14vh, 8rem);
+  /* Keep page-shell horizontal gutter — do not zero padding-inline here. */
 }
 
 .lab-section-header {
