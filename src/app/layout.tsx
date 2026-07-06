@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Sora } from "next/font/google";
 import { AppProviders } from "@/app/providers";
 import { ScrollToTopOnLoad } from "@/components/ScrollToTopOnLoad";
@@ -54,6 +55,9 @@ export default function RootLayout({
           <ScrollToTopOnLoad />
           {children}
         </AppProviders>
+        {process.env.NEXT_PUBLIC_GA_ID ? (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        ) : null}
       </body>
     </html>
   );
