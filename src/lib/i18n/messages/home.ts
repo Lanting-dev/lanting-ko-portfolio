@@ -2,24 +2,24 @@ import type { Locale } from "@/lib/i18n/locale";
 
 const en = {
   heroBio:
-    "I design products that make everyday experiences feel effortless. My experience spans EdTech, accessibility, and museum experiences.",
+    "I’m a Product Designer who thinks about the product, the people using it, and the constraints around it. I like making everyday experiences easier to understand.",
   heroTapeLabel: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeTagline: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeExtraA: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeExtraB: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeAria: "Product Designer — Structure, Function, and Visual Craft",
   aboutLead:
-    "Lanting Ko is a product designer focused on structure, function, and visual craft.",
+    "Born and raised in Taiwan, Lanting now lives in New York, surrounded by bagels, Broadway shows, and unpredictable subway performances.",
   aboutBody: [
-    "She was born and raised in Taiwan and now lives in New York, surrounded by bagels and unpredictable subway performances.",
-    "Working with her is like brainstorming with someone who interrupts to ask, “Wait, who is this actually for?”",
-    "When she’s not designing or doing research, you can find her watching movies, going to Broadway shows, or getting some vitamin D outdoors.",
+    "She is a Product Designer who likes when design has real constraints to work with, from user needs and technical limits to accessibility, business goals, and existing systems.",
+    "Before design, she worked with engineers and manufacturing teams, where she learned to turn constraints into clear next steps. Today, that background shapes how she designs experiences that help people feel clear, confident, and in control.",
+    "Working with her is like brainstorming with someone who interrupts to ask, “Wait, who is this actually for, and what needs to be clearer?”",
   ],
 } as const;
 
 const zhTW = {
   heroBio:
-    "我是產品設計師，設計讓日常體驗變得輕鬆自然的產品。深耕教育科技、無障礙設計與博物館體驗。",
+    "我是產品設計師，會同時思考產品、使用它的人，以及它周圍的限制。我喜歡讓日常體驗變得更容易理解。",
   heroTapeLabel:
     "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
   heroTapeTagline:
@@ -29,11 +29,12 @@ const zhTW = {
   heroTapeExtraB:
     "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
   heroTapeAria: "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ Product Designer — ㄐㄧㄝ ㄍㄡˋ Structure、ㄍㄨㄥ ㄋㄥˊ Function、ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ Visual Craft",
-  aboutLead: "Lanting Ko 是一位專注於結構、功能與視覺細節的產品設計師。",
+  aboutLead:
+    "Lanting 在台灣長大，現在住在紐約，日常被貝果、百老匯音樂劇和地鐵裡突如其來的表演包圍。",
   aboutBody: [
-    "她在台灣長大，現在住在紐約，日常被貝果和地鐵裡突如其來的表演包圍。",
-    "跟她一起腦力激盪，像是有人會突然打斷你問：「等等，這到底是給誰用的？」",
-    "不設計、不做研究的時候，她可能在看電影、看百老匯音樂劇，或到戶外曬太陽。",
+    "她是產品設計師，喜歡在真實限制中設計，從使用者需求、技術限制、無障礙考量，到商業目標與既有系統。",
+    "在進入設計之前，她曾與工程師和製造團隊合作，學會把限制轉化成清楚的下一步。這段背景也影響她現在的設計方式，讓她專注於幫助人們在體驗中感到清楚、有信心，也更有掌控感。",
+    "跟她一起腦力激盪，像是有人會突然打斷你問：「等等，這到底是給誰用的？哪裡可以更清楚？」",
   ],
 } as const;
 
