@@ -39,8 +39,6 @@ export function ParallaxLandingClient() {
   const projectTrackRef = useRef<HTMLElement>(null);
   const aboutTrackRef = useRef<HTMLElement>(null);
   const footerTrackRef = useRef<HTMLElement>(null);
-  const heroCaptureRef = useRef<HTMLDivElement>(null);
-
   const reducedMotion = usePrefersReducedMotion();
   const heroTrackVh = useScrollTrackVh("hero");
   const [introComplete, setIntroComplete] = useState(false);
@@ -112,8 +110,7 @@ export function ParallaxLandingClient() {
       >
         <div className="hero-sticky relative z-[2] sticky top-0 flex w-full flex-col page-shell">
           <div
-            ref={heroCaptureRef}
-            className={`hero-intro-enter intro-capture-target flex min-h-0 flex-1 flex-col ${
+            className={`hero-intro-enter flex min-h-0 flex-1 flex-col ${
               heroEnter ? "is-active" : ""
             }`}
           >

@@ -287,10 +287,6 @@ a:hover {
   transform: scale(1);
 }
 
-.intro-capture-target {
-  min-height: 100%;
-}
-
 .intro-overlay-panel {
   min-height: 100dvh;
   min-height: 100svh;
@@ -1765,93 +1761,6 @@ a:hover {
 .scramble-word__gap {
   display: inline-block;
   width: 0.32em;
-}
-
-/* Four-face word column (see BigWordPrism.tsx). Scroll rotates it around Y so
-   the side faces and vertical edges read as real depth. */
-.bigword-prism {
-  display: inline-block;
-}
-
-.bigword-rotor {
-  position: relative;
-  display: inline-block;
-  transform-style: preserve-3d;
-  transform-origin: 50% 50%;
-  will-change: transform;
-}
-
-.bigword-face {
-  display: inline-block;
-  white-space: nowrap;
-  transform-origin: 50% 50%;
-  /* Hide the reverse of each face , its back is mirrored + upside-down. The
-     WebKit prefix is required on Safari/iOS or the inverted backs bleed through. */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-.bigword-face--side {
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* Recedes behind the front face so depth reads without a fill. */
-  opacity: 0.4;
-}
-
-/* Lines → text morph for section display words (BigWordLinesReveal.tsx). */
-.bigword-lines-reveal {
-  position: relative;
-  display: inline-block;
-  overflow: visible;
-  min-width: min-content;
-  line-height: 1;
-}
-
-.bigword-lines-measure {
-  display: block;
-  visibility: hidden;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.bigword-lines-measure--stitch {
-  font-family: var(--font-display), system-ui, sans-serif;
-  padding-top: 0.12em;
-  padding-bottom: 0.05em;
-}
-
-.bigword-lines-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  pointer-events: none;
-  transition: opacity 0.2s linear;
-}
-
-.bigword-lines-final {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  white-space: nowrap;
-  font-family: var(--font-sora), system-ui, sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: #111;
-  transition: opacity 0.2s linear;
-}
-
-.bigword-lines-reveal--settled {
-  font-family: var(--font-sora), system-ui, sans-serif;
-  font-weight: 600;
-}
-
-.bigword-lines-reveal--settled .bigword-lines-final {
-  position: static;
-  opacity: 1 !important;
 }
 
 /* "About" , left column, above cube; shares section bigword scale with Work. */

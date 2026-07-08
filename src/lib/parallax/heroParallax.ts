@@ -25,8 +25,6 @@ export type HeroParallaxValues = {
   rowGapEm: number;
   titleScale: number;
   titleYOffset: number;
-  /** 0 → ball rests in the "O"; >0 → ball detaches and falls toward card 1. */
-  fallPhase: number;
 };
 
 export function getHeroParallaxValues(progress: number): HeroParallaxValues {
@@ -37,11 +35,5 @@ export function getHeroParallaxValues(progress: number): HeroParallaxValues {
     rowGapEm: lerpKeyframes(HERO_PARALLAX.rowGapEm, p),
     titleScale: lerpKeyframes(HERO_PARALLAX.titleScale, p),
     titleYOffset: lerpKeyframes(HERO_PARALLAX.titleYOffset, p),
-    fallPhase: clamp(
-      (p - PARALLAX_PHASE.morphEnd) /
-        (PARALLAX_PHASE.landEnd - PARALLAX_PHASE.morphEnd),
-      0,
-      1,
-    ),
   };
 }

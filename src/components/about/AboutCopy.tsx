@@ -1,6 +1,6 @@
 "use client";
 
-import { smoothstepEase } from "@/lib/animation/sectionBigWordReveal";
+import { smoothstep } from "@/lib/parallax/interpolate";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 type AboutCopyProps = {
@@ -10,7 +10,7 @@ type AboutCopyProps = {
 /** About bio copy , right column on desktop, below cube on mobile. */
 export function AboutCopy({ aboutProgress }: AboutCopyProps) {
   const { home } = useLocale();
-  const copyIn = smoothstepEase((aboutProgress - 0.2) / 0.3);
+  const copyIn = smoothstep(0, 1, (aboutProgress - 0.2) / 0.3);
 
   return (
     <div

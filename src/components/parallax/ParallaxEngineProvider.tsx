@@ -14,9 +14,6 @@ import { HERO_STICKY_VH } from "@/lib/scroll/rhythmSpec";
 import { clamp } from "@/lib/parallax/interpolate";
 import {
   computeSnapshot,
-  gatesEqual,
-  DEFAULT_GATES,
-  type ParallaxGates,
   type ParallaxSnapshot,
 } from "@/lib/parallax/parallaxSnapshot";
 
@@ -46,7 +43,6 @@ const FALLBACK_ENGINE: EngineApi = {
 };
 
 const EngineContext = createContext<EngineApi>(FALLBACK_ENGINE);
-const GatesContext = createContext<ParallaxGates>(DEFAULT_GATES);
 
 type Refs = {
   heroTrackRef: RefObject<HTMLElement | null>;
@@ -90,8 +86,6 @@ export function ParallaxEngineProvider({
 }: ParallaxEngineProviderProps) {
   const snapshotRef = useRef<ParallaxSnapshot>(INITIAL_SNAPSHOT);
   const subscribersRef = useRef<Set<FrameCb>>(new Set());
-  const [gates, setGates] = useState<ParallaxGates>(INITIAL_SNAPSHOT.gates);
-  const gatesRef = useRef<ParallaxGates>(INITIAL_SNAPSHOT.gates);
 
   const api = useMemo<EngineApi>(
     () => ({
@@ -127,11 +121,6 @@ export function ParallaxEngineProvider({
       writeHeroVars(snapshot);
 
       for (const cb of subscribersRef.current) cb(snapshot);
-
-      if (!gatesEqual(snapshot.gates, gatesRef.current)) {
-        gatesRef.current = snapshot.gates;
-        setGates(snapshot.gates);
-      }
     };
 
     const schedule = () => {
@@ -151,19 +140,12 @@ export function ParallaxEngineProvider({
   }, [heroTrackRef, projectTrackRef, aboutTrackRef, footerTrackRef]);
 
   return (
-    <EngineContext.Provider value={api}>
-      <GatesContext.Provider value={gates}>{children}</GatesContext.Provider>
-    </EngineContext.Provider>
+    <EngineContext.Provider value={api}>{children}</EngineContext.Provider>
   );
 }
 
 function useEngine(): EngineApi {
   return useContext(EngineContext);
-}
-
-/** Mount/visibility gates. Re-renders the caller only when a gate flips. */
-export function useParallaxGates(): ParallaxGates {
-  return useContext(GatesContext);
 }
 
 /** Imperative per-frame callback , for components that write the DOM directly
