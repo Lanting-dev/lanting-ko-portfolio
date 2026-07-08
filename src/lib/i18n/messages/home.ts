@@ -2,7 +2,7 @@ import type { Locale } from "@/lib/i18n/locale";
 
 const en = {
   heroBio:
-    "I'm a product designer. I design products that make everyday experiences feel effortless. Experience in EdTech, accessibility, and museum experiences.",
+    "I design products that make everyday experiences feel effortless. My experience spans EdTech, accessibility, and museum experiences.",
   heroTapeLabel: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeTagline: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeExtraA: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",

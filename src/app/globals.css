@@ -406,10 +406,11 @@ a:hover {
 }
 
 .hero-sticky {
-  height: 88vh;
-  height: 88dvh;
-  overflow: clip;
-  --hero-peek-vh: 12vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: clip;
+  overflow-y: visible;
+  --hero-peek-vh: 6vh;
 }
 
 .hero-photo-stack {
@@ -470,10 +471,9 @@ a:hover {
 }
 
 .hero-photo-pane--five {
-  /* bottom peek — below bio, clipped by hero-sticky */
-  z-index: 1;
-  --hero-pane-transform: translate3d(calc(-50% + 10vmin), calc(-50% + 50vmin), -120px) rotateY(-14deg) rotateZ(7deg);
-  --hero-pane-opacity: 0.62;
+  width: clamp(96px, 12vw, 156px);
+  --hero-pane-transform: translate3d(calc(-50% + 0vmin), calc(-50% + 48vmin), -110px) rotateY(-8deg) rotateZ(4deg);
+  --hero-pane-opacity: 0.56;
   opacity: var(--hero-pane-opacity);
 }
 
@@ -525,14 +525,20 @@ a:hover {
 .hero-intro-copy {
   position: relative;
   z-index: 2;
-  width: min(560px, 100%);
+  width: min(560px, calc(100vw - 2 * var(--page-gutter)));
+  max-width: 100%;
   margin-top: clamp(0.9rem, 2vh, 1.5rem);
   color: #111111;
   text-align: center;
+  overflow: visible;
 }
 
 .hero-intro-copy p {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
 }
 
 .hero-intro-copy p + p {
@@ -731,8 +737,9 @@ a:hover {
   }
 
   .hero-photo-pane--five {
-    --hero-pane-transform: translate3d(calc(-50% + 6vmin), calc(-50% + 44vmin), -82px) rotateY(-14deg) rotateZ(7deg);
-    --hero-pane-opacity: 0.56;
+    width: clamp(72px, 24vw, 96px);
+    --hero-pane-transform: translate3d(calc(-50% + 0vmin), calc(-50% + 52vmin), -82px) rotateY(-8deg) rotateZ(4deg);
+    --hero-pane-opacity: 0.5;
   }
 }
 
@@ -770,7 +777,7 @@ a:hover {
   }
 
   .hero-intro-copy {
-    width: min(330px, 100%);
+    width: min(330px, calc(100vw - 2rem));
     margin-top: clamp(0.9rem, 2.5vh, 1.35rem);
   }
 
@@ -785,6 +792,7 @@ a:hover {
 
   .hero-sticky {
     overflow-x: clip;
+    overflow-y: visible;
   }
 
   .project-scroll-sticky {
