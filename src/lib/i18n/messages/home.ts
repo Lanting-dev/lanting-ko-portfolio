@@ -8,11 +8,10 @@ const en = {
   heroTapeExtraA: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeExtraB: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
   heroTapeAria: "Product Designer — Structure, Function, and Visual Craft",
-  aboutLead:
-    "Born and raised in Taiwan, Lanting now lives in New York, surrounded by bagels, Broadway shows, and unpredictable subway performances.",
+  aboutLead: "NYC-based Product Designer",
   aboutBody: [
-    "She is a Product Designer who likes when design has real constraints to work with, from user needs and technical limits to accessibility, business goals, and existing systems.",
-    "Before design, she worked with engineers and manufacturing teams, where she learned to turn constraints into clear next steps. Today, that background shapes how she designs experiences that help people feel clear, confident, and in control.",
+    "Born and raised in Taiwan, she now lives in New York, surrounded by bagels, Broadway shows, and unpredictable subway performances.",
+    "Before design, she worked with engineers and manufacturing teams, where she learned to turn constraints into clear next steps. Today, that background shapes how she designs across user needs, technical limits, accessibility, business goals, and existing systems.",
     "Working with her is like brainstorming with someone who interrupts to ask, “Wait, who is this actually for, and what needs to be clearer?”",
   ],
 } as const;
@@ -29,11 +28,10 @@ const zhTW = {
   heroTapeExtraB:
     "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
   heroTapeAria: "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ Product Designer — ㄐㄧㄝ ㄍㄡˋ Structure、ㄍㄨㄥ ㄋㄥˊ Function、ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ Visual Craft",
-  aboutLead:
-    "Lanting 在台灣長大，現在住在紐約，日常被貝果、百老匯音樂劇和地鐵裡突如其來的表演包圍。",
+  aboutLead: "現居紐約的產品設計師",
   aboutBody: [
-    "她是產品設計師，喜歡在真實限制中設計，從使用者需求、技術限制、無障礙考量，到商業目標與既有系統。",
-    "在進入設計之前，她曾與工程師和製造團隊合作，學會把限制轉化成清楚的下一步。這段背景也影響她現在的設計方式，讓她專注於幫助人們在體驗中感到清楚、有信心，也更有掌控感。",
+    "她在台灣長大，現在住在紐約，日常被貝果、百老匯音樂劇和地鐵裡突如其來的表演包圍。",
+    "在進入設計之前，她曾與工程師和製造團隊合作，學會把限制轉化成清楚的下一步。這段背景也影響她現在的設計方式，讓她在使用者需求、技術限制、無障礙考量、商業目標與既有系統之間做出清楚的設計判斷。",
     "跟她一起腦力激盪，像是有人會突然打斷你問：「等等，這到底是給誰用的？哪裡可以更清楚？」",
   ],
 } as const;
