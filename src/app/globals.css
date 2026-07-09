@@ -122,9 +122,9 @@ button:focus-visible {
     100dvh - var(--about-project-gap) - var(--about-sticky-pad)
   );
   --about-cube-size: min(
-    760px,
-    calc(100vw - 4rem),
-    calc(var(--about-viewport-h) / 1.18)
+    820px,
+    calc(100vw - 3rem),
+    calc(var(--about-viewport-h) / 1.08)
   );
   --about-card-width: var(--about-cube-size);
   --about-card-height: var(--about-cube-size);
@@ -1843,7 +1843,7 @@ a:hover {
   :root {
     --about-project-gap: clamp(2rem, 8vw, 4rem);
     --about-sticky-pad: clamp(20px, 3vh, 32px);
-    --about-cube-size: min(280px, 100%);
+    --about-cube-size: min(320px, 100%);
   }
 
   .about-scroll-sticky {
