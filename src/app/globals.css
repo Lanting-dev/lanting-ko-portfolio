@@ -1795,24 +1795,16 @@ a:hover {
   z-index: 0;
 }
 
-/* Readable copy column , right of cube; frosted glass panel like Work cards. */
+/* Readable copy column , right of cube. */
 .about-copy {
   flex: 0 0 min(560px, 42vw);
   position: relative;
   width: 100%;
   max-width: 560px;
-  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  padding: 0;
   z-index: 20;
   color: #1a1a1a;
   pointer-events: auto;
-  border: 1px solid rgb(255 255 255 / 0.55);
-  border-radius: clamp(24px, 3.5vw, 40px);
-  background: rgb(255 255 255 / 0.62);
-  box-shadow:
-    0 24px 60px rgb(0 0 0 / 0.07),
-    0 1px 0 rgb(255 255 255 / 0.8) inset;
-  -webkit-backdrop-filter: blur(24px) saturate(1.25);
-  backdrop-filter: blur(24px) saturate(1.25);
   overflow: hidden;
   contain: layout style;
 }
@@ -1903,7 +1895,7 @@ a:hover {
     min-width: 0;
     height: auto;
     box-sizing: border-box;
-    padding: clamp(1.15rem, 4vw, 1.5rem);
+    padding: 0;
     overflow: hidden;
     contain: layout style;
   }
