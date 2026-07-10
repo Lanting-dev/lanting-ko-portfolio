@@ -71,6 +71,7 @@ function readProgress(
 function writeHeroVars(snapshot: ParallaxSnapshot): void {
   const root = document.documentElement.style;
   const { hero } = snapshot;
+  root.setProperty("--hero-progress", snapshot.heroProgress.toFixed(4));
   root.setProperty("--hero-split", hero.splitOpacity.toFixed(4));
   root.setProperty("--hero-title-y", hero.titleYOffset.toFixed(2));
   root.setProperty("--hero-title-scale", hero.titleScale.toFixed(4));

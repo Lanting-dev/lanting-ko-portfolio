@@ -14,27 +14,32 @@ const heroPanes = [
   {
     src: "/projects/Amazon Music.png",
     alt: "Amazon Music For Ü project interface preview",
-    className: "hero-photo-pane hero-photo-pane--one",
+    shellClassName: "hero-photo-pane-shell hero-photo-pane-shell--one",
+    paneClassName: "hero-photo-pane hero-photo-pane--one",
   },
   {
     src: "/projects/COPPER.png",
     alt: "COPPER project interface preview",
-    className: "hero-photo-pane hero-photo-pane--two",
+    shellClassName: "hero-photo-pane-shell hero-photo-pane-shell--two",
+    paneClassName: "hero-photo-pane hero-photo-pane--two",
   },
   {
     src: "/projects/GT.png",
     alt: "Gaze Tutor project interface preview",
-    className: "hero-photo-pane hero-photo-pane--three",
+    shellClassName: "hero-photo-pane-shell hero-photo-pane-shell--three",
+    paneClassName: "hero-photo-pane hero-photo-pane--three",
   },
   {
     src: "/projects/NGA.png",
     alt: "NGA project interface preview",
-    className: "hero-photo-pane hero-photo-pane--four",
+    shellClassName: "hero-photo-pane-shell hero-photo-pane-shell--four",
+    paneClassName: "hero-photo-pane hero-photo-pane--four",
   },
   {
     src: "/projects/IONG.png",
     alt: "IONG project interface preview",
-    className: "hero-photo-pane hero-photo-pane--five",
+    shellClassName: "hero-photo-pane-shell hero-photo-pane-shell--five",
+    paneClassName: "hero-photo-pane hero-photo-pane--five",
   },
 ];
 
@@ -71,14 +76,16 @@ export function HeroParallaxScene() {
         >
           <div className="hero-photo-stack" aria-hidden="true">
             {heroPanes.map((pane, index) => (
-              <div className={pane.className} key={pane.src}>
-                <Image
-                  src={pane.src}
-                  alt={pane.alt}
-                  fill
-                  priority={index === 1}
-                  sizes="(max-width: 768px) 24vw, 180px"
-                />
+              <div className={pane.shellClassName} key={pane.src}>
+                <div className={pane.paneClassName}>
+                  <Image
+                    src={pane.src}
+                    alt={pane.alt}
+                    fill
+                    priority={index === 1}
+                    sizes="(max-width: 768px) 24vw, 180px"
+                  />
+                </div>
               </div>
             ))}
           </div>
