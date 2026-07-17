@@ -1,7 +1,7 @@
 import { isMobileViewport } from "@/lib/browser/isMobile";
 import { isSafari } from "@/lib/browser/isSafari";
 
-/** Safari + narrow viewports — lower canvas res. */
+/** Safari + narrow viewports , lower canvas res. */
 function isLowPowerCanvas(): boolean {
   if (typeof window === "undefined") return false;
   return isSafari() || isMobileViewport();
@@ -15,7 +15,7 @@ export type DitherBufferLayout = {
   pixelSize: number;
 };
 
-/** Full-screen intro — lower internal res, capped pixels (all browsers). */
+/** Full-screen intro , lower internal res, capped pixels (all browsers). */
 export function introBufferLayout(
   cssW: number,
   cssH: number,

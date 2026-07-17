@@ -161,7 +161,7 @@ a:hover {
   margin-top: var(--type-display-row-gap);
 }
 
-/* Hero title — upper stage; bottom 20vh is the peek / scroll-cue band. */
+/* Hero title , upper stage; bottom 20vh is the peek / scroll-cue band. */
 .hero-title-stage {
   position: relative;
   z-index: 1;
@@ -500,7 +500,7 @@ a:hover {
   object-fit: cover;
 }
 
-/* Periphery only — top/side margins and bottom peek; avoid title + bio band. */
+/* Periphery only , top/side margins and bottom peek; avoid title + bio band. */
 .hero-photo-pane--one {
   --hero-pane-index: 0;
   --hero-pane-transform: translate3d(calc(-50% - 52vmin), calc(-50% - 36vmin), -86px) rotateY(28deg) rotateZ(-8deg);
@@ -638,7 +638,7 @@ a:hover {
   color: rgb(0 0 0 / 0.68);
 }
 
-/* Kinetic ribbon — parallel bands, peek in hero overlap band then reveal on scroll. */
+/* Kinetic ribbon , parallel bands, peek in hero overlap band then reveal on scroll. */
 .hero-ribbon-pin {
   --ribbon-kinetic: 0;
   --ribbon-peek: 3vh;
@@ -697,7 +697,7 @@ a:hover {
   backdrop-filter: blur(24px) saturate(1.25);
 }
 
-/* Revealed layout — field offset animates the stack from hero peek band to center. */
+/* Revealed layout , field offset animates the stack from hero peek band to center. */
 .kinetic-ribbon--a {
   top: calc(50% - var(--ribbon-h) / 2 - var(--ribbon-stack-gap) / 2);
   z-index: 2;
@@ -921,7 +921,7 @@ a:hover {
     top: clamp(0.15rem, 1vh, 0.75rem);
   }
 
-  /* Section bigwords — shared left edge inside page-shell */
+  /* Section bigwords , shared left edge inside page-shell */
   .about-bigword,
   .project-stack-word,
   .project-stack-static-word,
@@ -5015,7 +5015,7 @@ a:hover {
 .lab-section {
   position: relative;
   padding-block: clamp(4rem, 12vh, 7rem) clamp(5rem, 14vh, 8rem);
-  /* Keep page-shell horizontal gutter — do not zero padding-inline here. */
+  /* Keep page-shell horizontal gutter , do not zero padding-inline here. */
 }
 
 .lab-section-header {

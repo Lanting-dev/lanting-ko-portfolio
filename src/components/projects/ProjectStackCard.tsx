@@ -15,7 +15,7 @@ type ProjectStackCardProps = {
   impactRef?: RefObject<HTMLDivElement | null>;
 };
 
-/** First segment of meta — used for the folder tab label. */
+/** First segment of meta , used for the folder tab label. */
 function projectTabLabel(meta?: string): string | null {
   if (!meta) return null;
   const head = meta.split("·")[0]?.trim();

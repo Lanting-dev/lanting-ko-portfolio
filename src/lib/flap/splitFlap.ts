@@ -1,4 +1,4 @@
-/** Glyphs the flaps tumble through before settling — letters + digits. */
+/** Glyphs the flaps tumble through before settling , letters + digits. */
 export const SPLIT_FLAP_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 export const SPLIT_FLAP_TICK_MS = 70;

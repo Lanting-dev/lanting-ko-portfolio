@@ -47,37 +47,37 @@ const en: Record<string, LocalizedProjectFields> = {
 const zhTW: Record<string, LocalizedProjectFields> = {
   nga: {
     alt: "National Gallery of Art · UX 研究與產品設計",
-    title: "為 Z 世代設計的多人博物館體驗",
+    title: "把看展變成 Gen Z 會想一起玩的體驗",
     meta: "National Gallery of Art · UX 研究 · 產品設計",
-    description: "一款多人繪畫遊戲，把看展變成 Gen Z 會想一起玩、一起比的社交體驗。",
+    description: "用多人繪畫遊戲，把藝術欣賞變成可以一起玩、一起比、一起聊的社交體驗。",
   },
   gt: {
     alt: "Gutenberg Technology · AI Course Builder 研究與產品設計",
     title: "讓 AI Course Builder 的系統狀態看得見",
     meta: "Gutenberg Technology · UX 研究 · 產品設計",
     description:
-      "把 AI Course Builder 的系統狀態講清楚，讓使用者敢下決定，不用一直試錯。",
+      "把 AI Course Builder 現在在做什麼、下一步會發生什麼說清楚，減少使用者一路猜、一路試錯。",
   },
   foru: {
     alt: "Amazon Music · For Ü 個人化推薦策略",
     title: "用 For Ü 讓 Amazon Music 走進日常",
     meta: "Amazon Music · 使用者研究 · 產品設計",
     description:
-      "以跨生態系推薦、日常情境歌單與 Maestro AI 建歌單，提升個人化體驗；資料來源則由使用者自行控管。",
+      "用跨服務推薦、日常情境歌單和 Maestro AI 建歌單，讓個人化更貼近日常，也把資料控制權留給使用者。",
   },
   copper: {
     alt: "Cooper Hewitt · accessible Bungee font tester redesign",
     title: "重新設計無障礙字型探索介面",
     meta: "Cooper Hewitt · 無障礙 · 產品設計",
     description:
-      "重建 Bungee font tester，支援鍵盤與螢幕閱讀器，並用聲音把視覺工具變成多感官體驗。",
+      "重建 Bungee font tester，讓鍵盤與螢幕閱讀器使用者也能操作，並用聲音補上純視覺工具缺少的回饋。",
   },
   iong: {
     alt: "IONG 養 · 推測性設計與互動設計",
     title: "當生物辨識系統替人決定吃什麼",
     meta: "個人專案 · 推測性設計 · 互動設計",
     description:
-      "一套發生在 2070 年的 employee onboarding 原型：閱讀時間與生物數據會悄悄決定你在營養管控系統中的角色。",
+      "一個設定在 2070 年的 employee onboarding 原型。系統會根據閱讀時間、互動紀錄和生物辨識資料，悄悄判斷你在營養管控系統裡的位置。",
   },
 };
 

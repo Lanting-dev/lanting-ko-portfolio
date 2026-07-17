@@ -35,6 +35,25 @@ export const EXPERIMENTAL_SHOWCASES: Record<
     year: "2025",
     lede:
       "I designed SUMA's initial VR space and growth companion, shaping the first moment where users check in, feel welcomed, and enter a calmer world.",
+    zh: {
+      lede:
+        "我設計 SUMA 最一開始的 VR 空間和成長夥伴，讓使用者一進來就能先做情緒 check-in，被溫柔接住，再慢慢進入比較安定的世界。",
+      summary: [
+        {
+          label: "問題",
+          text: "傳統引導式冥想有時太照本宣科。當使用者壓力很大、也不確定自己需要安慰、反思，還是快速整理情緒時，這種體驗很容易不夠貼近當下。",
+        },
+        {
+          label: "我的角色",
+          text: "我設計最初的 VR 空間，建模並測試 SUMA 作為成長夥伴的樣子，也嘗試讓短版 AI 對話搭配情緒回饋。",
+        },
+        {
+          label: "成果",
+          text: "原型變成一個柔和的 VR 入口。使用者可以先遇見 SUMA，說出現在的感受，再得到比較個人化的回應。",
+        },
+      ],
+      role: ["初始空間設計", "成長夥伴", "3D 建模", "AI 對話"],
+    },
     summary: [
       {
         label: "Problem",
@@ -54,14 +73,14 @@ export const EXPERIMENTAL_SHOWCASES: Record<
     with: "Lan Ting, Minh, Krathish",
     slides: [
       slide("suma/slides/01.png", "SUMA title slide"),
-      slide("suma/slides/02.png", "What's SUMA — a mindful relaxation companion"),
+      slide("suma/slides/02.png", "What's SUMA, a mindful relaxation companion"),
       slide("suma/slides/03.png", "Meeting SUMA: a calmer headspace when stress hits"),
       slide(
         "suma/slides/04.png",
-        "Value: mindful relaxation that meets you where you're at — your mood, your own space",
+        "Value: mindful relaxation that meets you where you're at, your mood, your own space",
       ),
       slide("suma/slides/05.png", "Tailored to user needs, not a one-time interaction"),
-      slide("suma/slides/06.png", "How did we make it — process"),
+      slide("suma/slides/06.png", "How did we make it, process"),
       slide("suma/slides/07.png", "Moodboard: dreamy, playful, surreal"),
       slide(
         "suma/slides/08.png",
@@ -102,6 +121,25 @@ export const EXPERIMENTAL_SHOWCASES: Record<
     year: "2025",
     lede:
       "An immersive VR space where sound, color, and emotions resonate together. Music sets the mood, a tap on an emoji names the feeling, and the room shifts color so a private response becomes a shared, collective space.",
+    zh: {
+      lede:
+        "一個讓聲音、顏色和情緒一起共振的沉浸式 VR 空間。音樂先定下氣氛，使用者點一下 emoji 說出感受，房間也跟著變色，讓原本很私人的反應變成共享的空間氛圍。",
+      summary: [
+        {
+          label: "問題",
+          text: "聽音樂很有情緒，但那些感受通常是看不見的。在共享聆聽空間裡，人們很難表達一首歌牽動了什麼，也很難看見自己的情緒被環境回應。",
+        },
+        {
+          label: "我的角色",
+          text: "這是個人專案。我負責概念、互動流程和 VR 空間本身：用唱片機開始播放音樂，用 emoji 反應表達情緒，讓牆面變色，也加入地面、方塊和聲音回饋等空間線索。",
+        },
+        {
+          label: "成果",
+          text: "最後做成一個可以在裡面走動的 VR demo。點唱片機後音樂開始、emoji 出現；選擇其中一個 emoji 後，整個房間會變色並放大該 emoji，把單一聽眾的情緒轉成集體的環境氛圍。",
+        },
+      ],
+      role: ["概念", "互動設計", "空間 / VR 設計", "3D 場景"],
+    },
     summary: [
       {
         label: "Problem",
@@ -194,6 +232,25 @@ export const EXPERIMENTAL_SHOWCASES: Record<
     year: "2026",
     lede:
       "An indoor IoT wellness system for remote workers. Instead of dismissing an on-screen reminder, you get up, find a flickering candle somewhere in your home, and blow it out to start your break, turning a passive notification into an embodied ritual with Boojie, a small ghost companion living on your desktop.",
+    zh: {
+      lede:
+        "一套為遠端工作者設計的室內 IoT wellness system。它不是再丟一個螢幕提醒給你關掉，而是讓你起身去家裡找到閃爍的蠟燭，吹熄它之後才開始休息。Boojie 是住在桌面上的小幽靈，也把被動通知變成一個真的要離開座位的休息儀式。",
+      summary: [
+        {
+          label: "問題",
+          text: "在家工作讓專注、休息和活動之間的界線變得很模糊。Pomodoro timer 和桌面提醒都停留在螢幕上，所以很容易被延後或忽略。很多 wellness 工具失效，是因為它幾乎不需要使用者真的動起來。",
+        },
+        {
+          label: "我的角色",
+          text: "這是四人團隊專案。我參與概念、蠟燭互動和桌面幽靈夥伴的設計，也協助做 usability testing，調整吹熄蠟燭的互動方式。",
+        },
+        {
+          label: "成果",
+          text: "最後做出可運作的原型：Micro:bit 蠟燭每 45 分鐘閃爍一次，吹熄後就會開始休息，也會讓 Boojie 得到新的物件、服裝和房間。測試顯示，這個實體任務比純螢幕提醒更難被隨手忽略。",
+        },
+      ],
+      role: ["概念", "互動設計", "Physical computing", "Usability testing"],
+    },
     summary: [
       {
         label: "Problem",
@@ -270,7 +327,7 @@ export const EXPERIMENTAL_SHOWCASES: Record<
   },
 };
 
-// travel-pal and doorbear are temporarily hidden — keep their data in
+// travel-pal and doorbear are temporarily hidden, keep their data in
 // EXPERIMENTAL_SHOWCASES, just drop them from the visible list / routes.
 export const EXPERIMENTAL_SLUGS: ExperimentalSlug[] = [
   "suma",

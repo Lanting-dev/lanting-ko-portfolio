@@ -42,8 +42,9 @@ function ShowcaseBlock({ block }: { block: ExperimentalMedia }) {
 }
 
 export function ShowcaseHero({ showcase }: { showcase: ExperimentalShowcase }) {
-  const { ui } = useLocale();
+  const { locale, ui } = useLocale();
   const reducedMotion = usePrefersReducedMotion();
+  const localized = locale === "zh-TW" ? showcase.zh : undefined;
   const hero = showcase.blocks[0];
   const heroMedia =
     hero?.type === "video" && !reducedMotion ? (
@@ -88,9 +89,9 @@ export function ShowcaseHero({ showcase }: { showcase: ExperimentalShowcase }) {
       <div className="lab-showcase-hero-media-wrap">{heroMedia}</div>
 
       <div className="lab-showcase-hero-copy">
-        <p className="lab-showcase-tag">{showcase.tag}</p>
+        <p className="lab-showcase-tag">{localized?.tag ?? showcase.tag}</p>
         <h1 className="lab-showcase-title">{showcase.title}</h1>
-        <p className="lab-showcase-lede">{showcase.lede}</p>
+        <p className="lab-showcase-lede">{localized?.lede ?? showcase.lede}</p>
       </div>
 
       <aside className="lab-showcase-hero-aside">
@@ -100,11 +101,12 @@ export function ShowcaseHero({ showcase }: { showcase: ExperimentalShowcase }) {
             <p className="lab-showcase-meta-value">{showcase.with}</p>
           </div>
         ) : null}
-        {showcase.role && showcase.role.length > 0 ? (
+        {(localized?.role ?? showcase.role) &&
+        (localized?.role ?? showcase.role)!.length > 0 ? (
           <div className="lab-showcase-meta-block">
             <p className="lab-showcase-meta-label">{ui.lab.roleLabel}</p>
             <ul className="lab-showcase-meta-list">
-              {showcase.role.map((line) => (
+              {(localized?.role ?? showcase.role)!.map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ul>

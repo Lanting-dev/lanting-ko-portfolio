@@ -12,19 +12,19 @@ export const PROJECT_SCROLL_VH = PROJECT_STACK_SCROLL_VH;
 export const PROJECT_STACK_INTRO_END =
   PROJECT_STACK_INTRO_VH / PROJECT_STACK_SCROLL_VH;
 
-/** @deprecated Scatter removed — kept so rhythm milestones compile. */
+/** @deprecated Scatter removed , kept so rhythm milestones compile. */
 export const PROJECT_SCATTER_START = PROJECT_STACK_INTRO_END;
 
 /** @deprecated Scatter removed. */
 export const PROJECT_SCATTER_END = PROJECT_STACK_INTRO_END;
 
-/** @deprecated Detail overlay removed — stack cards carry copy inline. */
+/** @deprecated Detail overlay removed , stack cards carry copy inline. */
 export const PROJECT_DETAIL_START = 0.88;
 
 /** @deprecated */
 export const PROJECT_HOP_MORPH_FRACTION = 0.15;
 
-/** Last portion of project scroll — ball rolls off the final card and falls to profile. */
+/** Last portion of project scroll , ball rolls off the final card and falls to profile. */
 export const PROJECT_EXIT_SCROLL_FRACTION =
   PROJECT_STACK_EXIT_VH / PROJECT_STACK_SCROLL_VH;
 

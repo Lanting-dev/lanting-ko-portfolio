@@ -9,10 +9,10 @@ export const PROJECT_STACK_CARD_VH = 80;
 /** Tail scroll room before About handoff. */
 export const PROJECT_STACK_EXIT_VH = 50;
 
-/** Desktop card body — synced to `--project-stack-card-body-vh`. */
+/** Desktop card body , synced to `--project-stack-card-body-vh`. */
 export const PROJECT_STACK_CARD_BODY_VH = 62;
 
-/** Mobile stacks copy + media vertically — needs more body vh. */
+/** Mobile stacks copy + media vertically , needs more body vh. */
 export const PROJECT_STACK_CARD_BODY_VH_MOBILE = 72;
 
 /** Extra scroll after the last card settles. */
@@ -66,7 +66,7 @@ export function projectStackLayout(
   };
 }
 
-/** Reference desktop total — feeds rhythm spec / PROJECT_SCROLL_VH. */
+/** Reference desktop total , feeds rhythm spec / PROJECT_SCROLL_VH. */
 export const PROJECT_STACK_SCROLL_VH = projectStackLayout(false).section;
 
 /** @deprecated use projectStackLayout() */

@@ -45,6 +45,15 @@ export type ExperimentalShowcase = {
     text: string;
   }[];
   role?: readonly string[];
+  zh?: {
+    tag?: string;
+    lede?: string;
+    summary?: readonly {
+      label: string;
+      text: string;
+    }[];
+    role?: readonly string[];
+  };
   stack?: readonly string[];
   with?: string;
   /** Deck slides shown in a sticky, horizontally-scrolling section. */

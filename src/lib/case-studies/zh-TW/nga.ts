@@ -9,7 +9,7 @@ import type {
 export const NGA_CASE_STUDY_ZH = {
   slug: "nga",
   accent: "#F85525",
-  title: "為 Z 世代設計的多人博物館體驗",
+  title: "把看展變成 Gen Z 會想一起玩的體驗",
   meta: [
     { label: "專案期程", value: "12 週" },
     { label: "團隊", value: "Lanting K, Claire P, Isadora O, Eric L" },
@@ -23,8 +23,8 @@ export const NGA_CASE_STUDY_ZH = {
   summary: {
     title: "重點整理",
     paragraphs: [
-      "NGA 網站使用者中有 13% 是 Fun Seekers，最年輕的一群，多半是 Z 世代。但他們滿意度在所有族群裡最低。Artle 每天約一萬人玩，但偏重猜謎，沒有太多主動參與的空間。",
-      "我們把藝術參與從被動辨識轉為共同創作，最後設計出一款結合創作、競賽與分享的多人繪畫體驗。",
+      "NGA 網站使用者中有 13% 是 Fun Seekers，也是最年輕的一群，多半屬於 Z 世代。但他們在所有族群中滿意度最低。Artle 每天約有一萬人玩，卻比較偏向猜謎，主動參與的空間有限。",
+      "我們把藝術參與從「認出作品」轉向「一起創作」，最後設計出一款結合繪畫、競賽與分享的多人遊戲體驗。",
     ],
   },
   heroImages: [
@@ -51,7 +51,7 @@ export const NGA_CASE_STUDY_ZH = {
     label: "問題",
     headline: "流量高，Z 世代滿意度卻最低",
     intro:
-      "NGA 是世界級美術館，線上流量很大，但 Fun Seekers（多半是 Z 世代）在六個族群中滿意度最低。NGA 已經試過幾種方式吸引他們，例如 Artle 這款每日猜畫遊戲。Artle 每天約一萬人玩，Fun Seekers 也是主要族群之一，證明遊戲有效。但跟很多輕量猜謎遊戲一樣，Artle 只支援很窄的互動類型。這給了我們機會，設計更貼近 Fun Seekers 參與方式的行動體驗。",
+      "NGA 是世界級美術館，線上流量很大，但 Fun Seekers（多半是 Z 世代）在六個族群中滿意度最低。NGA 已經嘗試用不同方式吸引他們，例如每日猜畫遊戲 Artle。Artle 每天約有一萬人玩，Fun Seekers 也是主要族群之一，代表遊戲確實有吸引力。但和許多輕量猜謎遊戲一樣，Artle 能做的互動很有限。這也給了我們一個機會：設計一個更貼近 Fun Seekers 參與習慣的行動體驗。",
     insightsTitle: "National Gallery of Art 已經知道的事",
     insights: [
       {
@@ -60,8 +60,8 @@ export const NGA_CASE_STUDY_ZH = {
         body: "Fun Seekers 占線上流量 13%，但滿意度在所有族群中最低。",
       },
       {
-        title: "參與方式很窄",
-        body: "Artle 帶來很強的回訪：54% 的 Fun Seekers 會再回來。但互動內容不足仍是他們最大的痛點。",
+        title: "能互動的方式太少",
+        body: "Artle 帶來很高的回訪率：54% 的 Fun Seekers 會再回來。但互動內容不夠豐富，仍是他們最大的痛點。",
       },
       {
         title: "57% 流量來自行動裝置",
@@ -74,7 +74,7 @@ export const NGA_CASE_STUDY_ZH = {
     headline:
       "有趣、有料，而且要有社交感和真實感",
     intro:
-      "根據這些洞察，我們聚焦在 Z 世代 Fun Seekers 覺得什麼有趣，以及他們怎麼用博物館網站。",
+      "根據這些洞察，我們把焦點放在兩件事：Z 世代 Fun Seekers 覺得什麼有趣，以及他們實際上怎麼使用博物館網站。",
     findings: [
       {
         text: "博物館網站有料，但不夠有趣",
@@ -100,8 +100,8 @@ export const NGA_CASE_STUDY_ZH = {
       label: "策略方向",
       headline: "從 Z 世代原有的行為切入",
       bodies: [
-        "我們的策略是從單向互動轉向可參與、可分享的體驗，同時把找資訊變成有趣的過程。與其靠獨立的遊戲機制，我們把社交和共同創作放進核心藝術體驗。",
-        "我們設計了參與式藝術體驗，把探索變成社交驅動的遊戲互動。",
+        "我們想把單向瀏覽改成可以參與、可以分享的體驗，也讓找資訊這件事本身變得更有趣。與其另外做一個和館藏無關的小遊戲，我們把社交和共同創作放進藝術體驗裡。",
+        "最後，我們設計了一個參與式藝術體驗，讓探索館藏變成由社交帶動的遊戲互動。",
       ],
       journey: [
         {
@@ -131,7 +131,7 @@ export const NGA_CASE_STUDY_ZH = {
       id: "ideation",
       label: "發想",
       headline: "把創作變成競賽",
-      body: "突破點是 Art or Fart：這個概念借鏡 Z 世代快節奏的數位文化，把藝術欣賞轉化為具競爭性的社交遊戲。相較之下，早期構想缺乏即時回饋或有意義的社交互動，因此沒有繼續發展。",
+      body: "突破點是 Art or Fart。這個概念借鏡 Z 世代熟悉的快速數位文化，把藝術欣賞變成帶有競賽感的社交遊戲。相較之下，早期構想不是回饋太慢，就是社交互動不夠明確，所以沒有繼續發展。",
       image: {
         src: "/work/nga/case-ideation.png",
         alt: "Art or Fart 早期概念探索",
@@ -140,8 +140,8 @@ export const NGA_CASE_STUDY_ZH = {
     {
       id: "discoverability",
       label: "設計決策 01",
-      headline: "借現有行為提高能見度",
-      body: "Z 世代造訪博物館網站，多半是查開放時間、當期展覽等實用資訊。我們在展覽資訊旁放進入點，提高遊戲能見度，也鼓勵他們出發前先認識該藝術風格。另外在 Artle 結果頁也加了進入點，讓現有玩家試新遊戲。",
+      headline: "順著既有行為，讓入口更容易被看見",
+      body: "Z 世代造訪博物館網站時，多半是查開放時間、當期展覽等實用資訊。我們把遊戲入口放在展覽資訊旁邊，讓它更容易被看見，也鼓勵他們出發前先接觸相關藝術風格。另外，我們也在 Artle 結果頁加入入口，讓既有玩家更容易試試新遊戲。",
       images: [
         {
           src: "/work/nga/case-entry-point-1.png",
@@ -157,7 +157,7 @@ export const NGA_CASE_STUDY_ZH = {
       id: "drawing-assist",
       label: "設計決策 02",
       headline: "用手指畫，降低門檻",
-      body: "在小螢幕上只用手指畫，門檻很高。我們整合多種繪圖輔助工具，解讀草稿並給建議，讓創作好上手，而不是充滿挫折。",
+      body: "在小螢幕上只用手指畫圖，其實很容易挫折。我們整合多種繪圖輔助工具，協助解讀草稿並給出建議，讓創作比較好上手。",
       image: {
         src: "/work/nga/case-drawing-tools.png",
         alt: "行動裝置上的 AI 繪圖輔助工具",
@@ -167,7 +167,7 @@ export const NGA_CASE_STUDY_ZH = {
       id: "reactions",
       label: "設計決策 03",
       headline: "保留社交表達，但不失控",
-      body: "開放式聊天可能影響 NGA 的機構語氣與內容管理。我們改用表情回應，既保留社交表達，也讓互動維持在可控範圍內。",
+      body: "開放式聊天可能影響 NGA 的機構語氣，也會增加內容管理成本。因此我們改用表情回應，保留社交表達，同時讓互動維持在可控範圍內。",
       image: {
         src: "/work/nga/case-reactions.png",
         alt: "以表情回應功能取代開放式聊天",
@@ -177,7 +177,7 @@ export const NGA_CASE_STUDY_ZH = {
       id: "theme-shuffle",
       label: "設計決策 04",
       headline: "邊玩邊學",
-      body: "讓使用者投票選主題帶來的複雜度高於實際價值。我們改用輪播選擇器，將藝術風格與物件組合，提供更多變化與清楚脈絡，也自然創造邊玩邊學的機會。",
+      body: "讓使用者投票選主題會增加不少複雜度，但實際價值有限。因此我們改用輪播選擇器，將藝術風格與物件組合在一起，提供更多變化和更清楚的背景，也自然創造邊玩邊學的機會。",
       image: {
         src: "/work/nga/case-theme-shuffle.png",
         alt: "以主題輪播機制取代主題投票",
@@ -187,10 +187,10 @@ export const NGA_CASE_STUDY_ZH = {
       id: "impact",
       label: "成效",
       headline: "把學習變成遊戲",
-      body: "Art or Fart 是競技多人繪畫遊戲：玩家依主題作畫、互相投票，並在週排行榜上競爭。",
+      body: "Art or Fart 是一款競技多人繪畫遊戲。玩家依照主題作畫、互相投票，最後在週排行榜上競爭。",
       image: {
         src: "/work/nga/case-impact-review.png",
-        alt: "NGA 團隊 Zoom 檢視會議",
+        alt: "NGA 團隊 Zoom review 會議",
       },
       points: [
         {
@@ -213,7 +213,7 @@ export const NGA_CASE_STUDY_ZH = {
       "很多部分對我們的開發者來說不陌生。我覺得這可以很容易接進現有的產品線。",
     quoteAttribution: "NGA Team",
     label: "結語",
-    headline: "擴展這套體驗",
-    body: "後續會擴充主題目錄，並整合共用的參與系統，把這套體驗跟其他 NGA 遊戲連起來，鼓勵長期參與，延伸整個 NGA 生態系的互動。",
+    headline: "讓體驗延伸到更多 NGA 遊戲",
+    body: "下一步可以擴充主題目錄，並整合共用的參與系統，把這套體驗和其他 NGA 遊戲串起來，鼓勵使用者長期回來玩，也讓整個 NGA 的互動更連貫。",
   },
 } as const;

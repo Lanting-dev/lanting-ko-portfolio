@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ShowcaseGallery,
   ShowcaseHero,
@@ -5,12 +7,17 @@ import {
 import { ShowcaseNav } from "@/components/experimental/showcase/ShowcaseNav";
 import { ShowcaseSlides } from "@/components/experimental/showcase/ShowcaseSlides";
 import type { ExperimentalShowcase } from "@/lib/experimental/types";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function ExperimentalShowcasePage({
   showcase,
 }: {
   showcase: ExperimentalShowcase;
 }) {
+  const { locale } = useLocale();
+  const summary =
+    locale === "zh-TW" ? (showcase.zh?.summary ?? showcase.summary) : showcase.summary;
+
   return (
     <div className="lab-showcase-page">
       <div className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]">
@@ -18,9 +25,9 @@ export function ExperimentalShowcasePage({
       </div>
       <article className="lab-showcase-article">
         <ShowcaseHero showcase={showcase} />
-        {showcase.summary && showcase.summary.length > 0 ? (
+        {summary && summary.length > 0 ? (
           <section className="lab-showcase-summary" aria-label="Project summary">
-            {showcase.summary.map((item) => (
+            {summary.map((item) => (
               <div className="lab-showcase-summary-item" key={item.label}>
                 <p className="lab-showcase-summary-label">{item.label}</p>
                 <p className="lab-showcase-summary-text">{item.text}</p>
