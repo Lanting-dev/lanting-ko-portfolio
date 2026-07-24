@@ -8,6 +8,7 @@ import { ScrambleWord } from "@/components/ScrambleWord";
 import { useLocalizedProjects } from "@/hooks/useLocalizedProject";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { ProjectStackCard } from "./ProjectStackCard";
 
 type ProjectScrollSectionProps = {
@@ -29,6 +30,7 @@ export function ProjectScrollSection({
   const isMobile = useIsMobile();
   const stackLayout = projectStackLayout(isMobile, projects.length);
   const reducedMotion = usePrefersReducedMotion();
+  const { ui } = useLocale();
   const workImpactRef = useRef<HTMLDivElement>(null);
   const projectProgress = useParallaxValue((s) => s.projectProgress);
   const headingPinned = projectProgress > 0.01 && projectProgress < 0.995;
@@ -43,7 +45,9 @@ export function ProjectScrollSection({
   if (reducedMotion) {
     return (
       <section id="work" className="project-stack-static page-shell pt-2 pb-14 md:pt-2 md:pb-20">
-        <ScrambleWord text="Work" className="project-stack-static-word" />
+        <div className="project-stack-static-heading">
+          <ScrambleWord text={ui.work.heading} className="project-stack-static-word" />
+        </div>
         <ul className="project-stack-static-list">
           {projects.map((project, index) => (
             <li key={project.id}>
@@ -67,7 +71,7 @@ export function ProjectScrollSection({
         className={`project-stack-heading page-shell${headingPinned ? " is-pinned" : ""}`}
         aria-hidden={!headingPinned}
       >
-        <ScrambleWord text="Work" className="project-stack-word" />
+        <ScrambleWord text={ui.work.heading} className="project-stack-word" />
       </div>
 
       <div

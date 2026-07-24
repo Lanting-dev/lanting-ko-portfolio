@@ -118,8 +118,13 @@ export function HeroParallaxScene() {
           </h1>
         </div>
         <div className="hero-intro-copy">
-          <p className="hero-kicker">Hi, I&apos;m Lanting</p>
+          <p className="hero-kicker">{home.heroKicker}</p>
           <p>{home.heroBio}</p>
+          <ul className="hero-identity-row" aria-label="Design focus">
+            {home.heroIdentity.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

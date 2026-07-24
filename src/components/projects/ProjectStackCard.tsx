@@ -57,6 +57,9 @@ export function ProjectStackCard({
           <p className="project-stack-card-index" aria-hidden="true">
             {String(index + 1).padStart(2, "0")}
           </p>
+          {localized.focus ? (
+            <p className="project-stack-card-focus">{localized.focus}</p>
+          ) : null}
           {localized.title ? (
             <h3 className="project-stack-card-title">{localized.title}</h3>
           ) : null}

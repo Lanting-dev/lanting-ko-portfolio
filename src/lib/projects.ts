@@ -9,6 +9,7 @@ export type ProjectItem = {
   /** Card caption , readable without opening the case study. */
   title?: string;
   meta?: string;
+  focus?: string;
   description?: string;
   /** Omit from homepage carousel until the case study is ready. */
   hidden?: boolean;
@@ -28,6 +29,7 @@ export const PROJECTS: ProjectItem[] = [
     href: "/work/nga",
     title: "Designing a Multiplayer Experience for Gen Z Museum Engagement",
     meta: "National Gallery of Art · UX Research · Product Design",
+    focus: "Engagement strategy",
     description:
       "A multiplayer drawing game that turns art appreciation into social, competitive play for Gen Z.",
   },
@@ -40,6 +42,7 @@ export const PROJECTS: ProjectItem[] = [
     href: "/work/gt",
     title: "Making System State Visible in AI Course Creation",
     meta: "Gutenberg Technology · UX Research · Product Design",
+    focus: "AI workflow clarity",
     description:
       "Surfacing system state in an AI course builder so users act with confidence, not trial and error.",
   },
@@ -52,6 +55,7 @@ export const PROJECTS: ProjectItem[] = [
     href: "/work/foru",
     title: "A Personalized Recommendation Strategy for Amazon Music",
     meta: "Amazon Music · User Research · Product Design",
+    focus: "Personalization strategy",
     description:
       "Cross-ecosystem recommendations, routine-based For You rows, and Maestro AI, with user control over data sources.",
   },
@@ -64,6 +68,7 @@ export const PROJECTS: ProjectItem[] = [
     href: "/work/copper",
     title: "Redesigning an Accessible Font Exploration Interface",
     meta: "Cooper Hewitt · Accessibility · Product Design",
+    focus: "Accessible interaction",
     description:
       "Rebuilding the Bungee font tester for keyboard and screen-reader access, plus audio that turns a visual tool multisensory.",
   },
@@ -76,6 +81,7 @@ export const PROJECTS: ProjectItem[] = [
     href: "/work/iong",
     title: "When Biometric Systems Decide What We Eat",
     meta: "Individual Project · Speculative Design · Interaction Design",
+    focus: "Critical interaction design",
     description:
       "A 2070 employee onboarding demo where reading time and biometric tracking quietly assign you a role inside a system that manages citizen nutrition.",
   },

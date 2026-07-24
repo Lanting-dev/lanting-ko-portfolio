@@ -1,6 +1,6 @@
 "use client";
 
-import { useTexture } from "@react-three/drei";
+import { RoundedBox, useTexture } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Suspense,
@@ -23,6 +23,41 @@ const DEG = Math.PI / 180;
 const CUBE_SIZE = 0.9;
 const CUBE_HALF = CUBE_SIZE / 2;
 const CUBE_FOOT_Y = CUBE_HALF;
+const CUBE_CORNER_RADIUS = 0.065;
+const PROFILE_FACE_SIZE = CUBE_SIZE * 0.82;
+const FACE_TEXTURE_OFFSET = CUBE_HALF + 0.003;
+const PROFILE_FACE_PLANES = [
+  {
+    key: "front",
+    position: [0, 0, FACE_TEXTURE_OFFSET],
+    rotation: [0, 0, 0],
+  },
+  {
+    key: "back",
+    position: [0, 0, -FACE_TEXTURE_OFFSET],
+    rotation: [0, Math.PI, 0],
+  },
+  {
+    key: "right",
+    position: [FACE_TEXTURE_OFFSET, 0, 0],
+    rotation: [0, Math.PI / 2, 0],
+  },
+  {
+    key: "left",
+    position: [-FACE_TEXTURE_OFFSET, 0, 0],
+    rotation: [0, -Math.PI / 2, 0],
+  },
+  {
+    key: "top",
+    position: [0, FACE_TEXTURE_OFFSET, 0],
+    rotation: [-Math.PI / 2, 0, 0],
+  },
+  {
+    key: "bottom",
+    position: [0, -FACE_TEXTURE_OFFSET, 0],
+    rotation: [Math.PI / 2, 0, 0],
+  },
+] as const;
 
 type ProfileCubeProps = {
   aboutProgress: number;
@@ -38,21 +73,32 @@ function ProfileCube({ aboutProgress, anchorGroupRef }: ProfileCubeProps) {
 
   const materials = useMemo(
     () => [
-      new THREE.MeshBasicMaterial({ color: faceColor("right") }),
-      new THREE.MeshBasicMaterial({ color: faceColor("left") }),
-      new THREE.MeshBasicMaterial({ color: faceColor("top") }),
-      new THREE.MeshBasicMaterial({ color: faceColor("bottom") }),
-      new THREE.MeshBasicMaterial({ map: profileMap }),
-      new THREE.MeshBasicMaterial({ color: faceColor("back") }),
+      new THREE.MeshBasicMaterial({ color: "#050505" }),
+      new THREE.MeshBasicMaterial({ color: "#050505" }),
+      new THREE.MeshBasicMaterial({ color: "#050505" }),
+      new THREE.MeshBasicMaterial({ color: "#050505" }),
+      new THREE.MeshBasicMaterial({ color: "#050505" }),
+      new THREE.MeshBasicMaterial({ color: "#050505" }),
     ],
+    [],
+  );
+
+  const profileMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        map: profileMap,
+        transparent: true,
+        side: THREE.DoubleSide,
+      }),
     [profileMap],
   );
 
   useEffect(
     () => () => {
       materials.forEach((material) => material.dispose());
+      profileMaterial.dispose();
     },
-    [materials],
+    [materials, profileMaterial],
   );
 
   useFrame(() => {
@@ -74,9 +120,23 @@ function ProfileCube({ aboutProgress, anchorGroupRef }: ProfileCubeProps) {
   return (
     <group position={[0, CUBE_FOOT_Y, 0]}>
       <group ref={anchorGroupRef}>
-        <mesh material={materials}>
-          <boxGeometry args={[CUBE_SIZE, CUBE_SIZE, CUBE_SIZE]} />
-        </mesh>
+        <RoundedBox
+          args={[CUBE_SIZE, CUBE_SIZE, CUBE_SIZE]}
+          radius={CUBE_CORNER_RADIUS}
+          smoothness={8}
+          bevelSegments={4}
+          material={materials}
+        />
+        {PROFILE_FACE_PLANES.map((face) => (
+          <mesh
+            key={face.key}
+            material={profileMaterial}
+            position={face.position}
+            rotation={face.rotation}
+          >
+            <planeGeometry args={[PROFILE_FACE_SIZE, PROFILE_FACE_SIZE]} />
+          </mesh>
+        ))}
       </group>
     </group>
   );

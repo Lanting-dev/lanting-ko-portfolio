@@ -14,7 +14,7 @@ const en = {
   },
   work: {
     heading: "Work",
-    subheading: "Selected product design work",
+    subheading: "Case studies in making messy things make sense.",
     viewCaseStudy: "View case study →",
   },
   lab: {
@@ -101,7 +101,7 @@ const zhTW = {
   },
   work: {
     heading: "作品",
-    subheading: "精選產品設計專案",
+    subheading: "幾個把混亂整理到終於說得通的案例。",
     viewCaseStudy: "看案例 →",
   },
   lab: {
