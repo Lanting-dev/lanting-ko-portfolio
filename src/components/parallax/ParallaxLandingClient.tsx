@@ -78,7 +78,7 @@ export function ParallaxLandingClient() {
           className="relative"
           style={{ height: `${heroTrackVh}vh` }}
         >
-          <div className="hero-sticky relative z-[2] flex w-full flex-col page-shell">
+          <div className="hero-sticky relative z-[2] flex w-full flex-col">
             <HeroParallaxScene />
           </div>
         </section>
@@ -108,7 +108,7 @@ export function ParallaxLandingClient() {
         className="relative"
         style={{ height: `${heroTrackVh}vh` }}
       >
-        <div className="hero-sticky relative z-[2] sticky top-0 flex w-full flex-col page-shell">
+        <div className="hero-sticky relative z-[2] sticky top-0 flex w-full flex-col">
           <div
             className={`hero-intro-enter flex min-h-0 flex-1 flex-col ${
               heroEnter ? "is-active" : ""

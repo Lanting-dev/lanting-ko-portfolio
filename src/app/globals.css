@@ -76,8 +76,6 @@ button:focus-visible {
   --page-max-width: 1440px;
   --section-gap: clamp(2.5rem, calc(100vw * 96 / 1440), 5rem);
 
-  /* Figma node 6:116 , 400.59×400.59 on 1440px frame */
-  --figma-flower-size: min(400.59px, calc(100vw * 400.59 / 1440));
 
   /* Figma node 11-5 , typography */
   --type-display-size: clamp(4.8rem, 19vw, 15.6rem);
@@ -93,7 +91,7 @@ button:focus-visible {
   --type-body-leading: 1.65;
   --type-body-tracking: 0.01em;
 
-  /* Figma node 40-10 , project cards + glass ball (ball.png = 53px @ 1440) */
+  /* Figma node 40-10 , project card metrics (53px unit @ 1440). */
   --project-card-width: min(600px, calc(100vw * 600 / 1440));
   --project-card-gap: clamp(40px, calc(100vw * 96 / 1440), 96px);
   --figma-ball-size: clamp(28px, calc(100vw * 53 / 1440), 53px);
@@ -173,19 +171,6 @@ a:hover {
   padding-bottom: clamp(1.25rem, 3vh, 2rem);
 }
 
-.parallax-scroll-ball {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.project-ball-slot {
-  width: var(--figma-ball-size);
-  height: var(--figma-ball-size);
-  transform: translate(-50%, -50%);
-}
-
 .type-nav {
   font-family: var(--font-sora), system-ui, sans-serif;
   font-size: var(--type-nav-size);
@@ -211,14 +196,6 @@ a:hover {
   padding-inline: var(--page-gutter);
 }
 
-.flower-graphic {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transform: translateZ(0);
-}
-
 .dither-scatter-canvas {
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
@@ -227,24 +204,12 @@ a:hover {
   image-rendering: crisp-edges;
 }
 
-.flower-reveal-sharp {
-  opacity: 0;
-  will-change: opacity;
-}
-
-.flower-reveal-sharp.is-revealed {
-  opacity: 1;
-  will-change: auto;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .dither-scatter-canvas,
   .dither-reveal canvas {
     opacity: 1 !important;
   }
 
-  .flower-reveal-sharp,
-  .flower-reveal-sharp.is-revealed,
   .glass-reveal-sharp,
   .glass-reveal-sharp.is-revealed {
     opacity: 1 !important;
@@ -409,434 +374,265 @@ a:hover {
   --hero-peek-vh: 6vh;
 }
 
-.hero-photo-stack {
+
+/* ── Hero cover ────────────────────────────────────────────────────────────
+   A cut-out portrait on paper, sliced into bands that come apart on scroll.
+   The title is white + difference-blended, so it reads black on paper and
+   inverts wherever it crosses the photo. That needs an opaque backdrop inside
+   the blend group, hence the white fill on the wrap , which already isolates
+   because it is transformed. */
+.hero-title-wrap {
+  background: #ffffff;
+}
+
+.hero-composition {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  /* The name and the figure both run past the edges; this is what cuts them. */
+  overflow: clip;
+  /* Opaque, so the title's difference blend has something to invert against. */
+  background: #ffffff;
+  will-change: transform;
+}
+
+.hero-title-cut {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 0;
-  width: 0;
-  height: 0;
-  perspective: 900px;
+  inset: 0;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--font-display), var(--font-sora), system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  color: #000000;
   pointer-events: none;
 }
 
-.hero-photo-pane-shell {
+@supports (mix-blend-mode: difference) {
+  .hero-title-cut {
+    color: #ffffff;
+    mix-blend-mode: difference;
+  }
+}
+
+.hero-title-line {
   position: absolute;
+  display: block;
+  line-height: 0.78;
+  white-space: nowrap;
+}
+
+/* Flush to both edges, not past them. */
+.hero-title-line--lead {
+  top: clamp(-64px, -5vh, -32px);
+  left: 0;
+}
+
+.hero-title-line--tail {
+  left: 50%;
+  transform: translateX(-50%);
+  /* Sunk ~half a glyph below the fold so the cut-off "KO" reads as "there's
+     more below". Scrolling lifts the hero and brings it fully into view. */
+  bottom: calc(var(--hero-bottom-inset, 0px) - 0.45em);
+}
+
+/* Figure , cut-out portrait bleeding off the bottom edge. A real length, not a
+   percentage: the slice maths below needs one that background-size can use. */
+/* Figure , whole portrait, hand reaching in from the left to cover the eyes.
+   The hand lowers away as the hero scrolls (--hero-assemble 0 -> 1), revealing
+   the eyes. Square portrait, centred in the composition, bleeding off the base. */
+.hero-figure {
+  /* Small face, big framing hands. */
+  --hero-figure-h: clamp(300px, 40vw, 560px);
+  /* 1 = fully glitched (rest), 0 = healed. Resolves over the first third of
+     the hero scroll. */
+  --hero-glitch: clamp(0, calc((0.34 - var(--hero-progress, 0)) / 0.34), 1);
+  position: absolute;
+  left: 50%;
+  bottom: var(--hero-bottom-inset, 0px);
+  z-index: 1;
+  width: var(--hero-figure-h);
+  height: var(--hero-figure-h);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* Portrait sliced into horizontal bands. At rest each band is displaced
+   sideways (a datamosh glitch); the offsets collapse to 0 as --hero-glitch
+   heals, snapping the face back into one clean image on scroll. */
+.hero-figure-portrait {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-glitch-band {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: grayscale(1) contrast(1.04);
+  will-change: transform, clip-path;
+}
+
+/* Only the eye band (2) and mouth band (4) shift; the rest stay put, so the
+   glitch targets her eyes and mouth. Positions measured off profile.png:
+   eyes ≈ 30–40%, mouth ≈ 51–60% of the square. */
+.hero-glitch-band--1 {
+  clip-path: inset(0 0 70% 0);
+}
+.hero-glitch-band--2 {
+  clip-path: inset(30% 0 60% 0);
+  transform: translateX(calc(var(--hero-glitch, 0) * -11vw));
+}
+.hero-glitch-band--3 {
+  clip-path: inset(40% 0 49% 0);
+}
+.hero-glitch-band--4 {
+  clip-path: inset(51% 0 40% 0);
+  transform: translateX(calc(var(--hero-glitch, 0) * 9vw));
+}
+.hero-glitch-band--5 {
+  clip-path: inset(60% 0 0 0);
+}
+
+/* Two hands point at her face from either side (Figma 1943). They part
+   outwards , left hand exits left, right hand exits right , as the glitch
+   heals on scroll. */
+.hero-figure-hand {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ASCII hand rendered as real text , crisp at any size, transparent, colourable.
+   font-size controls the overall hand size (≈100 cols × 0.6em ≈ 60 × font). */
+/* Native cursor hidden only while the ASCII cursor is running. */
+.ascii-cursor-on,
+.ascii-cursor-on * {
+  cursor: none !important;
+}
+
+/* ASCII arrow cursor , tracks the pointer, tip at its top-left. */
+.ascii-cursor {
+  position: fixed;
   top: 0;
   left: 0;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-  transform: translate3d(
-      calc(var(--hero-pane-parallax-x, 0) * var(--hero-progress, 0)),
-      calc(var(--hero-pane-parallax-y, 0) * var(--hero-progress, 0)),
-      calc(var(--hero-pane-parallax-z, 0) * var(--hero-progress, 0))
-    )
-    rotateZ(calc(var(--hero-pane-parallax-rot, 0deg) * var(--hero-progress, 0)))
-    scale(calc(1 - var(--hero-progress, 0) * var(--hero-pane-parallax-scale, 0.11)));
-  opacity: calc(1 - var(--hero-progress, 0) * var(--hero-pane-parallax-fade, 0.55));
+  z-index: 9999;
+  margin: 0;
+  pointer-events: none;
+  white-space: pre;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Courier New", monospace;
+  font-size: 2px;
+  line-height: 1;
+  font-weight: 700;
+  color: #ffffff;
+  mix-blend-mode: difference;
+  transform: translate(-100px, -100px);
+  will-change: transform;
 }
 
-.hero-photo-pane-shell--one {
-  --hero-pane-parallax-x: -78px;
-  --hero-pane-parallax-y: -88px;
-  --hero-pane-parallax-z: -28px;
-  --hero-pane-parallax-rot: -8deg;
-  --hero-pane-parallax-fade: 0.58;
+.hand-ascii {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Courier New", monospace;
+  white-space: pre;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #000000;
+  background: transparent;
+  /* font-size (per section below) sets the overall hand size:
+     100 cols × ~0.6em ≈ 60 × font-size wide. */
 }
 
-.hero-photo-pane-shell--two {
-  --hero-pane-parallax-x: 72px;
-  --hero-pane-parallax-y: -98px;
-  --hero-pane-parallax-z: 48px;
-  --hero-pane-parallax-rot: 7deg;
-  --hero-pane-parallax-scale: 0.08;
-  --hero-pane-parallax-fade: 0.45;
+.hero-hand-ascii {
+  font-size: clamp(0.42rem, 0.88vw, 1.15rem);
 }
 
-.hero-photo-pane-shell--three {
-  --hero-pane-parallax-x: -86px;
-  --hero-pane-parallax-y: 24px;
-  --hero-pane-parallax-z: -14px;
-  --hero-pane-parallax-rot: -6deg;
+.about-hand-ascii {
+  font-size: clamp(0.34rem, 0.7vw, 0.9rem);
 }
 
-.hero-photo-pane-shell--four {
-  --hero-pane-parallax-x: 82px;
-  --hero-pane-parallax-y: 32px;
-  --hero-pane-parallax-z: -40px;
-  --hero-pane-parallax-rot: 6deg;
-  --hero-pane-parallax-fade: 0.62;
+.project-stack-hand-ascii {
+  font-size: clamp(0.3rem, 0.62vw, 0.82rem);
 }
 
-.hero-photo-pane-shell--five {
-  --hero-pane-parallax-x: 0px;
-  --hero-pane-parallax-y: 112px;
-  --hero-pane-parallax-z: -52px;
-  --hero-pane-parallax-rot: 5deg;
-  --hero-pane-parallax-fade: 0.68;
+/* `figure-half - 50vw` lands the outer edge exactly on the viewport edge; the
+   extra 2vw bleeds it off so there's no gutter. */
+.hero-figure-hand--left {
+  left: calc(var(--hero-figure-h) / 2 - 50vw - 2vw);
+  top: 24%;
+  transform-origin: left center;
+  /* Finger sits on the eye slice's cut edge and pushes it back to centre:
+     same direction and travel as band 2 (glitch * -11vw). */
+  transform: translateX(calc(var(--hero-glitch, 0) * -11vw));
 }
 
-.hero-photo-pane {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: clamp(72px, 10vw, 128px);
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  border: 1px solid rgb(0 0 0 / 0.16);
-  border-radius: 6px;
-  background: #f4f0e8;
-  box-shadow: 0 22px 52px rgb(0 0 0 / 0.18);
-  transform: var(--hero-pane-transform);
-  transform-style: preserve-3d;
-  will-change: transform, opacity, filter;
-  --hero-pane-float-duration: 5.2s;
-  --hero-pane-float-y: -8px;
-  --hero-pane-float-x: 2px;
-  --hero-pane-float-rot: 0.4deg;
+.hero-figure-hand--right {
+  right: calc(var(--hero-figure-h) / 2 - 50vw - 2vw);
+  top: 46%;
+  transform-origin: right center;
+  /* Pushes the mouth slice (band 4) left , matches its travel (glitch * 9vw). */
+  transform: translateX(calc(var(--hero-glitch, 0) * 9vw));
 }
 
-.hero-photo-pane img {
-  object-fit: cover;
+/* Mirror the ASCII so it points in from the right. */
+.hero-figure-hand--right .hero-hand-ascii {
+  transform: scaleX(-1);
 }
 
-/* Periphery only , top/side margins and bottom peek; avoid title + bio band. */
-.hero-photo-pane--one {
-  --hero-pane-index: 0;
-  --hero-pane-transform: translate3d(calc(-50% - 52vmin), calc(-50% - 36vmin), -86px) rotateY(28deg) rotateZ(-8deg);
-  --hero-pane-opacity: 0.78;
-  --hero-pane-float-duration: 4.6s;
-  --hero-pane-float-y: -10px;
-  --hero-pane-float-x: 3px;
-  --hero-pane-float-rot: 0.55deg;
-  opacity: var(--hero-pane-opacity);
-}
-
-.hero-photo-pane--two {
-  --hero-pane-index: 1;
-  width: clamp(82px, 11.5vw, 148px);
-  --hero-pane-transform: translate3d(calc(-50% + 48vmin), calc(-50% - 38vmin), 32px) rotateY(-16deg) rotateZ(6deg);
-  --hero-pane-opacity: 0.96;
-  --hero-pane-float-duration: 5.4s;
-  --hero-pane-float-y: -7px;
-  --hero-pane-float-x: -2px;
-  --hero-pane-float-rot: -0.35deg;
-  opacity: var(--hero-pane-opacity);
-}
-
-.hero-photo-pane--three {
-  --hero-pane-index: 2;
-  --hero-pane-transform: translate3d(calc(-50% - 54vmin), calc(-50% + 10vmin), -12px) rotateY(22deg) rotateZ(-4deg);
-  --hero-pane-opacity: 0.82;
-  --hero-pane-float-duration: 5.8s;
-  --hero-pane-float-y: -9px;
-  --hero-pane-float-x: 2px;
-  --hero-pane-float-rot: 0.45deg;
-  opacity: var(--hero-pane-opacity);
-}
-
-.hero-photo-pane--four {
-  --hero-pane-index: 3;
-  --hero-pane-transform: translate3d(calc(-50% + 50vmin), calc(-50% + 12vmin), -64px) rotateY(-22deg) rotateZ(5deg);
-  --hero-pane-opacity: 0.74;
-  --hero-pane-float-duration: 4.9s;
-  --hero-pane-float-y: -11px;
-  --hero-pane-float-x: -3px;
-  --hero-pane-float-rot: -0.5deg;
-  opacity: var(--hero-pane-opacity);
-}
-
-.hero-photo-pane--five {
-  --hero-pane-index: 4;
-  width: clamp(96px, 12vw, 156px);
-  --hero-pane-transform: translate3d(calc(-50% + 0vmin), calc(-50% + 48vmin), -110px) rotateY(-8deg) rotateZ(4deg);
-  --hero-pane-opacity: 0.56;
-  --hero-pane-float-duration: 6.2s;
-  --hero-pane-float-y: -6px;
-  --hero-pane-float-x: 1px;
-  --hero-pane-float-rot: 0.3deg;
-  opacity: var(--hero-pane-opacity);
-}
-
-.hero-intro-enter.is-active .hero-photo-pane {
-  animation:
-    hero-pane-scatter 780ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
-    hero-pane-float var(--hero-pane-float-duration, 5.2s) ease-in-out infinite;
-  animation-delay:
-    calc(90ms + var(--hero-pane-index, 0) * 55ms),
-    calc(870ms + var(--hero-pane-index, 0) * 55ms);
-}
-
-@keyframes hero-pane-scatter {
-  0% {
-    opacity: 0;
-    filter: blur(8px);
-    transform: translate3d(-50%, -50%, 0) rotateY(0deg) rotateZ(0deg) scale(0.68);
+@media (prefers-reduced-motion: reduce) {
+  .hero-figure {
+    --hero-glitch: 0;
   }
-
-  62% {
-    opacity: 1;
-    filter: blur(0);
-    transform: var(--hero-pane-transform) scale(1.035);
-  }
-
-  100% {
-    opacity: var(--hero-pane-opacity, 1);
-    filter: blur(0);
-    transform: var(--hero-pane-transform) scale(1);
-  }
-}
-
-@keyframes hero-pane-float {
-  0%,
-  100% {
-    transform: var(--hero-pane-transform) scale(1) translate3d(0, 0, 0) rotateZ(0deg);
-  }
-
-  50% {
-    transform: var(--hero-pane-transform) scale(1)
-      translate3d(var(--hero-pane-float-x), var(--hero-pane-float-y), 0)
-      rotateZ(var(--hero-pane-float-rot));
+  .hero-figure-hand {
+    transform: none;
   }
 }
 
 .hero-intro-copy {
-  position: relative;
-  z-index: 2;
-  width: min(780px, calc(100vw - 2 * var(--page-gutter)));
-  max-width: 100%;
-  margin-top: clamp(0.9rem, 2vh, 1.5rem);
+  position: absolute;
+  right: clamp(1.5rem, 3.5vw, 3.5rem);
+  top: 34%;
+  z-index: 3;
+  width: min(28%, 400px);
+  /* Solid dark text sitting in the white gutter to the right of the portrait ,
+     no plate, so it must stay clear of the photo. */
   color: #111111;
-  text-align: center;
-  overflow: visible;
+  text-align: left;
 }
 
 .hero-intro-copy p {
   margin: 0;
-  width: 100%;
-  max-width: 100%;
   overflow-wrap: break-word;
   text-wrap: pretty;
 }
 
 .hero-intro-copy p + p {
-  margin-top: 0.55rem;
+  margin-top: 0.9rem;
 }
 
 .hero-kicker {
   font-family: var(--font-display), var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(1.15rem, 2vw, 1.75rem);
+  font-size: clamp(1rem, 1.67vw, 1.5rem);
   font-weight: 800;
   line-height: 1.1;
 }
 
 .hero-intro-copy p:not(.hero-kicker) {
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(0.82rem, 1.05vw, 0.98rem);
+  font-size: clamp(0.95rem, 1.67vw, 1.5rem);
   font-weight: 400;
-  line-height: 1.55;
-  color: rgb(0 0 0 / 0.68);
-}
-
-.hero-identity-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: clamp(0.55rem, 1.2vh, 0.9rem) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.hero-identity-row li {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0.3rem 0.62rem;
-  border: 1px solid rgb(0 0 0 / 0.14);
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.68);
-  box-shadow:
-    0 8px 22px rgb(0 0 0 / 0.05),
-    0 1px 0 rgb(255 255 255 / 0.88) inset;
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
-  backdrop-filter: blur(18px) saturate(1.15);
-  font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(0.68rem, 0.82vw, 0.78rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0;
-  color: rgb(0 0 0 / 0.66);
-  text-transform: uppercase;
-}
-
-.hero-identity-row li:nth-child(1) {
-  border-color: rgb(0 0 0 / 0.28);
-}
-
-.hero-identity-row li:nth-child(2) {
-  border-color: rgb(0 0 0 / 0.2);
-}
-
-.hero-identity-row li:nth-child(3) {
-  border-color: rgb(0 0 0 / 0.14);
-}
-
-/* Kinetic ribbon , parallel bands, peek in hero overlap band then reveal on scroll. */
-.hero-ribbon-pin {
-  --ribbon-kinetic: 0;
-  --ribbon-peek: 3vh;
-  --ribbon-peek-band: 20vh;
-  --ribbon-field-offset: 0vh;
-  --ribbon-stack-gap: clamp(0.35rem, 1.2vw, 0.65rem);
-}
-
-.hero-ribbon-stage {
-  position: relative;
-  height: 100%;
-}
-
-.hero-ribbon-sticky {
-  overflow: clip;
-}
-
-.hero-ribbon-field {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform: translateY(var(--ribbon-field-offset, 0vh));
-  will-change: transform;
-}
-
-.kinetic-ribbon {
-  --ribbon-h: clamp(6rem, 10.5vw, 8.5rem);
-  --ribbon-drift: 28s;
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: var(--ribbon-h);
-  overflow: hidden;
-  transform: translateY(-50%);
-}
-
-.kinetic-ribbon--dark {
-  background: rgb(0 0 0 / 0.52);
-  color: rgb(255 255 255 / 0.95);
-  border: 1px solid rgb(255 255 255 / 0.14);
-  box-shadow:
-    0 12px 40px rgb(0 0 0 / 0.14),
-    0 1px 0 rgb(255 255 255 / 0.08) inset;
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  backdrop-filter: blur(20px) saturate(1.2);
-}
-
-.kinetic-ribbon--light {
-  background: rgb(255 255 255 / 0.58);
-  color: rgb(0 0 0 / 0.88);
-  border: 1px solid rgb(255 255 255 / 0.55);
-  box-shadow:
-    0 12px 40px rgb(0 0 0 / 0.07),
-    0 1px 0 rgb(255 255 255 / 0.82) inset;
-  -webkit-backdrop-filter: blur(24px) saturate(1.25);
-  backdrop-filter: blur(24px) saturate(1.25);
+  line-height: 1.18;
+  color: #111111;
 }
 
 /* Revealed layout , field offset animates the stack from hero peek band to center. */
-.kinetic-ribbon--a {
-  top: calc(50% - var(--ribbon-h) / 2 - var(--ribbon-stack-gap) / 2);
-  z-index: 2;
-}
-
-.kinetic-ribbon--b {
-  top: calc(50% + var(--ribbon-h) / 2 + var(--ribbon-stack-gap) / 2);
-  z-index: 3;
-}
-
-.kinetic-ribbon__track {
-  height: 100%;
-  transform: translateX(calc(-1vw - var(--ribbon-kinetic, 0) * 2vw));
-}
-
-.kinetic-ribbon__flow {
-  display: flex;
-  width: max-content;
-  height: 100%;
-  align-items: center;
-}
-
-.hero-ribbon-pin[data-kinetic="active"] .kinetic-ribbon__flow {
-  animation: kinetic-ribbon-marquee var(--ribbon-drift, 28s) linear infinite;
-}
-
-.hero-ribbon-pin[data-kinetic="active"] .kinetic-ribbon[data-reverse="true"] .kinetic-ribbon__flow {
-  animation-direction: reverse;
-}
-
-.hero-ribbon-pin[data-reduced="true"] .kinetic-ribbon__track {
-  transform: translateX(-10vw);
-}
-
-@keyframes kinetic-ribbon-marquee {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.kinetic-ribbon__line {
-  flex: 0 0 auto;
-  padding-inline: clamp(2.5rem, 6.5vw, 5.5rem);
-  font-family: var(--font-display), var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(1.2rem, 2vw, 1.85rem);
-  font-weight: 800;
-  letter-spacing: 0.018em;
-  line-height: 1.15;
-  white-space: nowrap;
-  font-feature-settings: "kern" 1;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .kinetic-ribbon--dark {
-    background: rgb(0 0 0 / 0.88);
-  }
-
-  .kinetic-ribbon--light {
-    background: rgb(255 255 255 / 0.94);
-    border-color: rgb(0 0 0 / 0.12);
-  }
-}
-
-@media (max-width: 768px) {
-  .kinetic-ribbon {
-    --ribbon-h: clamp(5rem, 17vw, 7.5rem);
-  }
-
-  .kinetic-ribbon__track {
-    transform: translateX(calc(-0.5vw - var(--ribbon-kinetic, 0) * 1.5vw));
-  }
-
-  .kinetic-ribbon__line {
-    font-size: clamp(1rem, 4.8vw, 1.45rem);
-    padding-inline: clamp(2rem, 6.5vw, 3.5rem);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .hero-ribbon-pin[data-kinetic="active"] .kinetic-ribbon__flow {
-    animation: none;
-  }
-
-  .hero-photo-pane-shell {
+  .hero-title-band {
     transform: none;
-    opacity: 1;
-  }
-
-  .hero-intro-enter.is-active .hero-photo-pane {
-    animation: hero-pane-scatter 780ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: calc(90ms + var(--hero-pane-index, 0) * 55ms);
   }
 }
 
@@ -845,58 +641,6 @@ a:hover {
     overflow-x: visible;
   }
 
-  .hero-photo-pane-shell--one {
-    --hero-pane-parallax-x: -52px;
-    --hero-pane-parallax-y: -58px;
-  }
-
-  .hero-photo-pane-shell--two {
-    --hero-pane-parallax-x: 48px;
-    --hero-pane-parallax-y: -66px;
-  }
-
-  .hero-photo-pane-shell--three {
-    --hero-pane-parallax-x: -56px;
-    --hero-pane-parallax-y: 18px;
-  }
-
-  .hero-photo-pane-shell--four {
-    --hero-pane-parallax-x: 52px;
-    --hero-pane-parallax-y: 22px;
-  }
-
-  .hero-photo-pane-shell--five {
-    --hero-pane-parallax-y: 72px;
-  }
-
-  .hero-photo-pane {
-    width: clamp(56px, 18vw, 76px);
-    border-radius: 5px;
-    box-shadow: 0 14px 32px rgb(0 0 0 / 0.16);
-  }
-
-  .hero-photo-pane--one {
-    --hero-pane-transform: translate3d(calc(-50% - 42vmin), calc(-50% - 28vmin), -62px) rotateY(24deg) rotateZ(-6deg);
-  }
-
-  .hero-photo-pane--two {
-    width: clamp(62px, 20vw, 86px);
-    --hero-pane-transform: translate3d(calc(-50% + 38vmin), calc(-50% - 30vmin), 24px) rotateY(-14deg) rotateZ(5deg);
-  }
-
-  .hero-photo-pane--three {
-    --hero-pane-transform: translate3d(calc(-50% - 44vmin), calc(-50% + 10vmin), -12px) rotateY(18deg) rotateZ(-3deg);
-  }
-
-  .hero-photo-pane--four {
-    --hero-pane-transform: translate3d(calc(-50% + 40vmin), calc(-50% + 12vmin), -48px) rotateY(-20deg) rotateZ(4deg);
-  }
-
-  .hero-photo-pane--five {
-    width: clamp(72px, 24vw, 96px);
-    --hero-pane-transform: translate3d(calc(-50% + 0vmin), calc(-50% + 52vmin), -82px) rotateY(-8deg) rotateZ(4deg);
-    --hero-pane-opacity: 0.5;
-  }
 }
 
 .hero-scene {
@@ -921,7 +665,6 @@ a:hover {
     --type-display-size: clamp(3.75rem, 17.5vw, 6rem);
     --type-display-row-gap: clamp(0.16em, 2.4vw, 0.36em);
     --type-bigword: clamp(3.25rem, 15vw, 5.5rem);
-    --figma-flower-size: min(210px, calc(100vw * 0.54));
   }
 
   .hero-title-stage {
@@ -933,22 +676,61 @@ a:hover {
   }
 
   .hero-intro-copy {
-    width: min(330px, calc(100vw - 2rem));
-    margin-top: clamp(0.9rem, 2.5vh, 1.35rem);
+    right: clamp(0.9rem, 3.5vw, 1.25rem);
+    left: auto;
+    top: 56%;
+    bottom: auto;
+    width: min(250px, 62vw);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+    color: #ffffff;
+    mix-blend-mode: difference;
   }
 
   .hero-kicker {
-    font-size: clamp(1rem, 5vw, 1.28rem);
+    font-size: clamp(0.78rem, 3.2vw, 0.92rem);
+    color: #ffffff;
   }
 
   .hero-intro-copy p:not(.hero-kicker) {
-    font-size: clamp(0.74rem, 3.4vw, 0.86rem);
-    line-height: 1.5;
+    margin-top: 0.45rem;
+    font-size: clamp(0.68rem, 2.85vw, 0.78rem);
+    line-height: 1.22;
+    color: #ffffff;
+  }
+
+  .hero-title-line--lead {
+    top: 0;
   }
 
   .hero-sticky {
     overflow-x: clip;
     overflow-y: visible;
+  }
+
+  .hero-figure {
+    --hero-figure-h: min(118vw, 560px);
+  }
+
+  .hero-figure-hand {
+    width: 84vw;
+  }
+
+  .hero-figure-hand--left {
+    left: calc(var(--hero-figure-h) / 2 - 50vw - 3vw);
+    top: 22%;
+    transform: translateX(calc(var(--hero-glitch, 0) * -11vw));
+  }
+
+  .hero-figure-hand--right {
+    right: calc(var(--hero-figure-h) / 2 - 50vw - 3vw);
+    top: 46%;
+    transform: translateX(calc(var(--hero-glitch, 0) * 9vw));
   }
 
   .project-scroll-sticky {
@@ -1003,24 +785,29 @@ a:hover {
   position: relative;
   z-index: 2;
   width: 100%;
-  overflow: visible;
-  --project-stack-heading-top: clamp(0.5rem, 2.5vh, 2rem);
+  overflow: clip;
+  background: #ffffff;
+  /* WORK sits this far below the viewport top so it clears the nav pill
+     (Figma: word top at 131px in the 1024-tall frame). */
+  --project-stack-heading-top: clamp(5.5rem, 13vh, 8.5rem);
   --project-stack-card-top-base: calc(
     var(--project-stack-heading-top) +
-    var(--type-bigword) * 0.95 +
-    clamp(0.5rem, 1.5vh, 1.25rem)
+    clamp(9rem, 26vh, 16rem)
   );
-  --project-stack-card-top-step: 44px;
+  --project-stack-card-top-step: 34px;
 }
 
+/* Full-bleed to the viewport edges so the framing hands can hug / bleed past
+   them. The gutter that keeps the WORK word in the content column lives on the
+   inner wrapper, not here. */
 .project-stack-heading {
   position: absolute;
-  top: var(--project-stack-heading-top);
+  top: 0;
   left: 0;
   right: 0;
   z-index: 3;
-  height: auto;
-  overflow: visible;
+  height: 100vh;
+  overflow: clip;
   visibility: visible;
   text-align: left;
   pointer-events: none;
@@ -1028,10 +815,15 @@ a:hover {
 
 .project-stack-heading.is-pinned {
   position: fixed;
-  top: var(--project-stack-heading-top);
-  height: auto;
-  overflow: visible;
+  top: 0;
+  height: 100vh;
+  overflow: clip;
   visibility: visible;
+}
+
+/* Keeps WORK inside the 1440 content column and pushes it below the nav. */
+.project-stack-heading-inner {
+  padding-top: var(--project-stack-heading-top);
 }
 
 .project-stack-intro-spacer {
@@ -1039,13 +831,19 @@ a:hover {
 }
 
 .project-stack-word {
-  font-size: var(--type-bigword);
+  position: relative;
+  z-index: 2;
+  /* Figma: ~207px in the 1440-wide frame. */
+  font-size: clamp(5rem, 14.4vw, 13rem);
+  font-weight: 800;
   text-align: left;
-  line-height: 0.95;
+  line-height: 0.9;
+  letter-spacing: 0;
 }
 
 .project-stack-scroll-room {
   position: relative;
+  z-index: 4;
 }
 
 .project-stack-card {
@@ -1055,12 +853,17 @@ a:hover {
     var(--project-stack-card-top-base) +
       var(--stack-index, 0) * var(--project-stack-card-top-step)
   );
-  width: 100%;
-  max-width: 100%;
+  width: clamp(460px, 52vw, 740px);
+  max-width: calc(100vw - 2rem);
   margin-inline: auto;
   padding-top: clamp(0.35rem, 1vh, 0.65rem);
   isolation: isolate;
   will-change: transform;
+  /* Biased up-right into the space the opened hands leave, then grows from a
+     small framed preview to full size as the scroll zoom plays. Defaults to 1
+     (full) when the engine isn't driving it. */
+  transform: translateX(4%) scale(calc(0.52 + var(--work-zoom, 1) * 0.48));
+  transform-origin: center center;
 }
 
 .project-stack-card-tab {
@@ -1080,7 +883,7 @@ a:hover {
   -webkit-backdrop-filter: blur(24px) saturate(1.25);
   backdrop-filter: blur(24px) saturate(1.25);
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(0.62rem, 0.82vw, 0.74rem);
+  font-size: clamp(0.72rem, 0.95vw, 0.88rem);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1092,14 +895,15 @@ a:hover {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  gap: clamp(1rem, 2.5vw, 2rem);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(0.7rem, 1.6vw, 1.25rem);
   align-items: stretch;
-  height: var(--project-stack-card-body-vh, 62vh);
+  /* Tall final card so the CTA never clips; grows in with the scroll zoom. */
+  height: clamp(240px, 28vw, 410px);
   min-height: 0;
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  padding: clamp(0.8rem, 1.5vw, 1.2rem);
   border: 1px solid rgb(255 255 255 / 0.55);
-  border-radius: clamp(24px, 3.5vw, 40px);
+  border-radius: clamp(14px, 2vw, 22px);
   background: rgb(255 255 255 / 0.62);
   box-shadow:
     0 24px 60px rgb(0 0 0 / 0.07),
@@ -1114,7 +918,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: clamp(0.55rem, 1.2vh, 0.85rem);
+  gap: clamp(0.28rem, 0.75vh, 0.48rem);
   min-width: 0;
   min-height: 0;
   overflow: auto;
@@ -1123,7 +927,7 @@ a:hover {
 .project-stack-card-index {
   margin: 0;
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(0.72rem, 0.95vw, 0.82rem);
+  font-size: clamp(0.58rem, 0.74vw, 0.74rem);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1134,12 +938,12 @@ a:hover {
   width: fit-content;
   max-width: 100%;
   margin: 0;
-  padding: 0.35rem 0.7rem;
+  padding: 0.24rem 0.48rem;
   border: 1px solid rgb(0 0 0 / 0.1);
   border-radius: 999px;
   background: rgb(255 255 255 / 0.5);
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(0.68rem, 0.82vw, 0.78rem);
+  font-size: clamp(0.56rem, 0.7vw, 0.7rem);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: 0;
@@ -1149,16 +953,16 @@ a:hover {
 .project-stack-card-title {
   margin: 0;
   font-family: var(--font-sora), system-ui, sans-serif;
-  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+  font-size: clamp(1.05rem, 1.55vw, 1.45rem);
   font-weight: 700;
-  line-height: 1.12;
+  line-height: 1.14;
   letter-spacing: 0;
   color: rgb(0 0 0 / 0.92);
 }
 
 .project-stack-card-meta {
   margin: 0;
-  font-size: clamp(0.78rem, 1vw, 0.9rem);
+  font-size: clamp(0.64rem, 0.85vw, 0.8rem);
   font-weight: 600;
   letter-spacing: 0.02em;
   color: rgb(0 0 0 / 0.58);
@@ -1166,15 +970,18 @@ a:hover {
 
 .project-stack-card-desc {
   margin: 0;
-  max-width: 36ch;
-  font-size: clamp(0.92rem, 1.15vw, 1.05rem);
-  line-height: 1.55;
+  max-width: 40ch;
+  font-size: clamp(0.64rem, 0.9vw, 0.84rem);
+  line-height: 1.4;
   color: rgb(0 0 0 / 0.68);
 }
 
 .project-stack-card-cta {
   align-self: flex-start;
-  margin-top: clamp(0.35rem, 1vh, 0.75rem);
+  min-height: 0;
+  margin-top: clamp(0.4rem, 1vh, 0.7rem);
+  padding: 0.6rem 1.05rem;
+  font-size: clamp(0.68rem, 0.9vw, 0.86rem);
 }
 
 .project-stack-card-media {
@@ -1185,7 +992,7 @@ a:hover {
   min-height: 0;
   height: 100%;
   border: 1px solid rgb(255 255 255 / 0.45);
-  border-radius: clamp(16px, 2vw, 24px);
+  border-radius: clamp(10px, 1.4vw, 16px);
   background: rgb(255 255 255 / 0.35);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.75);
   overflow: hidden;
@@ -1202,6 +1009,53 @@ a:hover {
   object-position: center 42%;
 }
 
+.project-stack-hand {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  filter: grayscale(1) contrast(1.03);
+  will-change: transform;
+}
+
+.project-stack-hand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Three scroll phases, all driven by --work-zoom (0→1 over the intro) and
+   --work-exit (0→1 over the exit band):
+     intro : card grows, hands spread from centre (pulled in + larger) to corner
+     stack : hands hold at the corner while the cards peel
+     exit  : each hand slides off its own side (top-right → right, bottom-left → left) */
+.project-stack-hand--top {
+  top: clamp(0.5rem, 4.5vh, 3rem);
+  right: clamp(-10rem, -8.5vw, -3rem);
+  width: max-content;
+  transform-origin: top right;
+  transform:
+    translate(
+      calc((1 - var(--work-zoom, 1)) * -11vw + var(--work-exit, 0) * 66vw),
+      calc((1 - var(--work-zoom, 1)) * 9vh)
+    )
+    scale(calc(1.16 - var(--work-zoom, 1) * 0.16));
+}
+
+.project-stack-hand--bottom {
+  left: clamp(-10rem, -8.5vw, -3rem);
+  bottom: auto;
+  top: clamp(24rem, 56vh, 40rem);
+  width: max-content;
+  transform-origin: bottom left;
+  transform:
+    translate(
+      calc((1 - var(--work-zoom, 1)) * 11vw - var(--work-exit, 0) * 66vw),
+      calc((1 - var(--work-zoom, 1)) * -3vh)
+    )
+    scale(calc(1.16 - var(--work-zoom, 1) * 0.16));
+}
+
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .project-stack-card-tab,
   .project-stack-card-inner {
@@ -1214,6 +1068,35 @@ a:hover {
 
   .about-copy {
     background: rgb(255 255 255 / 0.94);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .project-stack-pin {
+    --project-stack-card-top-base: calc(
+      var(--project-stack-heading-top) +
+      clamp(11rem, 28vh, 16rem)
+    );
+  }
+
+  .project-stack-word {
+    font-size: clamp(6rem, 16vw, 9.5rem);
+  }
+
+  .project-stack-card {
+    width: clamp(440px, 64vw, 640px);
+  }
+
+  .project-stack-hand--top {
+    top: clamp(0.5rem, 6vh, 3.5rem);
+    right: -6vw;
+    width: max-content;
+  }
+
+  .project-stack-hand--bottom {
+    left: -7vw;
+    top: clamp(20rem, 48vh, 30rem);
+    width: max-content;
   }
 }
 
@@ -1241,6 +1124,40 @@ a:hover {
 }
 
 @media (max-width: 767px) {
+  .project-stack-pin {
+    --project-stack-heading-top: clamp(4.5rem, 12vh, 6rem);
+    --project-stack-card-top-base: calc(
+      var(--project-stack-heading-top) +
+      clamp(9rem, 28vh, 14rem)
+    );
+    --project-stack-card-top-step: 28px;
+  }
+
+  .project-stack-heading,
+  .project-stack-heading.is-pinned {
+    height: 100vh;
+  }
+
+  .project-stack-word {
+    font-size: clamp(4.5rem, 22vw, 7rem);
+  }
+
+  .project-stack-hand--top {
+    top: clamp(5rem, 14vh, 7rem);
+    right: clamp(-9rem, -34vw, -7rem);
+    width: max-content;
+  }
+
+  .project-stack-hand--bottom {
+    left: clamp(-8rem, -30vw, -6rem);
+    top: clamp(18rem, 48vh, 24rem);
+    width: max-content;
+  }
+
+  .project-stack-card {
+    width: clamp(280px, 82vw, 360px);
+  }
+
   .project-stack-card-tab {
     left: clamp(0.85rem, 4vw, 1.25rem);
     max-width: calc(100% - 2rem);
@@ -1250,8 +1167,8 @@ a:hover {
 
   .project-stack-card-inner {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 38%) minmax(0, 1fr);
-    height: var(--project-stack-card-body-vh, 72vh);
+    grid-template-rows: minmax(0, 42%) minmax(0, 1fr);
+    height: clamp(310px, 58vh, 430px);
     padding: clamp(1rem, 4vw, 1.35rem);
   }
 
@@ -1848,12 +1765,34 @@ a:hover {
 
 .about-stage {
   grid-area: stage;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(2rem, 5vw, 4rem);
+  position: relative;
   min-height: 0;
   height: 100%;
+}
+
+/* Pointing hand, bottom-left, finger aimed at the copy. Slides in from the
+   left, dwells, then pushes the copy out to the right (transform is set inline
+   per scroll frame). */
+.about-hand {
+  position: absolute;
+  /* Arm hugs the left edge; sits at the copy's vertical level so the fingertips
+     read as pushing the text, not floating at the bottom. */
+  left: clamp(-11vw, -8vw, -3vw);
+  top: clamp(1rem, 9vh, 6rem);
+  bottom: auto;
+  z-index: 10;
+  width: max-content;
+  pointer-events: none;
+  user-select: none;
+  filter: grayscale(1) contrast(1.03);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.about-hand img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .about-cube-wrap {
@@ -1864,24 +1803,6 @@ a:hover {
   justify-content: center;
   align-items: center;
   min-width: 0;
-}
-
-.about-profile-flat {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: clamp(14px, 2.2vw, 24px);
-  overflow: hidden;
-  box-shadow:
-    0 28px 70px rgba(0, 0, 0, 0.12),
-    0 10px 24px rgba(0, 0, 0, 0.06);
-}
-
-.about-profile-flat-img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .about-cube-scene {
@@ -1899,20 +1820,6 @@ a:hover {
   height: 100%;
   overflow: visible;
   touch-action: none;
-}
-
-.about-cube-edge-ball {
-  display: none;
-}
-
-.about-profile-static {
-  width: var(--about-card-width);
-  max-width: 100%;
-  border-radius: clamp(14px, 2.2vw, 24px);
-  overflow: hidden;
-  box-shadow:
-    0 28px 70px rgba(0, 0, 0, 0.12),
-    0 10px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ── Section big words ("Work", "About") , one shared size ── */
@@ -1977,16 +1884,16 @@ a:hover {
 
 /* Readable copy column , right of cube. */
 .about-copy {
-  flex: 0 0 min(560px, 42vw);
-  position: relative;
-  width: 100%;
-  max-width: 560px;
-  padding: 0;
+  position: absolute;
+  /* Sits just past the fingertip so the hand reads as pushing it, not floating
+     apart. Anchored from the left for that reason, not flush right. */
+  left: clamp(28vw, 31vw, 34vw);
+  top: clamp(0.5rem, 5vh, 3.5rem);
+  width: min(580px, 48vw);
   z-index: 20;
   color: #1a1a1a;
   pointer-events: auto;
-  overflow: hidden;
-  contain: layout style;
+  will-change: transform;
 }
 
 .about-copy-lead {
@@ -2054,30 +1961,24 @@ a:hover {
     margin-inline-start: 0;
   }
 
-  .about-cube-wrap {
-    flex: none;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .about-cube-scene {
-    width: min(100%, var(--about-cube-size));
-    height: auto;
-    aspect-ratio: 1 / 1.22;
-    margin-inline: auto;
+  .about-hand {
+    position: relative;
+    left: auto;
+    top: auto;
+    bottom: auto;
+    width: max-content;
+    max-width: 100%;
+    margin-inline: 0;
   }
 
   .about-copy {
-    flex: none;
+    position: relative;
+    left: auto;
+    top: auto;
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    height: auto;
     box-sizing: border-box;
-    padding: 0;
-    overflow: hidden;
-    contain: layout style;
   }
 
   .about-copy-body {
@@ -5116,8 +5017,15 @@ a:hover {
 /* Black arrow centered between IDEAS and ?, swinging across the gap. */
 .lab-heading-arrow {
   display: inline-block;
+  align-self: center;
   color: inherit;
   animation: lab-heading-arrow-nudge 1.6s ease-in-out infinite;
+}
+
+/* ASCII arrow sized to the heading (48 rows ≈ its cap height) via em. */
+.lab-heading-arrow-ascii {
+  font-size: 0.016em;
+  color: currentColor;
 }
 
 .lab-heading-q {

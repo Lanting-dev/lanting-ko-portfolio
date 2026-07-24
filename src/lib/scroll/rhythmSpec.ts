@@ -9,14 +9,15 @@ import {
 } from "@/lib/projects/projectScroll";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 
-/** Hero pin track. Slightly longer than one viewport for a clean handoff into Work. */
-export const HERO_SCROLL_VH = 106;
+/**
+ * Hero pin track. The extra length over one viewport is the entire runway the
+ * figure has to reassemble in , at 106 it finished in ~54px of scroll, which
+ * was over before anyone saw it.
+ */
+export const HERO_SCROLL_VH = 135;
 
 /** Sticky hero stage height. */
 export const HERO_STICKY_VH = 100;
-
-/** Viewport slice below the hero that previews the next section. */
-export const HERO_PEEK_VH = Math.max(0, HERO_SCROLL_VH - HERO_STICKY_VH);
 
 export const SCROLL_TRACKS = {
   hero: HERO_SCROLL_VH,

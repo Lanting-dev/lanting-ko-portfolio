@@ -1,23 +1,24 @@
 "use client";
 
-import { smoothstep } from "@/lib/parallax/interpolate";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 type AboutCopyProps = {
-  aboutProgress: number;
+  /** Horizontal push in vw , negative = entering from the left, positive = pushed out to the right. */
+  pushX: number;
+  opacity: number;
 };
 
-/** About bio copy , right column on desktop, below cube on mobile. */
-export function AboutCopy({ aboutProgress }: AboutCopyProps) {
+/** About bio copy , right column on desktop. The hand pushes it in on entry and
+ *  out to the right on exit, so it only travels horizontally here. */
+export function AboutCopy({ pushX, opacity }: AboutCopyProps) {
   const { home } = useLocale();
-  const copyIn = smoothstep(0, 1, (aboutProgress - 0.2) / 0.3);
 
   return (
     <div
       className="about-copy"
       style={{
-        opacity: copyIn,
-        transform: `translateY(${(1 - copyIn) * 24}px)`,
+        opacity,
+        transform: `translateX(${pushX}vw)`,
       }}
     >
       <p className="about-copy-lead">{home.aboutLead}</p>

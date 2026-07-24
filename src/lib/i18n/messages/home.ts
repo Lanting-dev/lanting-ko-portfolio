@@ -5,12 +5,7 @@ const en = {
   heroBio:
     "who turns “wait, what?” into “oh, that makes sense.”",
   heroIdentity: ["Product Design", "UX Research", "Interaction Design"],
-  heroTapeLabel: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
-  heroTapeTagline: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
-  heroTapeExtraA: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
-  heroTapeExtraB: "PRODUCT DESIGNER · STRUCTURE · FUNCTION · VISUAL CRAFT · ",
-  heroTapeAria: "Product Designer, Structure, Function, and Visual Craft",
-  aboutLead: "NYC-based Product Designer",
+  aboutLead: "Product designer turning “wait, what?” into “that makes sense.”",
   aboutBody: [
     "Born and raised in Taiwan, she now lives in New York, surrounded by bagels, Broadway shows, and unpredictable subway performances.",
     "Before design, she worked with engineers and manufacturing teams, where she learned to translate constraints into clear next steps. Today, that background shapes how she designs across user needs, technical limits, accessibility, business goals, and existing systems.",
@@ -23,16 +18,7 @@ const zhTW = {
   heroBio:
     "把「蛤？」整理成「喔，懂了。」",
   heroIdentity: ["產品設計", "UX 研究", "互動設計"],
-  heroTapeLabel:
-    "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
-  heroTapeTagline:
-    "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
-  heroTapeExtraA:
-    "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
-  heroTapeExtraB:
-    "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ PRODUCT DESIGNER · ㄐㄧㄝ ㄍㄡˋ STRUCTURE · ㄍㄨㄥ ㄋㄥˊ FUNCTION · ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ VISUAL CRAFT · ",
-  heroTapeAria: "ㄔㄢˇ ㄆㄧㄣˇ ㄕㄜˋ ㄐㄧˋ Product Designer，ㄐㄧㄝ ㄍㄡˋ Structure、ㄍㄨㄥ ㄋㄥˊ Function、ㄕˋ ㄐㄩˋ ㄒㄧˋ ㄐㄧㄝˊ Visual Craft",
-  aboutLead: "現居紐約的產品設計師",
+  aboutLead: "把「蛤？」整理成「喔，懂了」的產品設計師。",
   aboutBody: [
     "我在台灣長大，現在住在紐約，日常被貝果、百老匯音樂劇和地鐵裡突如其來的表演包圍。",
     "進入設計之前，我曾和工程師、製造團隊一起工作，也是在那時學會把限制翻譯成清楚的下一步。這段背景影響了我現在的設計方式：在使用者需求、技術限制、無障礙、商業目標和既有系統之間，做出說得通的設計判斷。",
@@ -44,11 +30,6 @@ export type HomeMessages = {
   heroKicker: string;
   heroBio: string;
   heroIdentity: readonly string[];
-  heroTapeLabel: string;
-  heroTapeTagline: string;
-  heroTapeExtraA: string;
-  heroTapeExtraB: string;
-  heroTapeAria: string;
   aboutLead: string;
   aboutBody: readonly string[];
 };

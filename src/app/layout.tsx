@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Sora } from "next/font/google";
 import { AppProviders } from "@/app/providers";
+import { AsciiCursor } from "@/components/AsciiCursor";
+import { GoogleAnalyticsPageView } from "@/components/GoogleAnalyticsPageView";
 import { ScrollToTopOnLoad } from "@/components/ScrollToTopOnLoad";
+import { GA_MEASUREMENT_ID } from "@/lib/analytics";
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n/locale";
 import { ZH_TW_FONT_STYLESHEET } from "@/lib/i18n/fonts";
 import "./globals.css";
@@ -53,11 +56,11 @@ export default function RootLayout({
         />
         <AppProviders>
           <ScrollToTopOnLoad />
+          <GoogleAnalyticsPageView />
           {children}
+          <AsciiCursor />
         </AppProviders>
-        {process.env.NEXT_PUBLIC_GA_ID ? (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        ) : null}
+        <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
       </body>
     </html>
   );

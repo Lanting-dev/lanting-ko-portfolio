@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useScrambleText } from "@/hooks/useScrambleText";
+import { IDEA_ARROW_ASCII } from "@/lib/ascii/handAscii";
 
 const HEADING = "IDEAS";
 const QUESTION = "?";
@@ -33,7 +34,7 @@ export function LabScrambleHeading() {
         ))}
       </span>
       <span className="lab-heading-arrow" aria-hidden="true">
-        →
+        <pre className="hand-ascii lab-heading-arrow-ascii">{IDEA_ARROW_ASCII}</pre>
       </span>
       <span className="lab-heading-q" aria-hidden="true">
         {questionChars[0] ?? QUESTION}
