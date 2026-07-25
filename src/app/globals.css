@@ -5106,6 +5106,8 @@ a:hover {
 .lab-wall-media {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 .lab-wall-media img,
@@ -5113,6 +5115,9 @@ a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Round the media itself , a transformed <video> escapes the parent's
+     rounded overflow clip in some browsers, leaving square corners. */
+  border-radius: inherit;
   filter: grayscale(1) contrast(1.02);
   transform: scale(1.01);
   transition:
