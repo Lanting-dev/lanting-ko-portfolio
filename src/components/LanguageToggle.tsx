@@ -19,7 +19,7 @@ export function LanguageToggle({ className = "" }: LanguageToggleProps) {
         locale === "en" ? LOCALE_LABELS["zh-TW"] : LOCALE_LABELS.en
       }`}
     >
-      <span className="shrink-0 text-black/45">{ui.nav.language}</span>
+      <span className="shrink-0 text-black/60">{ui.nav.language}</span>
       <span className="shrink-0 font-semibold text-black">{LOCALE_LABELS[locale]}</span>
     </button>
   );

@@ -718,7 +718,7 @@ a:hover {
   }
 
   .hero-figure-hand {
-    width: 84vw;
+    width: max-content;
   }
 
   .hero-figure-hand--left {
@@ -931,7 +931,7 @@ a:hover {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgb(0 0 0 / 0.45);
+  color: rgb(0 0 0 / 0.56);
 }
 
 .project-stack-card-focus {
@@ -965,7 +965,7 @@ a:hover {
   font-size: clamp(0.64rem, 0.85vw, 0.8rem);
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: rgb(0 0 0 / 0.58);
+  color: rgb(0 0 0 / 0.64);
 }
 
 .project-stack-card-desc {

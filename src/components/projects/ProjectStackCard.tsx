@@ -79,6 +79,8 @@ export function ProjectStackCard({
             src={artSrc}
             alt={localized.alt}
             className="project-stack-card-art"
+            width={2400}
+            height={3028}
             draggable={false}
           />
         </div>

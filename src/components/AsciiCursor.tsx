@@ -46,7 +46,10 @@ export function AsciiCursor() {
   const ref = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
+    // Fine pointers only, and keep the native cursor for users who ask for
+    // reduced motion (they may rely on OS cursor customisations).
     if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const el = ref.current;
     if (!el) return;

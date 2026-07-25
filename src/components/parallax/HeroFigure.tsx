@@ -26,6 +26,8 @@ export function HeroFigure() {
             className={`hero-glitch-band hero-glitch-band--${n}`}
             src={PORTRAIT_SRC}
             alt=""
+            width={3320}
+            height={3320}
             draggable={false}
           />
         ))}
