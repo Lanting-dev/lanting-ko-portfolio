@@ -548,7 +548,9 @@ a:hover {
 }
 
 .hero-hand-ascii {
-  font-size: clamp(0.42rem, 0.88vw, 1.15rem);
+  /* Pure vw so the hand stays ~47vw at every width (no rem floor blowing it up
+     on phones). */
+  font-size: 0.78vw;
 }
 
 .about-hand-ascii {
@@ -676,11 +678,11 @@ a:hover {
   }
 
   .hero-intro-copy {
-    right: clamp(0.9rem, 3.5vw, 1.25rem);
-    left: auto;
-    top: 56%;
+    left: clamp(1.1rem, 5vw, 1.5rem);
+    right: auto;
+    top: 30%;
     bottom: auto;
-    width: min(250px, 62vw);
+    width: min(320px, 84vw);
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -688,20 +690,20 @@ a:hover {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    color: #ffffff;
-    mix-blend-mode: difference;
+    color: #111111;
+    mix-blend-mode: normal;
   }
 
   .hero-kicker {
-    font-size: clamp(0.78rem, 3.2vw, 0.92rem);
-    color: #ffffff;
+    font-size: clamp(0.82rem, 3.6vw, 1rem);
+    color: #111111;
   }
 
   .hero-intro-copy p:not(.hero-kicker) {
-    margin-top: 0.45rem;
-    font-size: clamp(0.68rem, 2.85vw, 0.78rem);
-    line-height: 1.22;
-    color: #ffffff;
+    margin-top: 0.5rem;
+    font-size: clamp(0.72rem, 3vw, 0.82rem);
+    line-height: 1.24;
+    color: #111111;
   }
 
   .hero-title-line--lead {
@@ -714,7 +716,7 @@ a:hover {
   }
 
   .hero-figure {
-    --hero-figure-h: min(118vw, 560px);
+    --hero-figure-h: min(58vw, 280px);
   }
 
   .hero-figure-hand {
@@ -1128,7 +1130,7 @@ a:hover {
     --project-stack-heading-top: clamp(4.5rem, 12vh, 6rem);
     --project-stack-card-top-base: calc(
       var(--project-stack-heading-top) +
-      clamp(9rem, 28vh, 14rem)
+      clamp(4.5rem, 15vh, 8rem)
     );
     --project-stack-card-top-step: 28px;
   }
@@ -1165,16 +1167,25 @@ a:hover {
     text-overflow: ellipsis;
   }
 
+  /* Auto height so the whole card , including the CTA , stays in flow, visible
+     and tappable (was a fixed height + overflow:hidden that clipped the CTA). */
   .project-stack-card-inner {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 42%) minmax(0, 1fr);
-    height: clamp(310px, 58vh, 430px);
+    grid-template-rows: auto auto;
+    height: auto;
+    overflow: visible;
     padding: clamp(1rem, 4vw, 1.35rem);
   }
 
   .project-stack-card-media {
     order: -1;
+    height: auto;
+    aspect-ratio: 16 / 10;
     min-height: 0;
+  }
+
+  .project-stack-card-copy {
+    overflow: visible;
   }
 
   .project-stack-card-art {
@@ -1920,7 +1931,8 @@ a:hover {
 
 @media (max-width: 960px) {
   :root {
-    --about-project-gap: clamp(2rem, 8vw, 4rem);
+    /* Clears the sticky nav so the "About" heading isn't cut off. */
+    --about-project-gap: clamp(5.5rem, 17vw, 7rem);
     --about-sticky-pad: clamp(20px, 3vh, 32px);
     --about-cube-size: min(320px, 100%);
   }
@@ -1928,30 +1940,21 @@ a:hover {
   .about-scroll-sticky {
     position: sticky;
     top: var(--about-project-gap);
-    height: auto;
+    box-sizing: border-box;
+    height: calc(100dvh - var(--about-project-gap));
     min-height: 0;
-    padding-bottom: clamp(1.5rem, 5vh, 2.5rem);
+    padding-bottom: var(--about-sticky-pad);
     overflow: visible;
   }
 
   .about-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--about-stack-gap);
-    height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    row-gap: clamp(0.5rem, 2vh, 1rem);
+    height: 100%;
     min-height: 0;
-    padding-top: clamp(0.75rem, 2.5vh, 1.25rem);
-  }
-
-  .about-stage {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    height: auto;
-    min-height: 0;
-    gap: var(--about-stack-gap);
+    padding-top: clamp(0.5rem, 2vh, 1rem);
   }
 
   .about-bigword {
@@ -1961,24 +1964,43 @@ a:hover {
     margin-inline-start: 0;
   }
 
-  .about-hand {
+  /* Same left-right composition as desktop , hand on the left, copy on the
+     right, horizontal push , just resized for the narrow screen. */
+  .about-stage {
     position: relative;
-    left: auto;
-    top: auto;
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .about-hand {
+    position: absolute;
+    left: -50vw;
+    top: clamp(1rem, 6vh, 4rem);
     bottom: auto;
     width: max-content;
-    max-width: 100%;
+    max-width: none;
     margin-inline: 0;
   }
 
+  .about-hand-ascii {
+    font-size: 1vw;
+  }
+
   .about-copy {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: 100%;
-    max-width: 100%;
+    position: absolute;
+    left: clamp(4vw, 5vw, 7vw);
+    top: clamp(0.5rem, 4vh, 3rem);
+    width: 80vw;
+    max-width: none;
     min-width: 0;
     box-sizing: border-box;
+  }
+
+  .about-copy-lead {
+    font-size: clamp(1.05rem, 4.2vw, 1.5rem);
+    margin-bottom: 0.8em;
   }
 
   .about-copy-body {
@@ -5061,6 +5083,151 @@ a:hover {
   font-size: clamp(0.95rem, 1.2vw, 1.1rem);
   line-height: 1.5;
   color: rgb(0 0 0 /0.55);
+}
+
+/* ── Lab wall , a gallery of media tiles; text reveals on hover ── */
+.lab-wall {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(0.75rem, 1.4vw, 1.25rem);
+  width: 100%;
+}
+
+.lab-wall-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: clamp(10px, 1vw, 16px);
+  background: #f0f0f0;
+  isolation: isolate;
+}
+
+.lab-wall-media {
+  position: absolute;
+  inset: 0;
+}
+
+.lab-wall-media img,
+.lab-wall-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.02);
+  transform: scale(1.01);
+  transition:
+    filter 0.5s ease,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.lab-wall-tile:hover .lab-wall-media img,
+.lab-wall-tile:hover .lab-wall-media video,
+.lab-wall-tile:focus-visible .lab-wall-media img,
+.lab-wall-tile:focus-visible .lab-wall-media video {
+  filter: grayscale(0) contrast(1.03);
+  transform: scale(1.07);
+}
+
+/* Title + tag , hidden until hover/focus. */
+.lab-wall-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: clamp(1rem, 2vw, 1.75rem);
+  color: #ffffff;
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.72),
+    rgb(0 0 0 / 0.25) 55%,
+    transparent
+  );
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  pointer-events: none;
+}
+
+.lab-wall-tile:hover .lab-wall-info,
+.lab-wall-tile:focus-visible .lab-wall-info {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lab-wall-title {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.lab-wall-tag {
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-size: clamp(0.68rem, 0.9vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+
+.lab-wall-arrow {
+  position: absolute;
+  top: clamp(0.8rem, 1.5vw, 1.3rem);
+  right: clamp(0.8rem, 1.5vw, 1.3rem);
+  z-index: 2;
+  font-size: clamp(1.1rem, 1.6vw, 1.6rem);
+  color: #ffffff;
+  mix-blend-mode: difference;
+  opacity: 0;
+  transform: translate(-6px, 6px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.lab-wall-tile:hover .lab-wall-arrow,
+.lab-wall-tile:focus-visible .lab-wall-arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+@media (max-width: 767px) {
+  .lab-wall {
+    grid-template-columns: 1fr;
+  }
+
+  /* No hover on touch , keep the text and colour visible. */
+  .lab-wall-media img,
+  .lab-wall-media video {
+    filter: grayscale(0) contrast(1.02);
+    transform: none;
+  }
+
+  .lab-wall-info {
+    opacity: 1;
+    transform: none;
+  }
+
+  .lab-wall-arrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-wall-media img,
+  .lab-wall-media video,
+  .lab-wall-info,
+  .lab-wall-arrow {
+    transition: none;
+  }
 }
 
 @media (max-width: 1100px) {

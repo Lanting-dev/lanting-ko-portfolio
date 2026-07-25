@@ -2,7 +2,6 @@
 
 import { type RefObject } from "react";
 import { useScrollTrackVh } from "@/hooks/useScrollTrackVh";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { ScrambleWord } from "@/components/ScrambleWord";
 import { smoothstep } from "@/lib/parallax/interpolate";
 import { useParallaxValue } from "@/components/parallax/ParallaxEngineProvider";
@@ -37,10 +36,10 @@ export function AboutSection({ trackRef, staticLayout = false }: AboutSectionPro
   // the about track is scrubbing (aboutProgress is pinned at 1 through footer).
   const aboutProgress = useParallaxValue((s) => s.aboutProgress);
   const projectProgress = useParallaxValue((s) => s.projectProgress);
-  const isMobile = useIsMobile();
   const aboutTrackVh = useScrollTrackVh("about");
-  // Static / mobile hold at the readable rest pose (entry done, exit not started).
-  const pushProgress = staticLayout || isMobile ? 0.42 : aboutProgress;
+  // Reduced-motion holds at the readable rest pose; otherwise the hand pushes
+  // the copy on scroll (on mobile the stacked column just slides horizontally).
+  const pushProgress = staticLayout ? 0.42 : aboutProgress;
   const { handX, handScale, copyX, copyOpacity } = pushStops(pushProgress);
   const workIncomplete = !staticLayout && projectProgress < 0.995;
 

@@ -22,6 +22,18 @@ function projectTabLabel(meta?: string): string | null {
   return head || null;
 }
 
+/** Meta without its first segment (the client/context already shown in the tab). */
+function projectMetaTail(meta?: string): string | null {
+  if (!meta) return null;
+  const tail = meta
+    .split("·")
+    .slice(1)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(" · ");
+  return tail || null;
+}
+
 export function ProjectStackCard({
   project,
   index,
@@ -32,6 +44,7 @@ export function ProjectStackCard({
   const localized = useLocalizedProject(project);
   const artSrc = localized.colorSrc ?? localized.src;
   const tabLabel = projectTabLabel(localized.meta);
+  const metaTail = projectMetaTail(localized.meta);
 
   return (
     <article
@@ -60,8 +73,8 @@ export function ProjectStackCard({
           {localized.title ? (
             <h3 className="project-stack-card-title">{localized.title}</h3>
           ) : null}
-          {localized.meta ? (
-            <p className="project-stack-card-meta">{localized.meta}</p>
+          {metaTail ? (
+            <p className="project-stack-card-meta">{metaTail}</p>
           ) : null}
           {localized.description ? (
             <p className="project-stack-card-desc">{localized.description}</p>

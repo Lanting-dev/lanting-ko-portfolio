@@ -73,19 +73,6 @@ export const PROJECTS: ProjectItem[] = [
       "Rebuilding the Bungee font tester for keyboard and screen-reader access, plus audio that turns a visual tool multisensory.",
   },
   {
-    id: "iong",
-    src: "/projects/IONG.png",
-    colorSrc: projectColorAsset("/projects/IONG-Color.png"),
-    alt: "IONG · speculative design and interaction design",
-    accent: "#01204E",
-    href: "/work/iong",
-    title: "When Biometric Systems Decide What We Eat",
-    meta: "Individual Project · Speculative Design · Interaction Design",
-    focus: "Critical interaction design",
-    description:
-      "A 2070 employee onboarding demo where reading time and biometric tracking quietly assign you a role inside a system that manages citizen nutrition.",
-  },
-  {
     id: "alo",
     src: "/projects/ALO.png",
     colorSrc: projectColorAsset("/projects/ALO-Color.png"),

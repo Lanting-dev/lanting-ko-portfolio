@@ -7,10 +7,46 @@ import {
   getExperimentalPreviewMedia,
 } from "@/lib/experimental/projects";
 import type { ExperimentalPreviewMedia } from "@/lib/experimental/projects";
-import type { ExperimentalSlug } from "@/lib/experimental/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+
+/** Collapse a full tag ("VR mindfulness · spatial UX") to just its focus. */
+function shortTag(tag: string): string {
+  if (/iot/i.test(tag)) return "IoT";
+  if (/\bvr\b/i.test(tag)) return "VR";
+  return tag.split("·")[0]?.trim() ?? tag;
+}
+
+type LabEntry = {
+  key: string;
+  title: string;
+  tag: string;
+  href: string;
+  preview: ExperimentalPreviewMedia;
+};
+
+/** The lab list = the experiment showcases plus IONG, a speculative piece that
+ *  lives here but keeps its full case-study page under /work/iong. */
+const LAB_ENTRIES: LabEntry[] = [
+  ...EXPERIMENTAL_PROJECTS.map((project) => ({
+    key: project.slug,
+    title: project.title,
+    tag: shortTag(project.tag),
+    href: `/lab/${project.slug}`,
+    preview: getExperimentalPreviewMedia(project.slug),
+  })),
+  {
+    key: "iong",
+    title: "IONG",
+    tag: "Interactive website",
+    href: "/work/iong",
+    preview: {
+      type: "video",
+      src: "/work/iong/intro.mp4",
+      poster: "/work/iong/welcome-onboard.png",
+    },
+  },
+];
 
 function PreviewLayer({
   media,
@@ -67,8 +103,7 @@ function PreviewLayer({
   );
 }
 
-function MobileCardMedia({ slug }: { slug: ExperimentalSlug }) {
-  const media = getExperimentalPreviewMedia(slug);
+function MobileCardMedia({ media }: { media: ExperimentalPreviewMedia }) {
   const reducedMotion = usePrefersReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const showVideo = media.type === "video" && !reducedMotion;
@@ -114,7 +149,7 @@ function MobileCardMedia({ slug }: { slug: ExperimentalSlug }) {
 export function ExperimentalHoverList() {
   const { ui } = useLocale();
   const reducedMotion = usePrefersReducedMotion();
-  const [active, setActive] = useState<ExperimentalSlug | null>(null);
+  const [active, setActive] = useState<string | null>(null);
 
   return (
     <div
@@ -122,27 +157,24 @@ export function ExperimentalHoverList() {
       onMouseLeave={() => setActive(null)}
     >
       <ol className="lab-hover-list-names">
-        {EXPERIMENTAL_PROJECTS.map((project) => {
-          const isActive = project.slug === active;
-          const previewMedia = getExperimentalPreviewMedia(project.slug);
+        {LAB_ENTRIES.map((entry) => {
+          const isActive = entry.key === active;
           return (
-            <li key={project.slug}>
+            <li key={entry.key}>
               <Link
-                href={`/lab/${project.slug}`}
+                href={entry.href}
                 className={`lab-hover-list-row${isActive ? " is-active" : ""}`}
-                onMouseEnter={() => setActive(project.slug)}
-                onFocus={() => setActive(project.slug)}
+                onMouseEnter={() => setActive(entry.key)}
+                onFocus={() => setActive(entry.key)}
               >
-                <span className="lab-hover-list-title">{project.title}</span>
-                <span className="lab-hover-list-meta">
-                  {project.tag}
-                </span>
+                <span className="lab-hover-list-title">{entry.title}</span>
+                <span className="lab-hover-list-meta">{entry.tag}</span>
                 <span className="lab-hover-list-arrow" aria-hidden>
                   ↗
                 </span>
                 <span className="lab-hover-list-float-preview" aria-hidden>
                   <PreviewLayer
-                    media={previewMedia}
+                    media={entry.preview}
                     visible={isActive}
                     reducedMotion={reducedMotion}
                   />
@@ -163,18 +195,18 @@ export function ExperimentalMobileCards() {
 
   return (
     <div className="lab-mobile-cards">
-      {EXPERIMENTAL_PROJECTS.map((project) => (
+      {LAB_ENTRIES.map((entry) => (
         <Link
-          key={project.slug}
-          href={`/lab/${project.slug}`}
+          key={entry.key}
+          href={entry.href}
           className="lab-mobile-card"
         >
           <div className="lab-mobile-card-media">
-            <MobileCardMedia slug={project.slug} />
+            <MobileCardMedia media={entry.preview} />
           </div>
           <div className="lab-mobile-card-copy">
-            <span className="lab-mobile-card-tag">{project.tag}</span>
-            <span className="lab-mobile-card-title">{project.title}</span>
+            <span className="lab-mobile-card-tag">{entry.tag}</span>
+            <span className="lab-mobile-card-title">{entry.title}</span>
           </div>
           <span className="lab-mobile-card-cta">{ui.lab.viewProject}</span>
         </Link>
@@ -183,7 +215,76 @@ export function ExperimentalMobileCards() {
   );
 }
 
+function WallTile({
+  entry,
+  reducedMotion,
+}: {
+  entry: LabEntry;
+  reducedMotion: boolean;
+}) {
+  const media = entry.preview;
+  const isVideo = media.type === "video" && !reducedMotion;
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !isVideo) return;
+    void video.play().catch(() => {});
+  }, [isVideo]);
+
+  return (
+    <Link href={entry.href} className="lab-wall-tile">
+      <div className="lab-wall-media">
+        {isVideo ? (
+          <video
+            ref={videoRef}
+            src={media.src}
+            poster={media.poster}
+            width={media.width}
+            height={media.height}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            draggable={false}
+          />
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={media.type === "video" ? media.poster ?? media.src : media.src}
+            alt=""
+            width={media.width}
+            height={media.height}
+            draggable={false}
+          />
+        )}
+      </div>
+      <div className="lab-wall-info">
+        <span className="lab-wall-title">{entry.title}</span>
+        <span className="lab-wall-tag">{entry.tag}</span>
+      </div>
+      <span className="lab-wall-arrow" aria-hidden>
+        ↗
+      </span>
+    </Link>
+  );
+}
+
+export function ExperimentalWall() {
+  const { ui } = useLocale();
+  const reducedMotion = usePrefersReducedMotion();
+
+  return (
+    <div className="lab-wall">
+      {LAB_ENTRIES.map((entry) => (
+        <WallTile key={entry.key} entry={entry} reducedMotion={reducedMotion} />
+      ))}
+      <p className="sr-only">{ui.lab.viewProject}</p>
+    </div>
+  );
+}
+
 export function ExperimentalList() {
-  const isMobile = useIsMobile();
-  return isMobile ? <ExperimentalMobileCards /> : <ExperimentalHoverList />;
+  return <ExperimentalWall />;
 }
