@@ -390,6 +390,10 @@ a:hover {
   flex: 1;
   min-height: 0;
   width: 100%;
+  /* Reaches up under the nav so the clip edge is the viewport top, not a line
+     partway down the screen. Margin only , `top: 0` for the absolute children
+     resolves against the padding box, so padding could not buy the same room. */
+  margin-top: calc(-1 * var(--hero-top-inset, 0px));
   /* The name and the figure both run past the edges; this is what cuts them. */
   overflow: clip;
   /* Opaque, so the title's difference blend has something to invert against. */
@@ -423,18 +427,20 @@ a:hover {
   white-space: nowrap;
 }
 
-/* Flush to both edges, not past them. */
+/* Rides up out of the nav band. The inset cancels the box's new reach upward,
+   so the clamp is measured from where the composition visually starts , the
+   letters land high but stay whole, with white paper behind them. */
 .hero-title-line--lead {
-  top: clamp(-64px, -5vh, -32px);
+  top: calc(var(--hero-top-inset, 0px) + clamp(-64px, -5vh, -32px));
   left: 0;
 }
 
 .hero-title-line--tail {
   left: 50%;
   transform: translateX(-50%);
-  /* Sunk ~half a glyph below the fold so the cut-off "KO" reads as "there's
-     more below". Scrolling lifts the hero and brings it fully into view. */
-  bottom: calc(var(--hero-bottom-inset, 0px) - 0.45em);
+  /* Sits fully on the visible bottom edge , `--hero-bottom-inset` lifts it off
+     the composition's overflowed base and onto the fold. */
+  bottom: var(--hero-bottom-inset, 0px);
 }
 
 /* Figure , cut-out portrait bleeding off the bottom edge. A real length, not a
@@ -443,14 +449,21 @@ a:hover {
    The hand lowers away as the hero scrolls (--hero-assemble 0 -> 1), revealing
    the eyes. Square portrait, centred in the composition, bleeding off the base. */
 .hero-figure {
-  /* Small face, big framing hands. */
-  --hero-figure-h: clamp(300px, 40vw, 560px);
+  /* Small face, big framing hands. Matched to the width of the "KO" line,
+     measured and published by HeroParallaxScene; the clamp is the first-paint
+     and no-JS fallback. Shrinking this without growing `.hero-hand-ascii`
+     opens a gap between the fingertip and the face , the hands are anchored to
+     the viewport edge, not to the figure. */
+  --hero-figure-h: var(--hero-ko-width, clamp(195px, 26vw, 365px));
   /* 1 = fully glitched (rest), 0 = healed. Resolves over the first third of
      the hero scroll. */
   --hero-glitch: clamp(0, calc((0.34 - var(--hero-progress, 0)) / 0.34), 1);
+  /* Rides above the fold rather than sitting on it. The hands are children, so
+     they travel with it , this is the one knob for the whole figure. */
+  --hero-figure-lift: clamp(4rem, 16vh, 13rem);
   position: absolute;
   left: 50%;
-  bottom: var(--hero-bottom-inset, 0px);
+  bottom: calc(var(--hero-bottom-inset, 0px) + var(--hero-figure-lift));
   z-index: 1;
   width: var(--hero-figure-h);
   height: var(--hero-figure-h);
@@ -548,13 +561,14 @@ a:hover {
 }
 
 .hero-hand-ascii {
-  /* Pure vw so the hand stays ~47vw at every width (no rem floor blowing it up
-     on phones). */
-  font-size: 0.78vw;
+  /* Pure vw so the hand keeps its share of the width at every size (no rem
+     floor blowing it up on phones). Ink is 70 cols ≈ 42 × font-size wide, so
+     0.95vw puts the fingertip just inside the face's edge. */
+  font-size: 0.95vw;
 }
 
 .about-hand-ascii {
-  font-size: clamp(0.34rem, 0.7vw, 0.9rem);
+  font-size: var(--about-hand-font, clamp(0.34rem, 0.7vw, 0.9rem));
 }
 
 .project-stack-hand-ascii {
@@ -706,8 +720,10 @@ a:hover {
     color: #111111;
   }
 
+  /* No lift on phones , cancel the box's reach so the line stays where the
+     composition visually starts. */
   .hero-title-line--lead {
-    top: 0;
+    top: var(--hero-top-inset, 0px);
   }
 
   .hero-sticky {
@@ -716,7 +732,15 @@ a:hover {
   }
 
   .hero-figure {
-    --hero-figure-h: min(58vw, 280px);
+    --hero-figure-h: var(--hero-ko-width, min(38vw, 184px));
+    /* Shorter viewport , a proportional lift would eat the figure. */
+    --hero-figure-lift: clamp(2rem, 8vh, 6rem);
+  }
+
+  /* Matched to the smaller figure above so the fingertips keep the same reach
+     into the face as on desktop. */
+  .hero-hand-ascii {
+    font-size: 1.02vw;
   }
 
   .hero-figure-hand {
@@ -789,6 +813,10 @@ a:hover {
   width: 100%;
   overflow: clip;
   background: #ffffff;
+  /* Blank paper between the hero's KO and WORK. Margin, not padding , the pin
+     maths and the scroll track both read this element's own rect, and its
+     height is set inline in vh. */
+  margin-top: clamp(4rem, 16vh, 14rem);
   /* WORK sits this far below the viewport top so it clears the nav pill
      (Figma: word top at 131px in the 1024-tall frame). */
   --project-stack-heading-top: clamp(5.5rem, 13vh, 8.5rem);
@@ -1779,6 +1807,13 @@ a:hover {
   position: relative;
   min-height: 0;
   height: 100%;
+  /* Hand geometry, shared so the copy can be placed against it rather than
+     tuned to match by eye. `--about-hand-rows` is the line count of
+     ABOUT_HAND_ASCII , update it if the art is swapped for a taller crop. */
+  --about-hand-font: clamp(0.34rem, 0.7vw, 0.9rem);
+  --about-hand-rows: 27;
+  --about-hand-top: clamp(0.5rem, 3vh, 2.5rem);
+  --about-hand-h: calc(var(--about-hand-rows) * var(--about-hand-font));
 }
 
 /* Pointing hand, bottom-left, finger aimed at the copy. Slides in from the
@@ -1786,10 +1821,10 @@ a:hover {
    per scroll frame). */
 .about-hand {
   position: absolute;
-  /* Arm hugs the left edge; sits at the copy's vertical level so the fingertips
-     read as pushing the text, not floating at the bottom. */
-  left: clamp(-11vw, -8vw, -3vw);
-  top: clamp(1rem, 9vh, 6rem);
+  /* Cut off by the frame's left edge, not floated past it , the art is already
+     cropped at the wrist, so this cancels the page gutter and no more. */
+  left: calc(-1 * var(--page-gutter));
+  top: var(--about-hand-top);
   bottom: auto;
   z-index: 10;
   width: max-content;
@@ -1896,10 +1931,13 @@ a:hover {
 /* Readable copy column , right of cube. */
 .about-copy {
   position: absolute;
-  /* Sits just past the fingertip so the hand reads as pushing it, not floating
-     apart. Anchored from the left for that reason, not flush right. */
-  left: clamp(28vw, 31vw, 34vw);
-  top: clamp(0.5rem, 5vh, 3.5rem);
+  /* Starts under the fingers, not past them , the last third of the hand
+     overlaps the first lines, which is what makes it read as one composition
+     rather than a picture next to a paragraph. */
+  left: clamp(34vw, 39vw, 42vw);
+  /* First line lands on the hand's vertical midline, i.e. just below the
+     fingertips. Derived so dialing the hand's size or drop carries the copy. */
+  top: calc(var(--about-hand-top) + 0.52 * var(--about-hand-h));
   width: min(580px, 48vw);
   z-index: 20;
   color: #1a1a1a;
@@ -5098,7 +5136,8 @@ a:hover {
   display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: clamp(10px, 1vw, 16px);
+  --lab-wall-radius: clamp(10px, 1vw, 16px);
+  border-radius: var(--lab-wall-radius);
   background: #f0f0f0;
   isolation: isolate;
 }
@@ -5108,6 +5147,11 @@ a:hover {
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
+  /* A rounded overflow clip is dropped for transformed descendants, which is
+     why the media used to carry its own radius , but a radius on the media
+     rides the hover scale, so the corners grew past the tile and read square.
+     clip-path holds for transformed children and stays fixed to the tile. */
+  clip-path: inset(0 round var(--lab-wall-radius));
 }
 
 .lab-wall-media img,
@@ -5115,9 +5159,6 @@ a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Round the media itself , a transformed <video> escapes the parent's
-     rounded overflow clip in some browsers, leaving square corners. */
-  border-radius: inherit;
   filter: grayscale(1) contrast(1.02);
   transform: scale(1.01);
   transition:

@@ -38,7 +38,16 @@ export function HeroParallaxScene() {
     const el = compositionRef.current;
     if (!el) return;
     const overflow = el.getBoundingClientRect().bottom - window.innerHeight;
-    el.style.setProperty("--hero-bottom-inset", `${Math.max(0, overflow)}px`);
+    const inset = `${Math.max(0, overflow)}px`;
+    el.style.setProperty("--hero-bottom-inset", inset);
+    /**
+     * Same quantity seen from the other end: what hangs off the bottom is
+     * exactly the nav band the composition starts below. The composition
+     * reaches back up by this much so its white fill and its clip edge meet
+     * the viewport top , without it, a title pushed above the box gets cut on
+     * a line partway down the screen instead of bleeding off it.
+     */
+    el.style.setProperty("--hero-top-inset", inset);
   }, []);
 
   useLayoutEffect(syncBottomOffset, [syncBottomOffset]);
@@ -46,6 +55,32 @@ export function HeroParallaxScene() {
     window.addEventListener("resize", syncBottomOffset);
     return () => window.removeEventListener("resize", syncBottomOffset);
   }, [syncBottomOffset]);
+
+  /**
+   * The figure is sized to the "KO" line, so the portrait sits exactly inside
+   * the word. Measured rather than guessed: the title font-size is itself fit
+   * to the viewport, so no static length tracks it. Published as a custom
+   * property , CSS keeps a static fallback for the first paint and for no-JS.
+   */
+  const tailRef = useRef<HTMLSpanElement | null>(null);
+  useEffect(() => {
+    const tail = tailRef.current;
+    const composition = compositionRef.current;
+    if (!tail || !composition) return;
+
+    const syncKoWidth = () => {
+      const { width } = tail.getBoundingClientRect();
+      if (width > 0) {
+        composition.style.setProperty("--hero-ko-width", `${width}px`);
+      }
+    };
+
+    syncKoWidth();
+    // Fires for viewport resize, the fit-text pass and web-font swap alike.
+    const observer = new ResizeObserver(syncKoWidth);
+    observer.observe(tail);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="hero-scene relative flex min-h-0 w-full flex-1 flex-col">
@@ -78,6 +113,7 @@ export function HeroParallaxScene() {
             LAN TING
           </span>
           <span
+            ref={tailRef}
             data-hero-intro-line
             className="hero-title-line hero-title-line--tail"
           >

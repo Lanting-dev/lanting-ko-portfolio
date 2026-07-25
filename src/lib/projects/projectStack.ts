@@ -24,6 +24,26 @@ export function projectStackBodyVh(mobile: boolean): number {
   return mobile ? PROJECT_STACK_CARD_BODY_VH_MOBILE : PROJECT_STACK_CARD_BODY_VH;
 }
 
+/** Viewport height the vh budgets above were tuned against. */
+export const PROJECT_STACK_REFERENCE_HEIGHT = 900;
+
+/**
+ * The stack's scroll budget is in vh, but what it pays for is not: the card
+ * tops out at 410px tall (`.project-stack-card-inner`, sized off viewport
+ * *width*). On a tall display the extra vh therefore buys dead scroll and
+ * nothing else , at 1600px the section alone ran 8320px against 4680px at the
+ * reference. Holding the budget at its reference pixel length matches what
+ * `trackVhForViewport` already does for hero, about and footer.
+ */
+export function projectStackTrackScale(
+  viewportHeight = PROJECT_STACK_REFERENCE_HEIGHT,
+): number {
+  return Math.min(
+    1,
+    PROJECT_STACK_REFERENCE_HEIGHT / Math.max(1, viewportHeight),
+  );
+}
+
 /** Document flow height inside the stack scroll room. */
 export function projectStackScrollRoomVh(
   cardCount = PROJECT_STACK_CARD_COUNT,
@@ -51,18 +71,24 @@ export type ProjectStackLayout = {
 export function projectStackLayout(
   mobile: boolean,
   cardCount = PROJECT_STACK_CARD_COUNT,
+  viewportHeight = PROJECT_STACK_REFERENCE_HEIGHT,
 ): ProjectStackLayout {
-  const cardBody = projectStackBodyVh(mobile);
-  const cardStep = PROJECT_STACK_CARD_VH;
+  // Every length here is scroll budget, so all of it scales together , the
+  // peel timings downstream are ratios within the section and stay put.
+  const scale = projectStackTrackScale(viewportHeight);
+  const cardBody = projectStackBodyVh(mobile) * scale;
+  const cardStep = PROJECT_STACK_CARD_VH * scale;
   const scrollRoom = projectStackScrollRoomVh(cardCount, cardBody, cardStep);
+  const intro = PROJECT_STACK_INTRO_VH * scale;
+  const exit = PROJECT_STACK_EXIT_VH * scale;
 
   return {
-    section: PROJECT_STACK_INTRO_VH + scrollRoom + PROJECT_STACK_EXIT_VH,
-    intro: PROJECT_STACK_INTRO_VH,
+    section: intro + scrollRoom + exit,
+    intro,
     cardStep,
     cardBody,
     scrollRoom,
-    exit: PROJECT_STACK_EXIT_VH,
+    exit,
   };
 }
 

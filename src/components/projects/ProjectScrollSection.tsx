@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, type RefObject, type CSSProperties } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useViewportHeight } from "@/hooks/useViewportHeight";
 import { VISIBLE_PROJECTS } from "@/lib/projects";
 import { projectStackLayout } from "@/lib/projects/projectStack";
 import { ScrambleWord } from "@/components/ScrambleWord";
@@ -32,7 +33,8 @@ export function ProjectScrollSection({
 }: ProjectScrollSectionProps) {
   const projects = useLocalizedProjects(VISIBLE_PROJECTS);
   const isMobile = useIsMobile();
-  const stackLayout = projectStackLayout(isMobile, projects.length);
+  const viewportHeight = useViewportHeight();
+  const stackLayout = projectStackLayout(isMobile, projects.length, viewportHeight);
   const reducedMotion = usePrefersReducedMotion();
   const { ui } = useLocale();
   const workImpactRef = useRef<HTMLDivElement>(null);
