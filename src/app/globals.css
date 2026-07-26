@@ -422,16 +422,8 @@ a:hover {
   );
   /* The name and the figure both run past the edges; this is what cuts them. */
   overflow: clip;
-  /* Opaque, so the title's difference blend has something to invert against. */
   background: #ffffff;
-  /* Blend group root for the title, and deliberately an uncomposited one.
-     WebKit drops an ancestor's own background out of the blend group as soon
-     as that ancestor is promoted to its own layer , which is why the white
-     title kept vanishing into the white paper in Safari while Chrome was fine.
-     `isolation` gives the stacking context the blend needs without triggering
-     promotion; `transform` and `will-change: transform` both would, so this
-     box must carry neither. */
-  isolation: isolate;
+
 }
 
 .hero-title-cut {
@@ -446,16 +438,15 @@ a:hover {
   pointer-events: none;
 }
 
-/* White + difference, so the name reads black on paper and inverts wherever it
-   crosses the photo. This depends on the composition's white fill being in the
-   same blend group, which is why `.hero-composition` must not be promoted to
-   its own compositing layer , see the note on `will-change` there. */
-@supports (mix-blend-mode: difference) {
-  .hero-title-cut {
-    color: #ffffff;
-    mix-blend-mode: difference;
-  }
-}
+/* Solid black, deliberately. This was white + `mix-blend-mode: difference` so
+   the name would invert where it crosses the photo, but WebKit would not paint
+   the blend until a scroll forced a repaint , the name was simply missing above
+   the fold in Safari. Five attempts at making the blend reliable (dropping
+   `will-change`, dropping the transform, `isolation`, an explicit opaque
+   backdrop child, a two-frame repaint nudge after the intro) each held in
+   Chrome and failed in Safari. Legibility is not worth that. The inversion is
+   recoverable without a blend , a second copy of the line in white, masked by
+   the portrait's own alpha , if it is wanted back. */
 
 .hero-title-line {
   position: absolute;

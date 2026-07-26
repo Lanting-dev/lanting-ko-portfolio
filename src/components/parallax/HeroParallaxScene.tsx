@@ -143,12 +143,6 @@ export function HeroParallaxScene() {
         data-hero-intro-title
         className="hero-composition"
         style={{
-          /* No transform here, deliberately. It would promote this box to its
-             own compositing layer, and WebKit then drops its white fill out of
-             the blend group the title composites into , the name disappears in
-             Safari. `.hero-composition` is already `position: relative`, so it
-             stays the containing block for the absolute children either way.
-             HERO_PARALLAX.titleYOffset is 0 throughout, so nothing is lost. */
           ...(titleSize
             ? { ["--hero-title-size" as string]: `${titleSize}px` }
             : {}),
