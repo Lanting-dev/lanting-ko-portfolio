@@ -470,14 +470,42 @@ a:hover {
   pointer-events: none;
 }
 
-/* "KO" is solid black too now, like the lead. It carried the difference blend
-   so it would invert across the shoulders, and on desktop that looked right ,
-   but only because the word happens to sit on the portrait there. WebKit only
-   ever resolved the blend where the title overlapped the figure: the group
-   keeps child elements but drops the group root's own background, so anywhere
-   the word crossed plain paper it stayed white on white. On a phone "KO" sits
-   below the portrait, and it vanished completely. Painting the paper as a
-   child (`.hero-composition::before`) did not change that either. */
+/* The inversion, by mask instead of by blend. `.hero-title-cut` paints "KO"
+   solid black; this is a white copy of the same line on top, masked to the
+   portrait's own alpha, so white survives only where the word actually crosses
+   the photo and plain paper keeps the black underneath.
+
+   This is what `mix-blend-mode: difference` used to do, minus the dependence on
+   compositing that made it unusable: WebKit keeps child elements in a blend
+   group but drops the group root's own background, so the blend only ever
+   resolved where the title happened to overlap the figure , fine on desktop
+   where "KO" sits on the shoulders, invisible on a phone where it sits on
+   paper below them. A mask asks nothing of the compositor.
+
+   The mask is the undisplaced portrait while the glitch bands are shoved
+   sideways at rest, which is exact where it counts: the word crosses band 5,
+   the one band with no drift. */
+.hero-title-invert {
+  position: absolute;
+  inset: 0;
+  /* Same layer as the black copy, later in the DOM, so it paints over it. */
+  z-index: 2;
+  margin: 0;
+  font-family: var(--font-display), var(--font-sora), system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  pointer-events: none;
+  -webkit-mask-image: url("/profile.png");
+  mask-image: url("/profile.png");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  /* Matched to `.hero-figure` exactly , same square, same centre, same top. */
+  -webkit-mask-size: var(--hero-figure-h) var(--hero-figure-h);
+  mask-size: var(--hero-figure-h) var(--hero-figure-h);
+  -webkit-mask-position: 50% var(--hero-figure-top);
+  mask-position: 50% var(--hero-figure-top);
+}
 
 .hero-title-line {
   position: absolute;

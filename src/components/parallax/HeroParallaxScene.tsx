@@ -174,6 +174,20 @@ export function HeroParallaxScene() {
           </span>
         </h1>
 
+        {/* White "KO" masked to the portrait, painted over the black one , the
+            inversion where the word crosses the photo. Purely decorative: the
+            black copy above already carries the text. */}
+        <div
+          className="hero-title-invert"
+          aria-hidden
+          style={{
+            letterSpacing: HERO_TITLE_LETTER_SPACING,
+            ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
+          }}
+        >
+          <span className="hero-title-line hero-title-line--tail">KO</span>
+        </div>
+
         <div className="hero-intro-copy">
           <p className="hero-kicker">{home.heroKicker}</p>
           <p>{home.heroBio}</p>
