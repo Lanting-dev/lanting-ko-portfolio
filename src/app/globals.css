@@ -369,11 +369,8 @@ a:hover {
 .hero-sticky {
   height: 100vh;
   height: 100dvh;
-  /* Both axes. The composition deliberately runs past the fold to carry the
-     sunk "KO", and it paints an opaque white , left visible, that overhang
-     covers the top of Work. Pinned, this box is exactly the viewport, so
-     clipping here is still the screen doing the cutting. */
-  overflow: clip;
+  overflow-x: clip;
+  overflow-y: visible;
   --hero-peek-vh: 6vh;
 }
 
@@ -397,11 +394,7 @@ a:hover {
      partway down the screen. Margin only , `top: 0` for the absolute children
      resolves against the padding box, so padding could not buy the same room. */
   margin-top: calc(-1 * var(--hero-top-inset, 0px));
-  /* And down past the fold. This is a page, not a poster , the screen edge is
-     what should cut "KO", with scroll bringing the rest up. The box has to
-     carry that hidden part, or its own clip edge does the cutting instead and
-     the reveal has nothing to reveal. */
-  margin-bottom: calc(-1 * var(--hero-reveal-room));
+
   /* Vertical rhythm, all hung off one line. `--hero-title-size` is the fitted
      size HeroParallaxScene resolved; cap height is ~0.72em of it, so the
      name's baseline is knowable and everything below can be placed against it
@@ -419,21 +412,9 @@ a:hover {
      figure room one-for-one; the visible sliver is what reads as "more below",
      and scroll pays it back. */
   --hero-ko-sink: 0.6;
-  /* How far the box reaches past the fold , enough to hold all of the sunk
-     "KO" plus its descender room. */
-  --hero-reveal-room: calc(1.3 * var(--hero-cap-height, 4.3rem));
   /* Distance from the box's bottom edge up to the visible fold. Bottom-anchored
      children measure from the box, so they need this to find the screen. */
-  --hero-fold-offset: calc(
-    var(--hero-bottom-inset, 0px) + var(--hero-reveal-room)
-  );
-  /* Scroll pulls the sunk part up. Resolves over the same first third of the
-     hero track that the glitch heals across, so the face settling and the name
-     completing land together. */
-  --hero-reveal: clamp(0, calc(var(--hero-progress, 0) / 0.34), 1);
-  --hero-reveal-y: calc(
-    var(--hero-reveal) * var(--hero-ko-sink) * var(--hero-cap-height, 4.3rem)
-  );
+  --hero-fold-offset: var(--hero-bottom-inset, 0px);
   /* Where KO's caps break the surface. The composition's top edge is the
      viewport top, so the fold is at 100dvh in these coordinates. */
   --hero-ko-cap-top: calc(
@@ -443,13 +424,14 @@ a:hover {
   overflow: clip;
   /* Opaque, so the title's difference blend has something to invert against. */
   background: #ffffff;
-  /* No `will-change: transform` here. It forced this box onto its own
-     compositing layer, and layer promotion is what decides the blend group the
-     title composites into , promoted, its own background stopped counting and
-     the white title vanished into the white paper in the production build
-     while dev still looked fine. The inline `translateY` keeps the stacking
-     context the blend needs to stay isolated; the promotion bought nothing,
-     since HERO_PARALLAX.titleYOffset holds this at 0 the whole way through. */
+  /* Blend group root for the title, and deliberately an uncomposited one.
+     WebKit drops an ancestor's own background out of the blend group as soon
+     as that ancestor is promoted to its own layer , which is why the white
+     title kept vanishing into the white paper in Safari while Chrome was fine.
+     `isolation` gives the stacking context the blend needs without triggering
+     promotion; `transform` and `will-change: transform` both would, so this
+     box must carry neither. */
+  isolation: isolate;
 }
 
 .hero-title-cut {
@@ -677,10 +659,6 @@ a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* No scroll-driven reveal , show the resolved state outright. */
-  .hero-composition {
-    --hero-reveal: 1;
-  }
   .hero-figure {
     --hero-glitch: 0;
   }
@@ -820,7 +798,8 @@ a:hover {
   }
 
   .hero-sticky {
-    overflow: clip;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .hero-figure {

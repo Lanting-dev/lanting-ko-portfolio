@@ -5,7 +5,7 @@ import { IntroRepeaterCanvas } from "./IntroRepeaterCanvas";
 
 /** Whole intro. Every phase in `introRepeater` is a fraction of this, so the
  *  sequence keeps its shape and just plays faster. */
-const INTRO_MS = 5000;
+const INTRO_MS = 8000;
 const OVERLAY_FADE_MS = 650;
 
 type DitherPageIntroProps = {

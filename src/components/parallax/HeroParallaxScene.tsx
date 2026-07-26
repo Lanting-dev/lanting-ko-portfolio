@@ -143,10 +143,12 @@ export function HeroParallaxScene() {
         data-hero-intro-title
         className="hero-composition"
         style={{
-          transform:
-            "translateY(calc(var(--hero-title-y, 0) * 1px - var(--hero-reveal-y, 0px)))",
-          /* The figure clears "KO" by cap height, so it needs the fitted size
-             the title actually resolved to , nothing static tracks it. */
+          /* No transform here, deliberately. It would promote this box to its
+             own compositing layer, and WebKit then drops its white fill out of
+             the blend group the title composites into , the name disappears in
+             Safari. `.hero-composition` is already `position: relative`, so it
+             stays the containing block for the absolute children either way.
+             HERO_PARALLAX.titleYOffset is 0 throughout, so nothing is lost. */
           ...(titleSize
             ? { ["--hero-title-size" as string]: `${titleSize}px` }
             : {}),
