@@ -2,13 +2,19 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useFitText } from "@/hooks/useFitText";
+import { useViewportHeight } from "@/hooks/useViewportHeight";
 import {
   HERO_TITLE_FIT_RATIO,
   HERO_TITLE_FIT_TEXT,
   HERO_TITLE_LETTER_SPACING,
+  HERO_TITLE_MAX_HEIGHT_RATIO,
+  measureHeroTitleMetrics,
 } from "@/lib/animation/heroTitleLayout";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { HeroFigure } from "./HeroFigure";
+
+/** Must match `.hero-title-line`'s line-height. */
+const TITLE_LINE_HEIGHT = 0.78;
 
 /**
  * Hero. The name brackets the figure , "LAN TING" bleeding off the top corners,
@@ -28,6 +34,17 @@ export function HeroParallaxScene() {
   );
 
   /**
+   * The fit only knows about width. Hold the name to a share of the height too,
+   * or on a wide, short viewport it and "KO" take 58% of the screen between
+   * them and the band and figure have nowhere to go.
+   */
+  const viewportHeight = useViewportHeight();
+  const titleSize =
+    titleFontSize != null
+      ? Math.min(titleFontSize, viewportHeight * HERO_TITLE_MAX_HEIGHT_RATIO)
+      : null;
+
+  /**
    * The nav sits in flow above the sticky hero, so at rest the composition
    * starts that far down the viewport while still claiming a full 100dvh , the
    * bottom-anchored pieces would fall off-screen. Publish the offset so they
@@ -37,16 +54,18 @@ export function HeroParallaxScene() {
   const syncBottomOffset = useCallback(() => {
     const el = compositionRef.current;
     if (!el) return;
-    const overflow = el.getBoundingClientRect().bottom - window.innerHeight;
-    const inset = `${Math.max(0, overflow)}px`;
-    el.style.setProperty("--hero-bottom-inset", inset);
     /**
-     * Same quantity seen from the other end: what hangs off the bottom is
-     * exactly the nav band the composition starts below. The composition
-     * reaches back up by this much so its white fill and its clip edge meet
-     * the viewport top , without it, a title pushed above the box gets cut on
-     * a line partway down the screen instead of bleeding off it.
+     * Measure the nav band itself, not the composition's own overflow. Both
+     * insets are the same quantity , the strip the sticky hero starts below and
+     * therefore hangs past the fold by , but reading it off the composition
+     * makes it circular: the box grows itself past the fold to hold "KO", which
+     * would feed straight back into the number that positions "KO".
      */
+    const navBand = document
+      .querySelector("[data-nav-band]")
+      ?.getBoundingClientRect().height;
+    const inset = `${Math.max(0, navBand ?? 0)}px`;
+    el.style.setProperty("--hero-bottom-inset", inset);
     el.style.setProperty("--hero-top-inset", inset);
   }, []);
 
@@ -82,6 +101,38 @@ export function HeroParallaxScene() {
     return () => observer.disconnect();
   }, []);
 
+  /**
+   * Publish the title's real vertical metrics. The rhythm below the name hangs
+   * off its baseline, and `line-height: 0.78` means the caps overrun their line
+   * box , both are font-specific, and every em-fraction estimate of them has
+   * been wrong by enough to shear the caps or leave "KO" floating off the fold.
+   */
+  const titleFontElRef = titleFontRef;
+  useLayoutEffect(() => {
+    const composition = compositionRef.current;
+    const fontEl = titleFontElRef.current;
+    if (!composition || !fontEl || titleSize == null) return;
+
+    const { fontFamily, fontWeight } = getComputedStyle(fontEl);
+    const metrics = measureHeroTitleMetrics(
+      titleSize,
+      fontFamily,
+      fontWeight,
+      TITLE_LINE_HEIGHT,
+    );
+    if (!metrics) return;
+
+    composition.style.setProperty("--hero-cap-height", `${metrics.capHeight}px`);
+    composition.style.setProperty(
+      "--hero-ink-top-inset",
+      `${metrics.inkTopInset}px`,
+    );
+    composition.style.setProperty(
+      "--hero-baseline-to-box-bottom",
+      `${metrics.baselineToBoxBottom}px`,
+    );
+  }, [titleSize, titleFontElRef]);
+
   return (
     <div className="hero-scene relative flex min-h-0 w-full flex-1 flex-col">
       <div
@@ -92,7 +143,13 @@ export function HeroParallaxScene() {
         data-hero-intro-title
         className="hero-composition"
         style={{
-          transform: "translateY(calc(var(--hero-title-y, 0) * 1px))",
+          transform:
+            "translateY(calc(var(--hero-title-y, 0) * 1px - var(--hero-reveal-y, 0px)))",
+          /* The figure clears "KO" by cap height, so it needs the fitted size
+             the title actually resolved to , nothing static tracks it. */
+          ...(titleSize
+            ? { ["--hero-title-size" as string]: `${titleSize}px` }
+            : {}),
         }}
       >
         <HeroFigure />
@@ -102,7 +159,7 @@ export function HeroParallaxScene() {
           className="hero-title-cut"
           style={{
             letterSpacing: HERO_TITLE_LETTER_SPACING,
-            ...(titleFontSize ? { fontSize: `${titleFontSize}px` } : {}),
+            ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
           }}
           aria-label="Lanting Ko"
         >

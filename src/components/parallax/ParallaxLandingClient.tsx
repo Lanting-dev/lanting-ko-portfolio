@@ -71,7 +71,10 @@ export function ParallaxLandingClient() {
   if (reducedMotion) {
     return (
       <>
-        <div className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]">
+        <div
+          data-nav-band
+          className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]"
+        >
           <Navigation />
         </div>
         <section
@@ -99,7 +102,10 @@ export function ParallaxLandingClient() {
         />
       ) : null}
 
-      <div className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]">
+      <div
+          data-nav-band
+          className="site-nav-page-shell page-shell mx-auto w-full max-w-[1440px]"
+        >
         <Navigation />
       </div>
 

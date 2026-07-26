@@ -6,6 +6,58 @@ export const HERO_TITLE_FIT_TEXT = "LAN TING";
 /** > 1 so "LAN TING" runs past both edges and the L and G are cut by them. */
 export const HERO_TITLE_FIT_RATIO = 0.995;
 
+/**
+ * Safety valve, not a layout knob. The fit is width-driven, so on an extreme
+ * aspect the name would grow taller than the screen it is meant to sit in.
+ * Keep it loose , the full-bleed name is the composition's spine, and capping
+ * it tight enough to buy room below just leaves it stranded mid-width with the
+ * edges no longer cut. Room comes out of `--hero-band` instead.
+ */
+export const HERO_TITLE_MAX_HEIGHT_RATIO = 0.42;
+
+export type HeroTitleMetrics = {
+  /** Baseline to ink top , the real cap height, not a guessed em fraction. */
+  capHeight: number;
+  /** Line box top to ink top, including the negative half-leading. */
+  inkTopInset: number;
+  /** Baseline to line box bottom. */
+  baselineToBoxBottom: number;
+};
+
+/**
+ * Real metrics for the resolved title font. Every em-fraction estimate of these
+ * has been wrong by enough to shear the caps or float "KO" off the fold, so
+ * measure rather than assume.
+ */
+export function measureHeroTitleMetrics(
+  fontSize: number,
+  fontFamily: string,
+  fontWeight: string,
+  lineHeight: number,
+): HeroTitleMetrics | null {
+  if (typeof document === "undefined" || !(fontSize > 0)) return null;
+
+  const ctx = document.createElement("canvas").getContext("2d");
+  if (!ctx) return null;
+
+  ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+  const m = ctx.measureText(HERO_TITLE_FIT_TEXT);
+  const ascent = m.fontBoundingBoxAscent;
+  const descent = m.fontBoundingBoxDescent;
+  const capHeight = m.actualBoundingBoxAscent;
+  if (!Number.isFinite(ascent) || !Number.isFinite(capHeight)) return null;
+
+  // Half-leading is negative whenever line-height < the font's natural extent,
+  // which is exactly the case here (0.78), so the ink overruns the box.
+  const halfLeading = (fontSize * lineHeight - (ascent + descent)) / 2;
+
+  return {
+    capHeight,
+    inkTopInset: halfLeading + ascent - capHeight,
+    baselineToBoxBottom: halfLeading + descent,
+  };
+}
+
 export type HeroIntroTitleLayout = {
   lines: readonly string[];
   fontSize: number;
