@@ -443,25 +443,6 @@ a:hover {
   overflow: clip;
   background: #ffffff;
   will-change: transform;
-  /* Declare the blend group explicitly instead of leaning on the stacking
-     context `will-change` happens to create. */
-  isolation: isolate;
-}
-
-/* The paper the title inverts against. `background` on the composition itself
-   is not enough: that box is promoted to its own compositing layer by
-   `will-change: transform`, and a promoted layer's own background is not
-   reliably part of the group its blending children composite into , in the
-   production build it was not, so the white title stayed white on white paper
-   and the name simply vanished. A positioned child at z-index 0 is
-   unambiguously in the group, below the figure (1) and the title (2). */
-.hero-composition::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: #ffffff;
-  pointer-events: none;
 }
 
 .hero-title-cut {
@@ -476,12 +457,13 @@ a:hover {
   pointer-events: none;
 }
 
-@supports (mix-blend-mode: difference) {
-  .hero-title-cut {
-    color: #ffffff;
-    mix-blend-mode: difference;
-  }
-}
+/* Solid black, not white-on-difference. The blend was the whole reason the name
+   could vanish: white paint only reads as black while the group underneath it
+   is opaque white, and in the production build it was not , so the title was
+   painted and simply invisible. Legibility should not depend on a compositing
+   detail that differs between builds. The inversion where the name crosses the
+   photo is worth having back, but not at this price, and not through a blend
+   whose group is decided by layer promotion. */
 
 .hero-title-line {
   position: absolute;
