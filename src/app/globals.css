@@ -377,10 +377,9 @@ a:hover {
 
 /* ── Hero cover ────────────────────────────────────────────────────────────
    A cut-out portrait on paper, sliced into bands that come apart on scroll.
-   The title is white + difference-blended, so it reads black on paper and
-   inverts wherever it crosses the photo. That needs an opaque backdrop inside
-   the blend group, hence the white fill on the wrap , which already isolates
-   because it is transformed. */
+   "LAN TING" is solid black; "KO" is white + difference-blended so it inverts
+   where it crosses the portrait. That needs an opaque backdrop inside the
+   blend group, hence the white fill on `.hero-composition`. */
 .hero-title-wrap {
   background: #ffffff;
 }
@@ -438,15 +437,12 @@ a:hover {
   pointer-events: none;
 }
 
-/* Solid black, deliberately. This was white + `mix-blend-mode: difference` so
-   the name would invert where it crosses the photo, but WebKit would not paint
-   the blend until a scroll forced a repaint , the name was simply missing above
-   the fold in Safari. Five attempts at making the blend reliable (dropping
-   `will-change`, dropping the transform, `isolation`, an explicit opaque
-   backdrop child, a two-frame repaint nudge after the intro) each held in
-   Chrome and failed in Safari. Legibility is not worth that. The inversion is
-   recoverable without a blend , a second copy of the line in white, masked by
-   the portrait's own alpha , if it is wanted back. */
+@supports (mix-blend-mode: difference) {
+  .hero-title-line--tail {
+    color: #ffffff;
+    mix-blend-mode: difference;
+  }
+}
 
 .hero-title-line {
   position: absolute;
@@ -462,6 +458,7 @@ a:hover {
 .hero-title-line--lead {
   top: calc(var(--hero-lead-top) - var(--hero-ink-top-inset, 0px));
   left: 0;
+  color: #000000;
 }
 
 .hero-title-line--tail {
