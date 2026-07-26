@@ -441,8 +441,15 @@ a:hover {
   );
   /* The name and the figure both run past the edges; this is what cuts them. */
   overflow: clip;
+  /* Opaque, so the title's difference blend has something to invert against. */
   background: #ffffff;
-  will-change: transform;
+  /* No `will-change: transform` here. It forced this box onto its own
+     compositing layer, and layer promotion is what decides the blend group the
+     title composites into , promoted, its own background stopped counting and
+     the white title vanished into the white paper in the production build
+     while dev still looked fine. The inline `translateY` keeps the stacking
+     context the blend needs to stay isolated; the promotion bought nothing,
+     since HERO_PARALLAX.titleYOffset holds this at 0 the whole way through. */
 }
 
 .hero-title-cut {
@@ -457,13 +464,16 @@ a:hover {
   pointer-events: none;
 }
 
-/* Solid black, not white-on-difference. The blend was the whole reason the name
-   could vanish: white paint only reads as black while the group underneath it
-   is opaque white, and in the production build it was not , so the title was
-   painted and simply invisible. Legibility should not depend on a compositing
-   detail that differs between builds. The inversion where the name crosses the
-   photo is worth having back, but not at this price, and not through a blend
-   whose group is decided by layer promotion. */
+/* White + difference, so the name reads black on paper and inverts wherever it
+   crosses the photo. This depends on the composition's white fill being in the
+   same blend group, which is why `.hero-composition` must not be promoted to
+   its own compositing layer , see the note on `will-change` there. */
+@supports (mix-blend-mode: difference) {
+  .hero-title-cut {
+    color: #ffffff;
+    mix-blend-mode: difference;
+  }
+}
 
 .hero-title-line {
   position: absolute;

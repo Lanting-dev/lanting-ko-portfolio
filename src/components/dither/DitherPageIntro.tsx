@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IntroRepeaterCanvas } from "./IntroRepeaterCanvas";
 
-const INTRO_MS = 12000;
+/** Whole intro. Every phase in `introRepeater` is a fraction of this, so the
+ *  sequence keeps its shape and just plays faster. */
+const INTRO_MS = 5000;
 const OVERLAY_FADE_MS = 650;
 
 type DitherPageIntroProps = {
