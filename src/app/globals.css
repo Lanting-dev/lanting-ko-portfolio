@@ -441,9 +441,27 @@ a:hover {
   );
   /* The name and the figure both run past the edges; this is what cuts them. */
   overflow: clip;
-  /* Opaque, so the title's difference blend has something to invert against. */
   background: #ffffff;
   will-change: transform;
+  /* Declare the blend group explicitly instead of leaning on the stacking
+     context `will-change` happens to create. */
+  isolation: isolate;
+}
+
+/* The paper the title inverts against. `background` on the composition itself
+   is not enough: that box is promoted to its own compositing layer by
+   `will-change: transform`, and a promoted layer's own background is not
+   reliably part of the group its blending children composite into , in the
+   production build it was not, so the white title stayed white on white paper
+   and the name simply vanished. A positioned child at z-index 0 is
+   unambiguously in the group, below the figure (1) and the title (2). */
+.hero-composition::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ffffff;
+  pointer-events: none;
 }
 
 .hero-title-cut {
@@ -692,7 +710,7 @@ a:hover {
   /* Solid dark text sitting in the white gutter to the right of the portrait ,
      no plate, so it must stay clear of the photo. */
   color: #111111;
-  text-align: left;
+  text-align: center;
 }
 
 .hero-intro-copy p {
@@ -774,8 +792,10 @@ a:hover {
     left: clamp(1.1rem, 5vw, 1.5rem);
     right: auto;
     top: 30%;
-    /* Cancel the desktop centring , this column is top-anchored. */
+    /* Cancel the desktop centring , this column is left-anchored and full
+       width, so centred text would read as ragged on both sides. */
     transform: none;
+    text-align: left;
     bottom: auto;
     width: min(320px, 84vw);
     padding: 0;
