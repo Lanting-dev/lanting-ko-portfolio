@@ -419,10 +419,43 @@ a:hover {
   --hero-ko-cap-top: calc(
     100dvh - (1 - var(--hero-ko-sink)) * var(--hero-cap-height, 4.3rem)
   );
+  /* Figure geometry lives here, not on `.hero-figure` , the copy is placed
+     against the portrait, and custom properties only inherit downwards, so a
+     sibling cannot read anything declared on the figure itself. */
+  --hero-figure-overlap: clamp(1rem, 4vh, 3rem);
+  /* KO's width, but never so tall that it runs past the visible part of the
+     word. Whichever is smaller wins, so the word clips the shoulders instead
+     of burying the face. */
+  /* The portrait's widest allowed size. Desktop ties it to "KO"; phones cannot,
+     since two characters of a width-fitted title are tiny on a narrow screen. */
+  --hero-figure-cap: var(--hero-ko-width, clamp(195px, 26vw, 365px));
+  --hero-figure-h: min(
+    var(--hero-figure-cap),
+    calc(
+      var(--hero-ko-cap-top) + var(--hero-figure-overlap) -
+        var(--hero-figure-top)
+    )
+  );
   /* The name and the figure both run past the edges; this is what cuts them. */
   overflow: clip;
   background: #ffffff;
 
+}
+
+/* The paper the title inverts against, as a child rather than the box's own
+   background. WebKit keeps child elements in the blend group but drops the
+   group root's own background, so the difference blend only resolved where the
+   title happened to overlap the figure , anywhere it crossed plain paper it
+   stayed white on white and vanished. Most visible on phones, where "KO" sits
+   below the portrait rather than on it and disappeared entirely. z-index 0 puts
+   it under the figure (1) and the title (2). */
+.hero-composition::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ffffff;
+  pointer-events: none;
 }
 
 .hero-title-cut {
@@ -437,12 +470,14 @@ a:hover {
   pointer-events: none;
 }
 
-@supports (mix-blend-mode: difference) {
-  .hero-title-line--tail {
-    color: #ffffff;
-    mix-blend-mode: difference;
-  }
-}
+/* "KO" is solid black too now, like the lead. It carried the difference blend
+   so it would invert across the shoulders, and on desktop that looked right ,
+   but only because the word happens to sit on the portrait there. WebKit only
+   ever resolved the blend where the title overlapped the figure: the group
+   keeps child elements but drops the group root's own background, so anywhere
+   the word crossed plain paper it stayed white on white. On a phone "KO" sits
+   below the portrait, and it vanished completely. Painting the paper as a
+   child (`.hero-composition::before`) did not change that either. */
 
 .hero-title-line {
   position: absolute;
@@ -489,19 +524,6 @@ a:hover {
      and no-JS fallback. Shrinking this without growing `.hero-hand-ascii`
      opens a gap between the fingertip and the face , the hands are anchored to
      the viewport edge, not to the figure. */
-  /* How far "KO" is allowed to cut into the shoulders , the one knob for the
-     overlap. */
-  --hero-figure-overlap: clamp(1rem, 4vh, 3rem);
-  /* KO's width, but never so tall that it runs past the visible part of the
-     word. Whichever is smaller wins, so the word clips the shoulders instead
-     of burying the face. */
-  --hero-figure-h: min(
-    var(--hero-ko-width, clamp(195px, 26vw, 365px)),
-    calc(
-      var(--hero-ko-cap-top) + var(--hero-figure-overlap) -
-        var(--hero-figure-top)
-    )
-  );
   /* 1 = fully glitched (rest), 0 = healed. Resolves over the first third of
      the hero scroll. */
   --hero-glitch: clamp(0, calc((0.34 - var(--hero-progress, 0)) / 0.34), 1);
@@ -747,15 +769,8 @@ a:hover {
   }
 
   .hero-intro-copy {
-    left: clamp(1.1rem, 5vw, 1.5rem);
-    right: auto;
-    top: 30%;
-    /* Cancel the desktop centring , this column is left-anchored and full
-       width, so centred text would read as ragged on both sides. */
-    transform: none;
-    text-align: left;
-    bottom: auto;
-    width: min(320px, 84vw);
+    /* Under the name and centred, same as desktop. */
+    width: min(86vw, 340px);
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -790,13 +805,13 @@ a:hover {
     overflow-y: visible;
   }
 
-  .hero-figure {
-    --hero-figure-h: var(--hero-ko-width, min(38vw, 184px));
-    /* Phones keep the old bottom anchor , the stacked column here does not
-       have the desktop band, and the lead is not flush to the top edge, so the
-       baseline the desktop rhythm hangs off does not apply. */
-    top: auto;
-    bottom: calc(var(--hero-bottom-inset, 0px) + clamp(2rem, 8vh, 6rem));
+  /* Phones run the same rhythm as desktop , name, band, copy, figure, all hung
+     off the measured baseline. Only the portrait's ceiling changes: tied to
+     "KO" it is a postage stamp on a narrow screen, and the leftover height
+     opens as a hole in the middle. Everything else, including where the copy
+     sits, is inherited. */
+  .hero-composition {
+    --hero-figure-cap: min(82vw, 400px);
   }
 
   /* Matched to the smaller figure above so the fingertips keep the same reach
