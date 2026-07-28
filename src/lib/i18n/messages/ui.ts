@@ -100,7 +100,7 @@ const zhTW = {
     switchLanguage: "切換語言至",
   },
   work: {
-    heading: "作品",
+    heading: "Work",
     subheading: "幾個把混亂整理到終於說得通的案例。",
     viewCaseStudy: "看案例 →",
   },
