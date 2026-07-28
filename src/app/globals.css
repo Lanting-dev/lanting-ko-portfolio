@@ -929,7 +929,12 @@ a:hover {
     var(--project-stack-heading-top) +
     clamp(9rem, 26vh, 16rem)
   );
-  --project-stack-card-top-step: 34px;
+  /* One number for the folder tab. Its own height, the room the card reserves
+     above its body for it, and the step between sticky cards are the same
+     quantity , let them drift apart and the tab's bottom edge lands somewhere
+     inside the card instead of on its top edge. */
+  --project-stack-tab-h: 34px;
+  --project-stack-card-top-step: var(--project-stack-tab-h);
 }
 
 /* Full-bleed to the viewport edges so the framing hands can hug / bleed past
@@ -991,7 +996,9 @@ a:hover {
   width: clamp(460px, 52vw, 740px);
   max-width: calc(100vw - 2rem);
   margin-inline: auto;
-  padding-top: clamp(0.35rem, 1vh, 0.65rem);
+  /* Exactly the tab's height , this is the strip the tab occupies, so the card
+     body starts where the tab ends. */
+  padding-top: var(--project-stack-tab-h);
   isolation: isolate;
   will-change: transform;
   /* Biased up-right into the space the opened hands leave, then grows from a
@@ -1007,7 +1014,12 @@ a:hover {
   left: clamp(1.25rem, 3vw, 2.5rem);
   z-index: 2;
   margin: 0;
-  padding: 0.45rem 1rem 0.35rem;
+  /* Height, not padding , the step between cards is measured against it, and a
+     clamp()ed font size would let the two disagree at some viewport widths.
+     Leading does the centring so `text-overflow: ellipsis` still applies. */
+  height: var(--project-stack-tab-h);
+  padding: 0 1rem;
+  line-height: calc(var(--project-stack-tab-h) - 1px);
   border: 1px solid rgb(255 255 255 / 0.55);
   border-bottom: 0;
   border-radius: 14px 14px 0 0;
@@ -1265,7 +1277,7 @@ a:hover {
       var(--project-stack-heading-top) +
       clamp(4.5rem, 15vh, 8rem)
     );
-    --project-stack-card-top-step: 28px;
+    --project-stack-tab-h: 28px;
   }
 
   .project-stack-heading,
