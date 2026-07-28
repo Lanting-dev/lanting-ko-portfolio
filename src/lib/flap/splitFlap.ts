@@ -1,9 +1,12 @@
 /** Glyphs the flaps tumble through before settling , letters + digits. */
 export const SPLIT_FLAP_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-export const SPLIT_FLAP_TICK_MS = 70;
-export const SPLIT_FLAP_STAGGER_TICKS = 4;
-export const SPLIT_FLAP_BASE_TICKS = 8;
+/* Tuned so every board lands in ~1s regardless of length. The stagger is what
+   scales with the word, so it stays at one tick , four ticks put the footer's
+   ten characters at 3.1s, three times the headings. */
+export const SPLIT_FLAP_TICK_MS = 55;
+export const SPLIT_FLAP_STAGGER_TICKS = 1;
+export const SPLIT_FLAP_BASE_TICKS = 10;
 
 export function splitFlapTargetChars(target: string): string[] {
   return target.split("");
