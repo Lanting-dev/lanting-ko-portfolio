@@ -21,19 +21,6 @@ const projectColorAsset = (path: string) =>
 
 export const PROJECTS: ProjectItem[] = [
   {
-    id: "nga",
-    src: "/projects/NGA.png",
-    colorSrc: projectColorAsset("/projects/NGA-Color.png"),
-    alt: "National Gallery of Art · UX research and product design",
-    accent: "#F85525",
-    href: "/work/nga",
-    title: "Designing a Multiplayer Experience for Gen Z Museum Engagement",
-    meta: "National Gallery of Art · UX Research · Product Design",
-    focus: "Engagement strategy",
-    description:
-      "A multiplayer drawing game that turns art appreciation into social, competitive play for Gen Z.",
-  },
-  {
     id: "gt",
     src: "/projects/GT.png",
     colorSrc: projectColorAsset("/projects/GT-Color.png"),
@@ -45,6 +32,19 @@ export const PROJECTS: ProjectItem[] = [
     focus: "AI workflow clarity",
     description:
       "Surfacing system state in an AI course builder so users act with confidence, not trial and error.",
+  },
+  {
+    id: "nga",
+    src: "/projects/NGA.png",
+    colorSrc: projectColorAsset("/projects/NGA-Color.png"),
+    alt: "National Gallery of Art · UX research and product design",
+    accent: "#F85525",
+    href: "/work/nga",
+    title: "Designing a Multiplayer Experience for Gen Z Museum Engagement",
+    meta: "National Gallery of Art · UX Research · Product Design",
+    focus: "Engagement strategy",
+    description:
+      "A multiplayer drawing game that turns art appreciation into social, competitive play for Gen Z.",
   },
   {
     id: "foru",
