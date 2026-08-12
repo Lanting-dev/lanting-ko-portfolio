@@ -520,7 +520,8 @@ a:hover {
    the *ink* on `--hero-lead-top` instead of the box. */
 .hero-title-line--lead {
   top: calc(var(--hero-lead-top) - var(--hero-ink-top-inset, 0px));
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   color: #000000;
 }
 
