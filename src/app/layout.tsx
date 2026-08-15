@@ -11,7 +11,7 @@ import { ZH_TW_FONT_STYLESHEET } from "@/lib/i18n/fonts";
 import "./globals.css";
 
 const sora = Sora({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-sora-next",
   weight: ["400", "500", "600", "700", "800"],
 });
