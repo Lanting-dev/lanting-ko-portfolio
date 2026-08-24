@@ -5,7 +5,7 @@ import { LabScrambleHeading } from "./LabScrambleHeading";
 
 export function ExperimentalSection() {
   return (
-    <section id="lab" className="lab-section page-shell">
+    <section id="idea" className="lab-section page-shell">
       <header className="lab-section-header">
         <div className="lab-section-heading">
           <LabScrambleHeading />

@@ -11,7 +11,7 @@ export function ShowcaseNav() {
     <header className="site-nav type-nav sticky top-0 z-40 shrink-0">
       <div className="site-nav-pill site-nav-pill--case-study grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-4">
         <Link
-          href="/#lab"
+          href="/#idea"
           className="site-nav-case-back min-w-0 truncate text-black/45 transition-opacity hover:opacity-60"
         >
           {ui.lab.backToLab}

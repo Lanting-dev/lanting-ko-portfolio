@@ -25,21 +25,20 @@ type LabEntry = {
   preview: ExperimentalPreviewMedia;
 };
 
-/** The lab list = the experiment showcases plus IONG, a speculative piece that
- *  lives here but keeps its full case-study page under /work/iong. */
+/** The lab list = the experiment showcases plus IONG, a speculative case study. */
 const LAB_ENTRIES: LabEntry[] = [
   ...EXPERIMENTAL_PROJECTS.map((project) => ({
     key: project.slug,
     title: project.title,
     tag: shortTag(project.tag),
-    href: `/lab/${project.slug}`,
+    href: `/idea/${project.slug}`,
     preview: getExperimentalPreviewMedia(project.slug),
   })),
   {
     key: "iong",
     title: "IONG",
     tag: "Interactive website",
-    href: "/work/iong",
+    href: "/idea/iong",
     preview: {
       type: "video",
       src: "/work/iong/intro.mp4",

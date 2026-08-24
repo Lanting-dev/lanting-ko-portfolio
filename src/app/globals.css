@@ -3844,6 +3844,31 @@ a:hover {
   padding-bottom: 0;
 }
 
+.iong-experience-section {
+  padding-bottom: clamp(6rem, 13vw, 11rem);
+}
+
+.iong-case-study .editorial-hero-media,
+.iong-case-study .case-study-figure-frame,
+.iong-case-study .gt-step-stage,
+.iong-case-study .gt-step-stage-media .gt-dark-media {
+  border-radius: 18px;
+}
+
+.iong-case-study .case-study-figure-img,
+.iong-case-study .gt-step-stage-media img,
+.iong-case-study .gt-step-stage-media video,
+.iong-case-study .gt-step-stage-media .gt-dark-media > img,
+.iong-case-study .gt-step-stage-media .gt-dark-media > video,
+.iong-case-study .editorial-hero-media video {
+  object-fit: contain;
+  object-position: center;
+}
+
+.iong-case-study .case-study-figure-img {
+  border-radius: 14px;
+}
+
 .gt-step-reveal {
   display: grid;
   margin-top: clamp(3rem, 7vw, 6rem);
@@ -4895,6 +4920,49 @@ a:hover {
 .editorial-case-study .gt-step-stage-media .gt-dark-media {
   height: 100%;
   min-height: clamp(14rem, 28vw, 22rem);
+}
+
+.editorial-case-study.iong-case-study .editorial-hero-media video,
+.editorial-case-study.iong-case-study .gt-step-stage-media video,
+.editorial-case-study.iong-case-study .gt-step-stage-media .gt-dark-media > img,
+.editorial-case-study.iong-case-study .gt-step-stage-media .gt-dark-media > video {
+  object-fit: contain;
+  object-position: center;
+}
+
+.editorial-case-study.iong-case-study .gt-step-stage-media,
+.editorial-case-study.iong-case-study .gt-step-stage-media-grid,
+.editorial-case-study.iong-case-study .gt-step-stage-media .gt-dark-media,
+.editorial-case-study.iong-case-study .gt-step-stage-media .gt-dark-media > img {
+  background: transparent;
+}
+
+.editorial-case-study.iong-case-study .gt-step-stage {
+  grid-template-rows: auto auto;
+}
+
+.editorial-case-study.iong-case-study .gt-step-stage-media,
+.editorial-case-study.iong-case-study .gt-step-stage-media-grid,
+.editorial-case-study.iong-case-study .gt-step-stage-media-grid.is-pair,
+.editorial-case-study.iong-case-study .gt-step-stage-media .gt-dark-media {
+  display: block;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+}
+
+.editorial-case-study.iong-case-study .gt-step-stage-media {
+  height: min(52vh, clamp(18rem, 36vw, 34rem));
+}
+
+.editorial-case-study.iong-case-study .gt-step-stage-media img,
+.editorial-case-study.iong-case-study .gt-step-stage-media video,
+.editorial-case-study.iong-case-study .gt-step-stage-media .gt-dark-media > img,
+.editorial-case-study.iong-case-study .gt-step-stage-media .gt-dark-media > video {
+  width: 100%;
+  height: 100%;
 }
 
 .editorial-case-study .gt-step-stage {

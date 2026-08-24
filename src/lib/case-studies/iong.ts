@@ -39,16 +39,14 @@ export const IONG_CASE_STUDY = {
     { label: "Tools", value: "Figma, Codex, Claude Code" },
   ],
   toc: [
+    { id: "concept", label: "Concept" },
     { id: "world", label: "World" },
     { id: "experience", label: "Experience" },
-    { id: "process", label: "Process" },
-    { id: "research", label: "Research" },
-    { id: "system", label: "System" },
     { id: "reflection", label: "Reflection" },
   ],
   summary: [
-    "In 2070, food is no longer a personal choice. It is a government-managed system driven by biometric tracking and automated nutrition. IONG reimagines what happens when care, convenience, and optimization quietly replace everyday decision-making.",
-    "You enter the system as a new employee, not as a citizen receiving meals, but as someone learning how the institution works. There is no fixed path: the system tracks reading time, clicks, and biometric scans as you explore, then assigns an employee badge based on that behavior. Interaction itself becomes participation.",
+    "IONG is a speculative onboarding system set in 2070, where food is no longer chosen but assigned through biometric tracking and automated nutrition.",
+    "Instead of showing the future from a citizen's view, I built an employee onboarding demo. The system tracks how you read, click, and move through departments, then assigns your badge based on that behavior.",
   ],
   hero: {
     src: "/work/iong/intro.mp4",
@@ -57,29 +55,32 @@ export const IONG_CASE_STUDY = {
   },
   demoUrl: "https://iong.vercel.app/index.html",
   world: {
+    conceptHeadline: "Food as a system, not a choice",
     headline: "2070: A Low-Fertility Future",
     body:
-      "Declining birth rates and pressure on public health systems have turned food into a government-managed resource. The government partners with private companies to establish IONG 養, a centralized nutrition program that supports population health without ever describing participation as mandatory.",
+      "Declining birth rates and pressure on public health systems have turned food into a government-managed resource. IONG 養 is a centralized nutrition program that supports population health without ever describing participation as mandatory.",
     context:
-      "Citizens receive meals generated through continuous biometric analysis, using food made from processed surplus and alternative materials. The onboarding demo places you on the employee side of the system, revealing how health scoring, monitoring, and allocation operate from within the institution.",
+      "Citizens receive meals generated through continuous biometric analysis. The demo places you on the employee side of the institution, where care, scoring, monitoring, and access start to blur.",
+    premiseContext:
+      "Food feels personal, but many choices are already shaped before we make them, through packaging, grocery systems, health tracking, and algorithms. IONG extends that condition into a future where food decisions become fully automated.",
     designQuestion:
-      "What happens when onboarding makes compliance feel voluntary?",
+      "IONG reimagines food as a system rather than a choice, exploring how care and optimization can slowly reshape human autonomy.",
     image: {
-      src: "/work/iong/world-2070.png",
-      alt: "2070 worldbuilding: population decline, government public health response, and establishment of IONG",
+      src: "/work/iong/low-fertility-future.jpg",
+      alt: "2070 low-fertility future scenario showing population decline, public health response, and the establishment of IONG",
     },
     goals: [
       {
         title: "Explore automation and care",
-        body: "Examine how automated systems can appear helpful while quietly shaping behavior and reducing personal autonomy.",
+        body: "Show how a helpful system can quietly shape behavior and reduce autonomy.",
       },
       {
         title: "Connect speculation to the present",
-        body: "Link IONG’s world to current health tracking, personalized algorithms, and AI-driven decision-making.",
+        body: "Tie the fiction to health tracking, personalization, and AI-driven decisions.",
       },
       {
         title: "No clear right or wrong",
-        body: "Present the system without defining it as purely good or bad. Curiosity and discomfort should coexist.",
+        body: "Let curiosity and discomfort coexist instead of labeling the system as good or bad.",
       },
     ] satisfies IongInsight[],
   },
@@ -135,34 +136,24 @@ export const IONG_CASE_STUDY = {
     ] satisfies IongInsight[],
   },
   process: {
-    headline: "From object to employee onboarding",
+    headline: "How the concept became interactive",
     intro:
-      "The onboarding demo was the final layer. IONG evolved from a physical speculative object into a connected digital ecosystem that examines how systems shape behavior through routine, restricted information, and small rewards rather than overt force.",
+      "IONG started as research into how food choices are already shaped, then moved from speculative object design into an interactive employee system. The final demo became a way to make the institution feel usable, believable, and slightly uncomfortable.",
     points: [
       [
         "01",
-        "Severance analysis",
-        "I analyzed how Severance creates discomfort through minimal interfaces, limited transparency, and institutional environments that appear helpful while quietly restricting autonomy.",
+        "Food choice research",
+        "I looked at packaging, grocery layouts, health tracking, and recommendation systems to understand how everyday choices are structured before they feel personal.",
       ],
       [
         "02",
-        "Circadian Compliance Unit",
-        "An early speculative device encouraged wellness compliance through reminders and small rewards. Limiting interaction to yes-or-no decisions became a foundation for IONG’s Health Credit Score and biometric monitoring.",
+        "Speculative object",
+        "I prototyped an early compliance device and food substrate system, testing how wellness language, minimal interfaces, and small rewards could make control feel ordinary.",
       ],
       [
         "03",
-        "Designing the food",
-        "I simplified food into three macros, then iterated packaging, shape, and color. A leaf-shaped reference shifted the direction toward clean, systemized substrates: Flǣsc, Hwǣte, and Fǣtt.",
-      ],
-      [
-        "04",
-        "From object to digital",
-        "IONG became a connected ecosystem of departments and interfaces. Loading screens evolved into an internal employee system; fingerprint and facial scans made onboarding feel like entering a controlled institution.",
-      ],
-      [
-        "05",
-        "Sorting through interaction",
-        "Instead of asking users to choose a department, the demo tracks reading time and behavior, then assigns an employee badge. Simply interacting with the experience becomes a form of participation.",
+        "Interactive onboarding",
+        "The project became an employee demo with biometric entry, locked departments, behavior tracking, and a badge assigned by the system instead of selected by the user.",
       ],
     ] as const,
     images: [
@@ -181,7 +172,7 @@ export const IONG_CASE_STUDY = {
   system: {
     headline: "One centralized system, five departments",
     intro:
-      "IONG operates through five connected departments. The onboarding experience grants partial access; this section maps what you can explore in the demo and what remains beyond your clearance.",
+      "IONG operates through five departments. The onboarding experience only grants partial access, so the system feels larger than what a new employee is allowed to see.",
     inDemo: {
       label: "In the demo",
       lead: "As a new employee, you can open Mete Systems, Hæl Intelligence, and Wēl Outreach. You also pass through biometric verification and, eventually, receive a badge.",
@@ -198,19 +189,19 @@ export const IONG_CASE_STUDY = {
       {
         name: "Mete Systems",
         tagline: "Surplus to sustenance",
-        body: "Collects and processes nutritional materials into daily sachets. Composition is not disclosed, and most processes remain invisible to the public.",
+        body: "Processes surplus materials into daily sachets while keeping composition mostly invisible.",
         accessible: true,
       },
       {
         name: "Hæl Intelligence",
         tagline: "Biometric data analysis",
-        body: "Uses wearable data to create daily nutrition plans for citizens and updates formulas in real time, while personal data remains siloed across departments.",
+        body: "Uses wearable data to update nutrition plans and citizen profiles in real time.",
         accessible: true,
       },
       {
         name: "Wēl Outreach",
         tagline: "Trust and communication",
-        body: "Explains the Health Credit Score to citizens, shares updates, and serves as the primary link between the public and the program.",
+        body: "Explains the Health Credit Score and turns compliance into public-facing guidance.",
         accessible: true,
       },
       {
@@ -307,14 +298,14 @@ export const IONG_CASE_STUDY = {
   experience: {
     headline: "Employee onboarding as the experience",
     intro:
-      "The onboarding demo has no fixed path. You enter with partial employee access, complete biometric scans, and explore the departments freely. Some sections remain locked behind clearance levels. The system tracks your reading time and interactions, then uses that behavior to determine the employee badge you receive. You never choose a role directly; browsing becomes a form of participation.",
+      "The demo has no fixed path. You enter with partial employee access, complete biometric scans, and explore departments freely. The system tracks reading time and interactions, then uses that behavior to assign your employee badge. You never choose a role directly; browsing becomes participation.",
     steps: [
       {
         index: "welcome",
         title: "Welcome onboard",
         finding: "Enter as a new employee",
         description:
-          "The experience opens with a partial-access employee ID, then moves through fingerprint and facial recognition. From the first screen, the tone is institutional, helpful, and slightly unsettling. Participation begins before anyone reads the fine print.",
+          "The experience opens with a partial-access employee ID, then moves through fingerprint and facial recognition. Participation begins before anyone reads the fine print.",
         media: [
           {
             src: "/work/iong/intro.mp4",
@@ -329,7 +320,7 @@ export const IONG_CASE_STUDY = {
         title: "Mete Systems",
         finding: "Surplus to sustenance",
         description:
-          "Mete Systems converts surplus into daily sachets for citizens. Processes stay hidden, and exact composition is never disclosed. As an employee exploring this department, you can linger or move on. The system logs reading time either way.",
+          "Mete Systems converts surplus into daily sachets. Employees can linger or move on, but the system logs reading time either way.",
         media: [
           {
             src: "/work/iong/mete.mp4",
@@ -344,7 +335,7 @@ export const IONG_CASE_STUDY = {
         title: "Hæl Intelligence",
         finding: "Citizen data, employee access",
         description:
-          "Hæl Intelligence shows how citizen health scores, mood, and delivery status are tracked in real time. Employees onboarding through the demo see the citizen-facing side of biometric monitoring: food as an output of continuous data collection.",
+          "Hæl Intelligence shows citizen health scores, mood, and delivery status in real time: food as an output of continuous data collection.",
         media: [
           {
             src: "/work/iong/heal.mp4",
@@ -359,7 +350,7 @@ export const IONG_CASE_STUDY = {
         title: "Wēl Outreach",
         finding: "How compliance is explained",
         description:
-          "Wēl Outreach is where citizens learn about the Health Credit Score. During onboarding, employees see how bonuses and penalties are communicated, and how access to services quietly depends on daily behavior.",
+          "Wēl Outreach shows how bonuses and penalties are communicated, and how access to services quietly depends on daily behavior.",
         media: [
           {
             src: "/work/iong/wel.mp4",
@@ -374,7 +365,7 @@ export const IONG_CASE_STUDY = {
         title: "Lif Continuity",
         finding: "Access restricted",
         description:
-          "Lif Continuity handles population monitoring. During onboarding, your clearance level does not permit entry. The lock screen is still part of the experience: you can attempt to open it, but the system reminds you the institution extends beyond what any new employee is allowed to see.",
+          "Lif Continuity handles population monitoring. The locked screen reinforces that the institution extends beyond what a new employee can see.",
         media: [
           {
             src: "/work/iong/lif-continuity-locked.png",
@@ -388,7 +379,7 @@ export const IONG_CASE_STUDY = {
         title: "Lic Analytics",
         finding: "Access restricted",
         description:
-          "Lic Analytics processes data at a scale onboarding does not expose. Like Lif Continuity, it appears in the department map but remains locked. Hitting these walls reinforces that IONG is larger than the sections you are allowed to browse.",
+          "Lic Analytics processes data at a scale onboarding does not expose. Its lock makes limited access part of the interaction.",
         media: [
           {
             src: "/work/iong/lic-analytics-locked.png",
@@ -402,7 +393,7 @@ export const IONG_CASE_STUDY = {
         title: "Employee badge",
         finding: "Assigned by your behavior",
         description:
-          "The badge reflects how you moved through onboarding, not a role you selected. Reading time in each department, tracked interactions, and biometric entry all feed into which department the system assigns. Two employees rarely receive the same outcome.",
+          "The badge reflects how you moved through onboarding, not a role you selected. Reading time, tracked interactions, and biometric entry feed the assignment.",
         media: [
           {
             src: "/work/iong/badge.mp4",
@@ -414,7 +405,7 @@ export const IONG_CASE_STUDY = {
       },
     ] satisfies GtStep[],
     outro:
-      "The demo is the entry point. What follows traces how it was built, and why food became the subject.",
+      "The demo is the entry point. What follows traces how the idea became a system.",
   },
   reflection: {
     headline: "Speculation as a mirror for the present",

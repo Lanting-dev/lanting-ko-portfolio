@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function IongWorkRedirectPage() {
+export default function IongLabRedirectPage() {
   redirect("/idea/iong");
 }

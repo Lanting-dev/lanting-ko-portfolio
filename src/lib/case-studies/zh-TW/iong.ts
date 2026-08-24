@@ -18,11 +18,9 @@ export const IONG_CASE_STUDY_ZH = {
     { label: "工具", value: "Figma, Codex, Claude Code" },
   ],
   toc: [
+    { id: "concept", label: "概念" },
     { id: "world", label: "世界觀" },
     { id: "experience", label: "體驗" },
-    { id: "process", label: "流程" },
-    { id: "research", label: "研究" },
-    { id: "system", label: "系統" },
     { id: "reflection", label: "反思" },
   ],
   summary: [
@@ -36,15 +34,18 @@ export const IONG_CASE_STUDY_ZH = {
   },
   demoUrl: "https://iong.vercel.app/index.html",
   world: {
+    conceptHeadline: "食物作為系統，而不只是選擇",
     headline: "2070：低生育率的未來",
     body:
       "在低生育率和公共衛生壓力不斷升高的未來，飲食被納入政府管理。政府與私人企業合作建立 IONG 養，表面上是一套照顧全民健康的集中式營養計畫，卻從不明說參與是否真的可以拒絕。",
     context:
       "公民透過持續的生物辨識分析取得餐食，食物則由加工剩餘物與替代材料製成。onboarding demo 讓你從機構內部看見健康評分、監控和配給如何串在一起。",
-    designQuestion: "如果 onboarding 讓服從看起來像自願，會發生什麼事？",
+    premiseContext:
+      "食物看似是很個人的選擇，但很多決定其實早已被包裝、超市系統、健康追蹤和演算法形塑。IONG 將這個狀態推向一個食物決策被完全自動化的未來。",
+    designQuestion: "IONG 將食物重新想像為一個系統，而不只是個人選擇，探索照護與最佳化如何逐漸改變人的自主性。",
     image: {
-      src: "/work/iong/world-2070.png",
-      alt: "2070 世界觀：人口下降、政府公共衛生回應與 IONG 的建立",
+      src: "/work/iong/low-fertility-future.jpg",
+      alt: "2070 低生育率未來情境，呈現人口下降、公共衛生回應與 IONG 的建立",
     },
     goals: [
       {

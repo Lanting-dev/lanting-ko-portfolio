@@ -4,7 +4,6 @@ import Link from "next/link";
 import { CaseStudyBackToTop } from "@/components/case-study/CaseStudyBackToTop";
 import { CaseStudyFigure } from "@/components/case-study/CaseStudySection";
 import { CaseStudyFooter } from "@/components/case-study/CaseStudyFooter";
-import { CaseStudyMoreProjects } from "@/components/case-study/CaseStudyMoreProjects";
 import { CaseStudyNav } from "@/components/case-study/CaseStudyNav";
 import { CaseStudyProgressBar } from "@/components/case-study/CaseStudyProgressBar";
 import { CaseStudyToc } from "@/components/case-study/CaseStudyToc";
@@ -14,7 +13,7 @@ import { caseStudySectionLabel } from "@/lib/i18n/caseStudySection";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export function IongCaseStudy() {
-  const { ui } = useLocale();
+  const { locale, ui } = useLocale();
   const study = useCaseStudy("iong");
   const {
     meta,
@@ -22,20 +21,17 @@ export function IongCaseStudy() {
     hero,
     demoUrl,
     world,
-    research,
-    process,
-    system,
     experience,
     reflection,
   } = study;
 
   return (
-    <div className="editorial-case-study">
+    <div className="editorial-case-study iong-case-study">
       <CaseStudyProgressBar />
       <CaseStudyBackToTop />
 
       <div className="page-shell mx-auto w-full max-w-[1440px]">
-        <CaseStudyNav />
+        <CaseStudyNav backHref="/#idea" backLabel={ui.lab.backToLab} />
 
         <div className="case-study-glass editorial-case-glass">
           <div className="editorial-case-shell">
@@ -83,20 +79,13 @@ export function IongCaseStudy() {
                 </figure>
               </header>
 
-              <section id="world" className="editorial-section">
-                <p className="editorial-section-label">{caseStudySectionLabel("world", ui)}</p>
-                <h2>{world.headline}</h2>
-                <p className="editorial-section-lead">{world.body}</p>
-                <p className="editorial-section-lead">{world.context}</p>
-
-                <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.designQuestion}</p>
+              <section id="concept" className="editorial-section">
+                <p className="editorial-section-label">
+                  {locale === "zh-TW" ? "概念" : "Concept"}
+                </p>
+                <h2>{world.conceptHeadline}</h2>
+                <p className="editorial-section-lead">{world.premiseContext}</p>
                 <p className="editorial-section-lead editorial-design-question">{world.designQuestion}</p>
-
-                <CaseStudyFigure
-                  className="editorial-design-media-figure"
-                  src={world.image.src}
-                  alt={world.image.alt}
-                />
 
                 <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.designGoals}</p>
                 <ul className="gt-signal-grid">
@@ -109,7 +98,21 @@ export function IongCaseStudy() {
                 </ul>
               </section>
 
-              <section id="experience" className="editorial-section gt-insight-section">
+              <section id="world" className="editorial-section">
+                <p className="editorial-section-label">{caseStudySectionLabel("world", ui)}</p>
+                <h2>{world.headline}</h2>
+                <p className="editorial-section-lead">{world.body}</p>
+                <p className="editorial-section-lead">{world.context}</p>
+
+                <CaseStudyFigure
+                  className="editorial-design-media-figure"
+                  src={world.image.src}
+                  alt={world.image.alt}
+                  parallax={false}
+                />
+              </section>
+
+              <section id="experience" className="editorial-section gt-insight-section iong-experience-section">
                 <p className="editorial-section-label">{caseStudySectionLabel("experience", ui)}</p>
                 <h2>{experience.headline}</h2>
                 <p className="editorial-section-lead">{experience.intro}</p>
@@ -119,170 +122,6 @@ export function IongCaseStudy() {
                   mode="explore"
                   railLabel="Departments available during employee onboarding"
                 />
-                <p className="editorial-section-lead editorial-section-bridge">{experience.outro}</p>
-              </section>
-
-              <section id="process" className="editorial-section">
-                <p className="editorial-section-label">{caseStudySectionLabel("process", ui)}</p>
-                <h2>{process.headline}</h2>
-                <p className="editorial-section-lead">{process.intro}</p>
-
-                <ol className="editorial-design-points">
-                  {process.points.map(([index, title, body]) => (
-                    <li key={index}>
-                      <span>{index}</span>
-                      <div>
-                        <h3>{title}</h3>
-                        <p>{body}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-
-                {process.images.map((image) => (
-                  <CaseStudyFigure
-                    key={image.src}
-                    className="editorial-design-media-figure"
-                    src={image.src}
-                    alt={image.alt}
-                    caption={image.caption}
-                  />
-                ))}
-              </section>
-
-              <section id="research" className="editorial-section">
-                <p className="editorial-section-label">{caseStudySectionLabel("research", ui)}</p>
-                <h2>{research.headline}</h2>
-                <p className="editorial-section-lead">{research.intro}</p>
-
-                <ul className="gt-signal-grid gt-signal-grid--quad">
-                  {research.pillars.map((pillar) => (
-                    <li key={pillar.title}>
-                      <h3>{pillar.title}</h3>
-                      <p>{pillar.body}</p>
-                    </li>
-                  ))}
-                </ul>
-
-                <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.literatureReview}</p>
-                <ul className="gt-signal-grid">
-                  {research.literature.map((item) => (
-                    <li key={item.title}>
-                      <h3>{item.title}</h3>
-                      <p>{item.body}</p>
-                    </li>
-                  ))}
-                </ul>
-
-                <p className="editorial-section-label editorial-subsection-label">{ui.caseStudy.weakSignals}</p>
-                <ul className="gt-signal-grid">
-                  {research.signals.map((signal) => (
-                    <li key={signal.title}>
-                      <h3>{signal.title}</h3>
-                      <p>{signal.body}</p>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <section id="system" className="editorial-section">
-                <p className="editorial-section-label">{caseStudySectionLabel("system", ui)}</p>
-                <h2>{system.headline}</h2>
-                <p className="editorial-section-lead">{system.intro}</p>
-
-                <p className="editorial-section-label editorial-subsection-label">{system.inDemo.label}</p>
-                <p className="editorial-section-lead">{system.inDemo.lead}</p>
-
-                <CaseStudyFigure
-                  className="editorial-design-media-figure"
-                  src={system.departmentMap.src}
-                  alt={system.departmentMap.alt}
-                />
-
-                <ul className="gt-signal-grid">
-                  {system.departments
-                    .filter((department) => department.accessible)
-                    .map((department) => (
-                      <li key={department.name}>
-                        <h3>{department.name}</h3>
-                        <p>
-                          {department.tagline}. {department.body}
-                        </p>
-                      </li>
-                    ))}
-                </ul>
-
-                {system.interfaces.map((screen) => (
-                  <section
-                    key={`${screen.label}-${screen.headline}`}
-                    className="editorial-section editorial-design-section"
-                  >
-                    <p className="editorial-section-label">{screen.label}</p>
-                    <h2>{screen.headline}</h2>
-                    <p className="editorial-section-lead">{screen.body}</p>
-                    <CaseStudyFigure
-                      className="editorial-design-media-figure"
-                      src={screen.image.src}
-                      alt={screen.image.alt}
-                    />
-                  </section>
-                ))}
-
-                <p className="editorial-section-label editorial-subsection-label">{system.beyondDemo.label}</p>
-                <p className="editorial-section-lead">{system.beyondDemo.lead}</p>
-
-                <ul className="gt-signal-grid">
-                  {system.departments
-                    .filter((department) => !department.accessible)
-                    .map((department) => (
-                      <li key={department.name}>
-                        <h3>{department.name}</h3>
-                        <p>
-                          {department.tagline}. {department.body}
-                        </p>
-                      </li>
-                    ))}
-                </ul>
-
-                <div className="editorial-design-chapter">
-                  {system.substrates.map((substrate) => (
-                    <section
-                      key={substrate.name}
-                      className="editorial-section editorial-design-section"
-                    >
-                      <p className="editorial-section-label">{substrate.macro}</p>
-                      <h2>{substrate.name}</h2>
-                      <p className="editorial-section-lead">{substrate.body}</p>
-                      <CaseStudyFigure
-                        className="editorial-design-media-figure"
-                        src={substrate.image.src}
-                        alt={substrate.image.alt}
-                      />
-                    </section>
-                  ))}
-
-                  <section className="editorial-section editorial-design-section">
-                    <p className="editorial-section-label">{ui.caseStudy.delivery}</p>
-                    <h2>{system.delivery.headline}</h2>
-                    <p className="editorial-section-lead">{system.delivery.body}</p>
-                    <CaseStudyFigure
-                      className="editorial-design-media-figure"
-                      src={system.delivery.image.src}
-                      alt={system.delivery.image.alt}
-                    />
-                  </section>
-
-                  <section className="editorial-section editorial-design-section">
-                    <p className="editorial-section-label">{ui.caseStudy.petizen}</p>
-                    <h2>{system.petizen.headline}</h2>
-                    <p className="editorial-section-lead">{system.petizen.body}</p>
-                    <CaseStudyFigure
-                      className="editorial-design-media-figure"
-                      src={system.petizen.image.src}
-                      alt={system.petizen.image.alt}
-                    />
-                  </section>
-                </div>
               </section>
 
               <section id="reflection" className="editorial-section editorial-conclusion">
@@ -304,7 +143,6 @@ export function IongCaseStudy() {
         </div>
       </div>
 
-      <CaseStudyMoreProjects currentProject="iong" />
       <CaseStudyFooter />
     </div>
   );
