@@ -19,13 +19,13 @@ type AboutSectionProps = {
  *  pushes the copy off to the right. */
 function pushStops(progress: number) {
   const entry = smoothstep(0, 1, progress / 0.3);
-  const exit = smoothstep(0, 1, (progress - 0.62) / 0.3);
+  const exit = smoothstep(0, 1, (progress - 0.72) / 0.24);
   return {
     // Hand: off-screen left → rest at bottom-left → shoved off to the right.
-    handX: (1 - entry) * -50 + exit * 70,
+    handX: (1 - entry) * -50 + exit * 34,
     handScale: 0.62 + entry * 0.38,
-    // Copy enters from the left just ahead of the finger; on exit it shares the
-    // hand's travel (same +70) so the fingertip stays in contact — a real push.
+    // Copy enters from the left just ahead of the finger; on exit it moves
+    // faster than the hand so the ASCII art never drifts into the text column.
     copyX: (1 - entry) * -26 + exit * 70,
     copyOpacity: entry,
   };

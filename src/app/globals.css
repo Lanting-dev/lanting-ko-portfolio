@@ -1930,7 +1930,7 @@ a:hover {
      ABOUT_HAND_ASCII , update it if the art is swapped for a taller crop. */
   --about-hand-font: clamp(0.34rem, 0.7vw, 0.9rem);
   --about-hand-rows: 27;
-  --about-hand-top: clamp(0.5rem, 3vh, 2.5rem);
+  --about-hand-top: clamp(0rem, 1.2vh, 1.2rem);
   --about-hand-h: calc(var(--about-hand-rows) * var(--about-hand-font));
 }
 
@@ -1946,6 +1946,8 @@ a:hover {
   bottom: auto;
   z-index: 10;
   width: max-content;
+  max-width: min(52vw, 860px);
+  overflow: hidden;
   pointer-events: none;
   user-select: none;
   filter: grayscale(1) contrast(1.03);
@@ -2052,10 +2054,10 @@ a:hover {
   /* Starts under the fingers, not past them , the last third of the hand
      overlaps the first lines, which is what makes it read as one composition
      rather than a picture next to a paragraph. */
-  left: clamp(34vw, 39vw, 42vw);
+  left: clamp(34rem, 44vw, 54rem);
   /* First line lands on the hand's vertical midline, i.e. just below the
      fingertips. Derived so dialing the hand's size or drop carries the copy. */
-  top: calc(var(--about-hand-top) + 0.52 * var(--about-hand-h));
+  top: calc(var(--about-hand-top) + 0.68 * var(--about-hand-h));
   width: min(580px, 48vw);
   z-index: 20;
   color: #1a1a1a;
@@ -2137,6 +2139,7 @@ a:hover {
     bottom: auto;
     width: max-content;
     max-width: none;
+    overflow: visible;
     margin-inline: 0;
   }
 
